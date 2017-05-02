@@ -8,22 +8,11 @@
  * option. This file may not be copied, modified, or distributed
  * except according to those terms.
  */
-import uuid from "uuid"
-import {observable, computed} from "mobx"
 
-export default class Repository {
-  id = null
-  @observable name
-  @observable token
-  @observable local;
+export default  class OpenRepository {
 
-  constructor(name, id, local = false) {
-    this.name = name
-    this.id = id
-    this.local = local
+  constructor(userName, password) {
+    this.userName = userName
+    this.password = Array.from(new TextEncoder("utf-8").encode(password))
   }
-}
-
-export function isOpen(repo) {
-  return repo.local || repo.token
 }

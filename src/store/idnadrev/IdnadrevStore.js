@@ -9,25 +9,52 @@
  * except according to those terms.
  */
 
-import {observable, computed, action} from 'mobx';
-import Loader from "./../remote/DummyLoader.js"
+import {observable, extendObservable, computed, action} from 'mobx';
+// import Loader from "./../remote/DummyLoader.js"
 import {all} from "./../DummyData.js"
+import LocalRepositoryLoader from "../remote/LocalRepositoryLoader";
+import Loader from "../remote/Loader";
+import Repository from "./Repository";
 
 export default class IdnadrevStore {
   loader = new Loader()
+  localRepoLoader = new LocalRepositoryLoader()
 
   @observable files = new Map(all)
   @observable repositories = new Map()
 
+  constructor() {
+    const localrepos = this.localRepoLoader.loadLocalRepositories()
+    for (let repo of localrepos) {
+      this.repositories.set(repo.id, repo)
+    }
+  }
+
   @action
-  getRepositories() {
-    this.loader.loadRepositories(this.repositories)
+  loadRepositories() {
+    this.loader.loadRepos().then(repos => {
+      for (let repo of repos) {
+        if (!this.repositories.has(repo.id)) {
+
+          this.repositories.set(repo.id, Object.assign(new Repository(), repo))
+        }
+      }
+    })
+  }
+
+  @action
+  openRepository(id, username, password) {
+    this.loader.openRepository(id, username, password).then(token => {
+      console.log("Logged into " + id)
+      this.repositories.get(id).token = token.id
+      console.log(this.repositories.get(id))
+    })
   }
 
   @action
   loadContent(id) {
-    this.loader.loadContent(id).then((c)=>{
-      this.files.get(id).content=c;
+    this.loader.loadContent(id).then((c) => {
+      this.files.get(id).content = c;
     });
   }
 
@@ -35,6 +62,11 @@ export default class IdnadrevStore {
   addFile(file) {
     this.files.set(file.id, file)
   }
+
+  getRepository(id) {
+    return this.repositories.get(id);
+  }
+
 
   @computed get thoughts() {
     return this.files.values()

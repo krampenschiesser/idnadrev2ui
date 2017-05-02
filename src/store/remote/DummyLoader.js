@@ -9,7 +9,6 @@
  * except according to those terms.
  */
 
-
 import {merged} from "./../DummyData.js"
 
 export  default  class Loader {
