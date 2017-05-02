@@ -8,8 +8,12 @@
  * option. This file may not be copied, modified, or distributed
  * except according to those terms.
  */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+
+
+import React, {Component} from "react";
+import {observer, inject} from "mobx-react";
+
+@inject("store", "uistore")
+@observer
+export default class RepoView extends Component {
 }

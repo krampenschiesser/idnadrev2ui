@@ -8,8 +8,24 @@
  * option. This file may not be copied, modified, or distributed
  * except according to those terms.
  */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+import uuid from "uuid"
+import {observable} from "mobx"
+
+export default class Repository {
+    id=null
+    @observable name
+    @observable token
+    @observable local;
+
+    constructor(name,id,local=false) {
+        this.name=name
+        this.id=id
+        this.local=local
+    }
+
+    isOpen() {
+        return this.token;
+    }
+
+
 }

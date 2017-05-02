@@ -1,3 +1,14 @@
+/*
+ * Copyright 2017 Christian Löhnert. See the COPYRIGHT
+ * file at the top-level directory of this distribution.
+ *
+ * Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+ * http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+ * <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
+ * option. This file may not be copied, modified, or distributed
+ * except according to those terms.
+ */
+
 import React, {Component} from 'react';
 import '../node_modules/grommet-css';
 import "../node_modules/codemirror/lib/codemirror.css";
@@ -25,6 +36,7 @@ import ReactTooltip from "react-tooltip"
 import TaskOverview from "./task/overview/TaskOverview";
 import IdnadrevStore from "./store/idnadrev/IdnadrevStore";
 import AddTask from "./task/add/AddTask";
+import RepoOverview from "./repo/RepoOverview";
 
 
 const store = new IdnadrevStore();
@@ -67,6 +79,7 @@ class App extends Component {
               <Route path="/task/add" component={AddTask}/>
               <Route exact path="/task" component={TaskOverview}/>
               <Route path="/doc" component={DocumentOverview}/>
+              <Route path="/repo" component={RepoOverview}/>
             </Idnadrev>
           </Router>
         </Provider>
