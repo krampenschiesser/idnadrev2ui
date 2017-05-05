@@ -10,21 +10,18 @@
  */
 
 import {observable, extendObservable, computed, action} from 'mobx';
-// import Loader from "./../remote/DummyLoader.js"
 import {all} from "./../DummyData.js"
-import LocalRepositoryLoader from "../remote/LocalRepositoryLoader";
 import Loader from "../remote/Loader";
 import Repository from "./Repository";
 
 export default class IdnadrevStore {
     loader = new Loader()
-    localRepoLoader = new LocalRepositoryLoader()
 
     @observable files = new Map(all)
     @observable repositories = new Map()
 
     constructor() {
-        const localrepos = this.localRepoLoader.loadLocalRepositories()
+        const localrepos = this.loader.loadLocalRepositories()
         for (let repo of localrepos) {
             this.repositories.set(repo.id, repo)
         }

@@ -58,4 +58,31 @@ export default class Loader {
     loadContent(id) {
         "".toJSON();
     }
+
+  loadLocalRepositories() {
+    if (typeof(Storage) !== "undefined") {
+      if (!localStorage.repositories) {
+        const repo = new Repository("Local", uuid.v4(), true)
+        localStorage.repositories = JSON.stringify([repo.id])
+        localStorage.setItem(repo.id, JSON.stringify(repo))
+      }
+
+      let repos = []
+      const ids = JSON.parse(localStorage.repositories)
+      for (let repoId of ids) {
+        const item = JSON.parse(localStorage.getItem(repoId));
+        if(item) {
+
+          repos.push(item)
+        }else{
+          console.warn("No item found for "+repoId)
+        }
+      }
+
+      return repos
+
+    } else {
+      return [new Repository("Local", uuid.v4(), true)]
+    }
+  }
 }
