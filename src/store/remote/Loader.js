@@ -10,54 +10,107 @@
  */
 
 import OpenRepository from "./OpenRepository";
+import Repository from "../idnadrev/Repository";
+import uuid from "uuid";
+import {merged} from "./../DummyData.js"
+import IdnadrevFile from "../idnadrev/IdnadrevFile";
+import Thought from "../idnadrev/Thought";
+import Task from "../idnadrev/Task";
+
 export default class Loader {
-    offline = false;
-    remote = "http://localhost:8000/rest/v1/"
+  offline = false;
+  remote = "http://localhost:8000/rest/v1"
 
-    loadRepos() {
-        console.log("loading repos")
-        return fetch(this.remote + "repo").then(response => {
-            if (!response.ok) {
-                throw Error(response.statusText)
-            } else {
-                console.log("Got response " + response)
-            }
-            return response.json()
-        }).catch(e => console.log(e))
+  post(path, bodyObj) {
+    const param = {
+      method: "POST", body: JSON.stringify(bodyObj), headers: {
+        "Content-Type": "application/json",
+        'Accept': 'application/json',
+      }
     }
+    return fetch(this.remote + path, param).then(response => {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+      return response.json()
+    }).catch(e => console.log(e))
+  }
 
-    post(path, bodyObj) {
-        const param = {
-            method: "POST", body: JSON.stringify(bodyObj), headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json',
-            }
+  get(path) {
+    return fetch(this.remote + path).then(response => {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+      return response.json()
+    }).catch(e => console.log(e))
+  }
+
+  loadRepos() {
+    console.log("loading repos")
+    return fetch("/repo")
+  }
+
+  openRepository(id, username, password) {
+    console.log("log into " + id)
+    const cmd = new OpenRepository(username, password)
+    return this.post("repo/" + id, cmd)
+  }
+
+  createRepository(cmd) {
+    if (cmd.local) {
+      const repo = new Repository(cmd.name, uuid.v4(), true);
+
+      localStorage.setItem(repo.id, JSON.stringify(repo))
+      let ids = JSON.parse(localStorage.repositories)
+      ids.push(repo.id);
+      localStorage.repositories = JSON.stringify(ids)
+
+      return new Promise(function (resolve, reject) {
+        console.log("resolve")
+        resolve({
+          "id": repo.id,
+          "token": null,
+          "local": true
+        })
+      })
+    } else {
+      cmd.password = Array.from(new TextEncoder("utf-8").encode(cmd.password))
+      return this.post("repo", cmd)
+    }
+  }
+
+  loadLocal(map) {
+    for (let i = 0; i < localStorage.length; i++) {
+      const text = localStorage.getItem(localStorage.key(i));
+      if (text && text !== "") {
+        let file = JSON.parse(text)
+
+        if (file.id && file.repository && file.tags) {
+          const type = file.fileType ? file.fileType.toUpperCase() : "";
+
+          if (type === "TASK") {
+            file = Object.assign(new Task(), file)
+          } else if (type === "DOCUMENT") {
+            file = Object.assign(new Document(), file)
+          } else if (type === "THOUGHT") {
+            file = Object.assign(new Thought(), file)
+          } else {
+            file = Object.assign(new IdnadrevFile(), file)
+          }
+
+          map.set(file.id, file)
         }
-        return fetch(this.remote + path, param).then(response => {
-            if (!response.ok) {
-                throw Error(response.statusText)
-            }
-            return response.json()
-        }).catch(e => console.log(e))
+      }
     }
+  }
 
-    openRepository(id, username, password) {
-        console.log("log into " + id)
-        const cmd = new OpenRepository(username, password)
-        return this.post("repo/" + id,cmd)
-    }
-    createRepository(cmd) {
-        cmd.password = Array.from(new TextEncoder("utf-8").encode(cmd.password))
-        if (!cmd.encryption) {
-            // cmd.encryption= 'ChaCha';
-        }
-        console.log("create repository " + cmd.name)
-        return this.post("repo",cmd)
-    }
+  loadThoughts(repoId) {
+    return fetch("/repo/" + repoId + "/thought/")
+  }
 
-    loadContent(id) {
-        "".toJSON();
-    }
+  loadContent(id) {
+    "".toJSON();
+  }
 
   loadLocalRepositories() {
     if (typeof(Storage) !== "undefined") {
@@ -65,17 +118,23 @@ export default class Loader {
         const repo = new Repository("Local", uuid.v4(), true)
         localStorage.repositories = JSON.stringify([repo.id])
         localStorage.setItem(repo.id, JSON.stringify(repo))
+
+        for (let file of merged) {
+          file.repository = repo.id
+
+          localStorage.setItem(file.id, JSON.stringify(file))
+        }
       }
 
       let repos = []
       const ids = JSON.parse(localStorage.repositories)
       for (let repoId of ids) {
         const item = JSON.parse(localStorage.getItem(repoId));
-        if(item) {
+        if (item) {
 
           repos.push(item)
-        }else{
-          console.warn("No item found for "+repoId)
+        } else {
+          console.warn("No item found for " + repoId)
         }
       }
 

@@ -15,6 +15,7 @@ import {observable} from "mobx"
 
 export default class IdnadrevFile {
   id=null
+  @observable repository
   @observable name
   @observable created
   @observable updated

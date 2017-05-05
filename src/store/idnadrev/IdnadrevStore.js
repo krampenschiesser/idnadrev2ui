@@ -10,121 +10,137 @@
  */
 
 import {observable, extendObservable, computed, action} from 'mobx';
-import {all} from "./../DummyData.js"
 import Loader from "../remote/Loader";
 import Repository from "./Repository";
 
 export default class IdnadrevStore {
-    loader = new Loader()
+  loader = new Loader()
 
-    @observable files = new Map(all)
-    @observable repositories = new Map()
+  @observable files = new Map()
+  @observable repositories = new Map()
 
-    constructor() {
-        const localrepos = this.loader.loadLocalRepositories()
-        for (let repo of localrepos) {
-            this.repositories.set(repo.id, repo)
+  constructor() {
+    const localrepos = this.loader.loadLocalRepositories()
+    for (let repo of localrepos) {
+      this.repositories.set(repo.id, repo)
+    }
+  }
+
+  @action
+  loadRepositories() {
+    this.loader.loadRepos().then(repos => {
+      for (let repo of repos) {
+        if (!this.repositories.has(repo.id)) {
+
+          this.repositories.set(repo.id, Object.assign(new Repository(), repo))
         }
-    }
+      }
+    })
+  }
 
-    @action
-    loadRepositories() {
-        this.loader.loadRepos().then(repos => {
-            for (let repo of repos) {
-                if (!this.repositories.has(repo.id)) {
+  @action
+  openRepository(id, username, password) {
+    this.loader.openRepository(id, username, password).then(token => {
+      console.log("Logged into " + id)
+      this.repositories.get(id).token = token.id
+      console.log(this.repositories.get(id))
+    })
+  }
 
-                    this.repositories.set(repo.id, Object.assign(new Repository(), repo))
-                }
-            }
-        })
-    }
+  @action
+  createRepository(cmd) {
+    this.loader.createRepository(cmd).then(dto => {
+      console.log(dto)
+      const id = dto.id
+      const token = dto.token;
+      const isLocal = dto.local || false;
 
-    @action
-    openRepository(id, username, password) {
-        this.loader.openRepository(id, username, password).then(token => {
-            console.log("Logged into " + id)
-            this.repositories.get(id).token = token.id
-            console.log(this.repositories.get(id))
-        })
-    }
+      let repo = new Repository(cmd.name, id, isLocal)
+      repo.token = token
+      this.repositories.set(id, repo)
+      console.log("Created repository " + cmd.name)
 
-    @action
-    createRepository(cmd) {
-        this.loader.createRepository(cmd).then(dto => {
-            console.log(dto)
-            const id = dto.id
-            const token = dto.token;
+      console.log(this.repositories.get(id))
+    })
+  }
 
-            let repo = new Repository(cmd.name,id,false)
-            repo.token=token
-            this.repositories.set(id,repo)
-            console.log("Created repository " + cmd.name)
+  @action
+  loadLocal() {
+    this.loader.loadLocal(this.files)
+  }
 
-            console.log(this.repositories.get(id))
-        })
-    }
-
-    @action
-    loadContent(id) {
-        this.loader.loadContent(id).then((c) => {
-            this.files.get(id).content = c;
-        });
-    }
-
-    @action
-    addFile(file) {
-        this.files.set(file.id, file)
-    }
-
-    getRepository(id) {
-        return this.repositories.get(id);
-    }
-
-
-    @computed get thoughts() {
-        return this.files.values()
-            .filter((file) => file.fileType === 'THOUGHT');
-    }
-
-    @computed get tasks() {
-        return this.files.values()
-            .filter((file) => file.fileType === 'TASK');
-    }
-
-    @computed get documents() {
-        return this.files.values()
-            .filter((file) => file.fileType === 'DOCUMENT');
-    }
-
-    @computed get getTaskTree() {
-        const allTasks = this.tasks;
-
-        let roots = [];
-
-        for (let task of allTasks) {
-            if (task.parent) {
-                const parent = this.files.get(task.parent)
-                if (parent.children) {
-                    parent.children.push(task.id)
-                } else {
-                    parent.children = [task.id];
-                }
-            } else {
-                roots.push(task)
-            }
+  @action
+  loadThoughts() {
+    for (let repoId in this.repositories.keys()) {
+      this.loader.loadThoughts(repoId).then(thoughts => {
+        for (let thought of thoughts) {
+          this.files.set(thought.id, thought)
         }
-        return roots;
+      })
     }
+  }
 
-    @computed get tags() {
-        let tags = new Set();
-        for (let array of this.files.values().map((f) => f.tags)) {
-            for (let element of array) {
-                tags.add(element);
-            }
+  @action
+  loadContent(id) {
+    this.loader.loadContent(id).then((c) => {
+      this.files.get(id).content = c;
+    });
+  }
+
+  @action
+  addFile(file) {
+    this.files.set(file.id, file)
+  }
+
+  getRepository(id) {
+    return this.repositories.get(id);
+  }
+
+
+  @computed get thoughts() {
+    return this.files.values()
+      .filter((file) => file.fileType === 'THOUGHT');
+  }
+
+  @computed get tasks() {
+    return this.files.values()
+      .filter((file) => file.fileType === 'TASK');
+  }
+
+  @computed get documents() {
+    return this.files.values()
+      .filter((file) => file.fileType === 'DOCUMENT');
+  }
+
+  @computed get getTaskTree() {
+    const allTasks = this.tasks;
+
+    let roots = [];
+
+    for (let task of allTasks) {
+      if (task.parent) {
+        const parent = this.files.get(task.parent)
+        if (parent.children) {
+          parent.children.push(task.id)
+        } else {
+          parent.children = [task.id];
         }
-        const array = Array.from(tags);
-        array.sort();
-        return array;
+      } else {
+        roots.push(task)
+      }
     }
+    return roots;
+  }
+
+  @computed get tags() {
+    let tags = new Set();
+    for (let array of this.files.values().map((f) => f.tags)) {
+      for (let element of array) {
+        tags.add(element);
+      }
+    }
+    const array = Array.from(tags);
+    array.sort();
+    return array;
+  }
 }

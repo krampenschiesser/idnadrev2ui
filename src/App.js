@@ -52,6 +52,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    store.loadLocal()
     this._responsive = Responsive.start(this._onResponsive);
   }
 

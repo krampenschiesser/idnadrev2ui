@@ -16,10 +16,10 @@ import {Split, Article, Section, CheckBox} from "grommet";
 
 import SiteTitle from "../../navigation/SiteTitle";
 import {
-    thoughtOverviewState,
-    getSelectedThought,
-    isThoughtPreviewEnabled,
-    isMobile,
+  thoughtOverviewState,
+  getSelectedThought,
+  isThoughtPreviewEnabled,
+  isMobile,
 } from "../../store/UiMappers.js"
 
 import PageSettingsMenu from "../../util/PageSettingsMenu";
@@ -28,37 +28,41 @@ import TextItemPreview from "../../util/TextItemPreview";
 @inject("store", "uistore")
 @observer
 export default class ThoughtOverview extends Component {
-    showThought(thought) {
-        thoughtOverviewState(this).selectThought(thought);
-    }
+  showThought(thought) {
+    thoughtOverviewState(this).selectThought(thought);
+  }
 
-    toggleHoverPreview = () => {
-        thoughtOverviewState(this).toggleHoverPreview();
-    };
+  toggleHoverPreview = () => {
+    thoughtOverviewState(this).toggleHoverPreview();
+  };
+
+  componentDidMount() {
+    this.props.store.loadThoughts();
+  }
 
 
-    render() {
-        const store = this.props.store;
-        const selected = getSelectedThought(this);
-        const previewEnabled = isThoughtPreviewEnabled(this);
-        const mobile = isMobile(this);
-        return (
-            <Article>
-                <SiteTitle title="Overview">
-                    {!mobile &&
-                    <PageSettingsMenu>
-                        <CheckBox id="1" label="Hover preview" defaultChecked={previewEnabled}
-                                  onChange={this.toggleHoverPreview}/>
-                    </PageSettingsMenu>
-                    }
-                </SiteTitle>
-                <Section>
-                    <Split priority='left'>
-                        <ThoughtTable store={store} onShow={(thought) => this.showThought(thought)}/>
-                        {previewEnabled && <TextItemPreview item={selected}/>}
-                    </Split>
-                </Section>
-            </Article>
-        );
-    }
+  render() {
+    const store = this.props.store;
+    const selected = getSelectedThought(this);
+    const previewEnabled = isThoughtPreviewEnabled(this);
+    const mobile = isMobile(this);
+    return (
+      <Article>
+        <SiteTitle title="Overview">
+          {!mobile &&
+          <PageSettingsMenu>
+            <CheckBox id="1" label="Hover preview" defaultChecked={previewEnabled}
+                      onChange={this.toggleHoverPreview}/>
+          </PageSettingsMenu>
+          }
+        </SiteTitle>
+        <Section>
+          <Split priority='left'>
+            <ThoughtTable store={store} onShow={(thought) => this.showThought(thought)}/>
+            {previewEnabled && <TextItemPreview item={selected}/>}
+          </Split>
+        </Section>
+      </Article>
+    );
+  }
 }
