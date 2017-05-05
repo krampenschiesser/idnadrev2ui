@@ -26,12 +26,13 @@ class ThoughtTable extends Component {
                     <tr>
                         <th style={styles.createdCol}>Created</th>
                         <th>Name</th>
+                        <th>Repository</th>
                         <th style={styles.actionCol}>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                 {thoughts.map(thought =>
-                    <ThoughtItem key={thought.id} thought={thought} onShow={this.props.onShow} uistore={this.props.uistore}/>
+                    <ThoughtItem key={thought.id} thought={thought} onShow={this.props.onShow} uistore={this.props.uistore} store={this.props.store}/>
                 )}
                 </tbody>
             </Table>

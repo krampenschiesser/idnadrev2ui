@@ -22,12 +22,12 @@ export default class FormTextInput extends Component {
 
     render() {
         const {name, form, autoFocus, ...props} = this.props;
-
         return (
-            <TextInput {...props}
+            <TextInput
                        {...form.$(name).bind()}
                        onDOMChange={form.select(name).sync}
                        autoFocus={autoFocus || false}
+                       {...props}
                        ref={autoFocus ? (i) => this.ref = i : null}
             />
         );

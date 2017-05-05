@@ -10,63 +10,66 @@
  */
 import React, {Component} from "react"
 import {observer, inject} from "mobx-react";
-import {Article, Box, Header, LoginForm, Section} from "grommet";
+import {Article, Box, Header, LoginForm, Section, Toast} from "grommet";
 import SiteTitle from "../navigation/SiteTitle";
 import PageSettingsMenu from "../util/PageSettingsMenu";
 import {isMobile} from "../store/UiMappers";
+import {observable} from "mobx";
 
 @inject("store", "uistore")
 @observer
 export default class RepoLogin extends Component {
-
-  componentDidMount() {
-    this.props.store.loadRepositories()
-  }
-
-  onSubmit = (form, repoid) => {
-    console.log("Login " + repoid + "with " + form.username + ":" + form.password)
-    this.props.store.openRepository(repoid, form.username, form.password)
-  }
-
-  render() {
-    let hasRepo = this.props.match;
-    const repoId = this.props.match.params.id
-    hasRepo = hasRepo && repoId;
-    const repo = this.props.store.repositories.get(repoId)
-    hasRepo = hasRepo && repo;
-
-    let content;
-    let title;
-    if (hasRepo) {
-      content = <LoginForm title={repo.name}
-                           onSubmit={(form) => this.onSubmit(form, repoId)}
-                           usernameType='text'/>
-      title = "Login into repository \"" + repo.name + "\""
-    } else {
-      content = "No data"
-      title = "Repository unknown"
+    componentDidMount() {
+        this.props.store.loadRepositories()
     }
 
-    if (hasRepo && repo.token ){
-      content = <Header>You are successfully logged in to {repo.name}</Header>
+    onSubmit = (form, repoid) => {
+        console.log("Login " + repoid + "with " + form.username + ":" + form.password)
+        this.props.store.openRepository(repoid, form.username, form.password)
     }
 
-    console.log(repoId)
-    console.log(repo)
-    const mobile = isMobile(this);
-    return (
-      <Article>
-        <SiteTitle title={title}>
-          {!mobile &&
-          <PageSettingsMenu />
-          }
-        </SiteTitle>
-        <Section>
-          <Box justify="center" align="center">
-            {content}
-          </Box>
-        </Section>
-      </Article>
-    );
-  }
+    redirect = () => {
+        this.props.history.push("/repo");
+    }
+
+    render() {
+        let hasRepo = this.props.match;
+        const repoId = this.props.match.params.id
+        hasRepo = hasRepo && repoId;
+        const repo = this.props.store.repositories.get(repoId)
+        hasRepo = hasRepo && repo;
+
+        let content;
+        let title;
+        if (hasRepo) {
+            content = <LoginForm title={repo.name}
+                                 onSubmit={(form) => this.onSubmit(form, repoId)}
+                                 usernameType='text'/>
+            title = "Login into repository \"" + repo.name + "\""
+        } else {
+            content = "No data"
+            title = "Repository unknown"
+        }
+
+        if (hasRepo && repo.token) {
+            content = <Toast status="ok" onClose={this.redirect}>You are successfully logged in to {repo.name}</Toast>
+            setTimeout(this.redirect, 3000)
+        }
+
+        const mobile = isMobile(this);
+        return (
+            <Article>
+                <SiteTitle title={title}>
+                    {!mobile &&
+                    <PageSettingsMenu />
+                    }
+                </SiteTitle>
+                <Section>
+                    <Box justify="center" align="center">
+                        {content}
+                    </Box>
+                </Section>
+            </Article>
+        );
+    }
 }

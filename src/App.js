@@ -38,6 +38,7 @@ import IdnadrevStore from "./store/idnadrev/IdnadrevStore";
 import AddTask from "./task/add/AddTask";
 import RepoOverview from "./repo/RepoOverview";
 import RepoLogin from "./repo/RepoLogin";
+import RepoCreate from "./repo/RepoCreate";
 
 
 const store = new IdnadrevStore();
@@ -81,6 +82,7 @@ class App extends Component {
               <Route exact path="/task" component={TaskOverview}/>
               <Route path="/doc" component={DocumentOverview}/>
               <Route path="/repo/login/:id" component={RepoLogin}/>
+              <Route path="/repo/create" component={RepoCreate}/>
               <Route exact path="/repo" component={RepoOverview}/>
             </Idnadrev>
           </Router>

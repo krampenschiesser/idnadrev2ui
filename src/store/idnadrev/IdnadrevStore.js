@@ -17,101 +17,117 @@ import Loader from "../remote/Loader";
 import Repository from "./Repository";
 
 export default class IdnadrevStore {
-  loader = new Loader()
-  localRepoLoader = new LocalRepositoryLoader()
+    loader = new Loader()
+    localRepoLoader = new LocalRepositoryLoader()
 
-  @observable files = new Map(all)
-  @observable repositories = new Map()
+    @observable files = new Map(all)
+    @observable repositories = new Map()
 
-  constructor() {
-    const localrepos = this.localRepoLoader.loadLocalRepositories()
-    for (let repo of localrepos) {
-      this.repositories.set(repo.id, repo)
-    }
-  }
-
-  @action
-  loadRepositories() {
-    this.loader.loadRepos().then(repos => {
-      for (let repo of repos) {
-        if (!this.repositories.has(repo.id)) {
-
-          this.repositories.set(repo.id, Object.assign(new Repository(), repo))
+    constructor() {
+        const localrepos = this.localRepoLoader.loadLocalRepositories()
+        for (let repo of localrepos) {
+            this.repositories.set(repo.id, repo)
         }
-      }
-    })
-  }
+    }
 
-  @action
-  openRepository(id, username, password) {
-    this.loader.openRepository(id, username, password).then(token => {
-      console.log("Logged into " + id)
-      this.repositories.get(id).token = token.id
-      console.log(this.repositories.get(id))
-    })
-  }
+    @action
+    loadRepositories() {
+        this.loader.loadRepos().then(repos => {
+            for (let repo of repos) {
+                if (!this.repositories.has(repo.id)) {
 
-  @action
-  loadContent(id) {
-    this.loader.loadContent(id).then((c) => {
-      this.files.get(id).content = c;
-    });
-  }
+                    this.repositories.set(repo.id, Object.assign(new Repository(), repo))
+                }
+            }
+        })
+    }
 
-  @action
-  addFile(file) {
-    this.files.set(file.id, file)
-  }
+    @action
+    openRepository(id, username, password) {
+        this.loader.openRepository(id, username, password).then(token => {
+            console.log("Logged into " + id)
+            this.repositories.get(id).token = token.id
+            console.log(this.repositories.get(id))
+        })
+    }
 
-  getRepository(id) {
-    return this.repositories.get(id);
-  }
+    @action
+    createRepository(cmd) {
+        this.loader.createRepository(cmd).then(dto => {
+            console.log(dto)
+            const id = dto.id
+            const token = dto.token;
+
+            let repo = new Repository(cmd.name,id,false)
+            repo.token=token
+            this.repositories.set(id,repo)
+            console.log("Created repository " + cmd.name)
+
+            console.log(this.repositories.get(id))
+        })
+    }
+
+    @action
+    loadContent(id) {
+        this.loader.loadContent(id).then((c) => {
+            this.files.get(id).content = c;
+        });
+    }
+
+    @action
+    addFile(file) {
+        this.files.set(file.id, file)
+    }
+
+    getRepository(id) {
+        return this.repositories.get(id);
+    }
 
 
-  @computed get thoughts() {
-    return this.files.values()
-      .filter((file) => file.fileType === 'THOUGHT');
-  }
+    @computed get thoughts() {
+        return this.files.values()
+            .filter((file) => file.fileType === 'THOUGHT');
+    }
 
-  @computed get tasks() {
-    return this.files.values()
-      .filter((file) => file.fileType === 'TASK');
-  }
+    @computed get tasks() {
+        return this.files.values()
+            .filter((file) => file.fileType === 'TASK');
+    }
 
-  @computed get documents() {
-    return this.files.values()
-      .filter((file) => file.fileType === 'DOCUMENT');
-  }
+    @computed get documents() {
+        return this.files.values()
+            .filter((file) => file.fileType === 'DOCUMENT');
+    }
 
-  @computed get getTaskTree() {
-    const allTasks = this.tasks;
+    @computed get getTaskTree() {
+        const allTasks = this.tasks;
 
-    let roots = [];
+        let roots = [];
 
-    for (let task of allTasks) {
-      if (task.parent) {
-        const parent = this.files.get(task.parent)
-        if (parent.children) {
-          parent.children.push(task.id)
-        } else {
-          parent.children = [task.id];
+        for (let task of allTasks) {
+            if (task.parent) {
+                const parent = this.files.get(task.parent)
+                if (parent.children) {
+                    parent.children.push(task.id)
+                } else {
+                    parent.children = [task.id];
+                }
+            } else {
+                roots.push(task)
+            }
         }
-      } else {
-        roots.push(task)
-      }
+        return roots;
     }
-    return roots;
-  }
 
-  @computed get tags() {
-    let tags = new Set();
-    for (let array of this.files.values().map((f) => f.tags)) {
-      for (let element of array) {
-        tags.add(element);
-      }
+    @computed get tags() {
+        let tags = new Set();
+        for (let array of this.files.values().map((f) => f.tags)) {
+            for (let element of array) {
+                tags.add(element);
+            }
+        }
+        const array = Array.from(tags);
+        array.sort();
+        return array;
     }
-    const array = Array.from(tags);
-    array.sort();
-    return array;
-  }
 }

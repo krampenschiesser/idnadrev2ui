@@ -25,10 +25,6 @@ export default class RepoView extends Component {
   render() {
     const repo = this.props.repo;
     const label = repo.local ? "Local repository" : "Remote repository"
-    console.log(repo)
-    console.log(repo.isOpen)
-    console.log("" + repo.isOpen)
-
 
     const image = isOpen(repo) ? <UnlockIcon colorIndex="ok"/> : <LockIcon colorIndex="warning"/>;
     const msg = isOpen(repo) ? <Label>Repository is unlocked</Label> : <Label>Repository is locked</Label>;

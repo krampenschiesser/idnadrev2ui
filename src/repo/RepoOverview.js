@@ -35,12 +35,20 @@ export default class ThoughtOverview extends Component {
     this.props.store.loadRepositories()
   }
 
+  componentDidUnomunt() {
+    this.redirectUrl=null;
+  }
+
   onRepoSelect = (repo) => {
     if (isOpen(repo)) {
       this.redirectUrl="/repo/logout/"+repo.id
     } else {
       this.redirectUrl="/repo/login/"+repo.id
     }
+  }
+
+  onRepoCreate = () => {
+    this.redirectUrl="/repo/create"
   }
 
 
@@ -67,7 +75,7 @@ export default class ThoughtOverview extends Component {
                 )
               })
             }
-            <Tile colorIndex="light-2">
+            <Tile colorIndex="light-2" onClick={this.onRepoCreate}>
               <Card label="more" heading="Create repository">
                 <Box justify="center" align="center" direction="row" responsive={false}>
                   <AddCircleIcon colorIndex="accent-2" type="logo " size="large"/>
