@@ -11,24 +11,35 @@
 
 import {observable, extendObservable, computed, action} from 'mobx';
 import Loader from "../remote/Loader";
-import Repository from "./Repository";
+import Repository, {isOpen} from "./Repository";
 
 export default class IdnadrevStore {
   loader = new Loader()
 
   @observable files = new Map()
   @observable repositories = new Map()
+  @observable selectedRepositoryId = null;
 
   constructor() {
     const localrepos = this.loader.loadLocalRepositories()
     for (let repo of localrepos) {
       this.repositories.set(repo.id, repo)
     }
+    if (localrepos.length > 0) {
+      this.selectedRepositoryId = localrepos[0].id;
+    }
   }
+
+  @action
+  setSelectedRepositoryId(id) {
+    this.selectedRepositoryId = id
+  }
+
 
   @action
   loadRepositories() {
     this.loader.loadRepos().then(repos => {
+      console.log(repos)
       for (let repo of repos) {
         if (!this.repositories.has(repo.id)) {
 
@@ -66,17 +77,20 @@ export default class IdnadrevStore {
 
   @action
   loadLocal() {
-    this.loader.loadLocal(this.files)
+    this.loader.loadLocalRepos(this.repositories)
+    this.loader.loadLocalFiles(this.files)
   }
 
   @action
   loadThoughts() {
-    for (let repoId in this.repositories.keys()) {
-      this.loader.loadThoughts(repoId).then(thoughts => {
-        for (let thought of thoughts) {
-          this.files.set(thought.id, thought)
-        }
-      })
+    for (let repoId of this.repositories.keys()) {
+      if (!this.repositories.get(repoId).local) {
+        this.loader.loadThoughts(repoId).then(thoughts => {
+          for (let thought of thoughts) {
+            this.files.set(thought.id, thought)
+          }
+        })
+      }
     }
   }
 
@@ -89,13 +103,34 @@ export default class IdnadrevStore {
 
   @action
   addFile(file) {
+    const selectedRepo = this.repositories.get(this.selectedRepositoryId);
+
+    file.repository = this.selectedRepositoryId
+    file.insync = false;
     this.files.set(file.id, file)
+
+    this.loader.saveFile(file, selectedRepo).then(fileFromRepo => {
+      this.files.delete(file.id)
+      Object.assign(file, fileFromRepo)
+      this.files.set(file.id, file)
+      file.insyync = true
+    })
   }
 
   getRepository(id) {
     return this.repositories.get(id);
   }
 
+
+  @computed get openRepositories() {
+    let retval = []
+    for (let repo of this.repositories.values()) {
+      if (isOpen(repo)) {
+        retval.push(repo)
+      }
+    }
+    return retval
+  }
 
   @computed get thoughts() {
     return this.files.values()
@@ -142,5 +177,15 @@ export default class IdnadrevStore {
     const array = Array.from(tags);
     array.sort();
     return array;
+  }
+
+  @computed get repositoryNames() {
+    let array = this.repositories.values().map((f) => f.name)
+    array.sort();
+    return array;
+  }
+
+  @computed get selectedRepository() {
+    this.repositories.get(this.selectedRepositoryId)
   }
 }

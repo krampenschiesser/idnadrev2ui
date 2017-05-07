@@ -17,20 +17,16 @@ import {observable} from 'mobx';
 
 @observer
 export default class FormToggle extends Component {
-  // @observable value = null;
 
   onChange = (val) => {
     const form = this.props.form;
     const field = form.select(this.props.name);
     const oldValue = field.get("value");
-    console.log(oldValue)
     if (oldValue === undefined) {
-      console.log("undefined")
       field.set("value", this.props.checked || false)
     } else {
       field.set("value", !oldValue)
     }
-    console.log(field.get("value"))
   }
 
   render() {

@@ -43,6 +43,8 @@ import RepoCreate from "./repo/RepoCreate";
 
 const store = new IdnadrevStore();
 const uiStore = new UIStore();
+// store.uistore=uiStore;
+// uiStore.store=store;
 
 @observer
 class App extends Component {
@@ -51,7 +53,7 @@ class App extends Component {
     this._onResponsive = this._onResponsive.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     store.loadLocal()
     this._responsive = Responsive.start(this._onResponsive);
   }

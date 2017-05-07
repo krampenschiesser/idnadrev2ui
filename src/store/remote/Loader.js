@@ -21,12 +21,19 @@ export default class Loader {
   offline = false;
   remote = "http://localhost:8000/rest/v1"
 
-  post(path, bodyObj) {
+  post(path, bodyObj, token = null, additionalHeaders = null) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json")
+    headers.append("Accept", "application/json")
+    if (additionalHeaders) {
+      Object.assign(headers, additionalHeaders)
+    }
+    if (token) {
+      headers.append("token", token)
+    }
+
     const param = {
-      method: "POST", body: JSON.stringify(bodyObj), headers: {
-        "Content-Type": "application/json",
-        'Accept': 'application/json',
-      }
+      method: "POST", body: JSON.stringify(bodyObj), headers: headers
     }
     return fetch(this.remote + path, param).then(response => {
       if (!response.ok) {
@@ -47,13 +54,13 @@ export default class Loader {
 
   loadRepos() {
     console.log("loading repos")
-    return fetch("/repo")
+    return this.get("/repo")
   }
 
   openRepository(id, username, password) {
     console.log("log into " + id)
     const cmd = new OpenRepository(username, password)
-    return this.post("repo/" + id, cmd)
+    return this.post("/repo/" + id, cmd)
   }
 
   createRepository(cmd) {
@@ -75,41 +82,81 @@ export default class Loader {
       })
     } else {
       cmd.password = Array.from(new TextEncoder("utf-8").encode(cmd.password))
-      return this.post("repo", cmd)
+      return this.post("/repo", cmd)
     }
   }
 
-  loadLocal(map) {
-    for (let i = 0; i < localStorage.length; i++) {
-      const text = localStorage.getItem(localStorage.key(i));
-      if (text && text !== "") {
-        let file = JSON.parse(text)
+  saveFile(file, repo) {
+    if (repo.local) {
+      localStorage.setItem(file.id, JSON.stringify(file))
 
-        if (file.id && file.repository && file.tags) {
-          const type = file.fileType ? file.fileType.toUpperCase() : "";
+      return new Promise(function (resolve, reject) {
+        resolve(file)
+      })
+    } else {
+      let send = Object.assign({}, file);
+      if (typeof file.content === 'string') {
+        send.content = Array.from(new TextEncoder("utf-8").encode(file.content))
+      }
+      if( Object.prototype.toString.call( send.tags) !== '[object Array]') {
+        send.tags=[]
+      }
+      console.log(send)
+      console.log(JSON.stringify(send))
+      return this.post("/repo/" + repo.id + "/file", send, repo.token)
+    }
+  }
 
-          if (type === "TASK") {
-            file = Object.assign(new Task(), file)
-          } else if (type === "DOCUMENT") {
-            file = Object.assign(new Document(), file)
-          } else if (type === "THOUGHT") {
-            file = Object.assign(new Thought(), file)
-          } else {
-            file = Object.assign(new IdnadrevFile(), file)
+  loadLocalFiles(map) {
+    if (typeof(Storage) !== "undefined") {
+      for (let i = 0; i < localStorage.length; i++) {
+        const text = localStorage.getItem(localStorage.key(i));
+        if (text && text !== "") {
+          let file = JSON.parse(text)
+
+          if (file.id && file.repository && file.tags) {
+            const type = file.fileType ? file.fileType.toUpperCase() : "";
+
+            if (type === "TASK") {
+              file = Object.assign(new Task(), file)
+            } else if (type === "DOCUMENT") {
+              file = Object.assign(new Document(), file)
+            } else if (type === "THOUGHT") {
+              file = Object.assign(new Thought(), file)
+            } else {
+              file = Object.assign(new IdnadrevFile(), file)
+            }
+
+            map.set(file.id, file)
           }
+        }
+      }
+    }
+  }
 
-          map.set(file.id, file)
+  loadLocalRepos(map) {
+    if (typeof(Storage) !== "undefined") {
+      let ids = localStorage.repositories
+      ids = ids && JSON.parse(ids)
+
+      for (let id of ids) {
+        let repo = localStorage.getItem(id)
+        if (repo) {
+          const parse = JSON.parse(repo)
+          map.set(parse.id, parse)
         }
       }
     }
   }
 
   loadThoughts(repoId) {
-    return fetch("/repo/" + repoId + "/thought/")
+    return this.get("/repo/" + repoId + "/thought/")
   }
 
   loadContent(id) {
-    "".toJSON();
+    return new Promise((resolve, reject) => {
+      resolve("")
+    })
   }
 
   loadLocalRepositories() {

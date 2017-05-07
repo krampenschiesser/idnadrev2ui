@@ -14,15 +14,18 @@ import uuid from "uuid"
 import {observable} from "mobx"
 
 export default class IdnadrevFile {
-  id=null
   @observable repository
+  id=null
+  @observable version
   @observable name
+
   @observable created
   @observable updated
   @observable deleted
-  @observable version
-  @observable tags
+
   @observable fileType
+  @observable tags
+
   @observable details
   @observable content
 

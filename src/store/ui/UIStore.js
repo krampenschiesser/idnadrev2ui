@@ -17,29 +17,29 @@ import ProcessThoughtState from "./ProcessThoughtState.js"
 import TaskOverviewState from "./../../task/overview/TaskOverviewState";
 
 export default class UIStore {
-    navigationState = new NavigationState();
-    thoughtOverviewState = new ThoughtOverviewState();
-    processThoughtState = new ProcessThoughtState();
-    taskOverviewState = new TaskOverviewState();
+  navigationState = new NavigationState();
+  thoughtOverviewState = new ThoughtOverviewState();
+  processThoughtState = new ProcessThoughtState();
+  taskOverviewState = new TaskOverviewState();
 
-    @observable mobile;
-    firstTimeMobile = true;
+  @observable mobile;
+  firstTimeMobile = true;
 
-    @observable showTooltips = true;
+  @observable showTooltips = true;
 
-    @action
-    toggleTooltips() {
-        this.showTooltips = !this.showTooltips;
+  @action
+  toggleTooltips() {
+    this.showTooltips = !this.showTooltips;
+  }
+
+  @action
+  setMobile(mobile) {
+    this.mobile = mobile;
+
+    if (mobile && this.firstTimeMobile) {
+      this.navigationState.setVisible(false);
+      this.firstTimeMobile = false;
     }
+  }
 
-    @action
-    setMobile(mobile) {
-        this.mobile = mobile;
-
-        if (mobile && this.firstTimeMobile) {
-            this.navigationState.setVisible(false);
-            this.firstTimeMobile = false;
-        }
-
-    }
 }
