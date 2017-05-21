@@ -12,7 +12,6 @@
 import React, {Component} from "react"
 import {Select} from "grommet";
 import {observer, inject} from 'mobx-react';
-import {observable} from 'mobx';
 
 class RepoDisplay {
   value;
@@ -20,7 +19,7 @@ class RepoDisplay {
 
   constructor(id, name) {
     this.value = id;
-    this.label= name;
+    this.label = name;
   }
 }
 
@@ -38,9 +37,8 @@ export default class FormRepoSelection extends Component {
     const repoId = store.selectedRepositoryId;
     const repoName = store.getRepository(repoId).name;
 
-
-    const display = new RepoDisplay(repoId,repoName)
-    const options = store.openRepositories.map(repo => new RepoDisplay(repo.id, repo.name))
+    const display = repoName
+    const options = store.openRepositories.map(repo => new RepoDisplay(repo.id,repo.name))
     return (
       <Select
         value={display}

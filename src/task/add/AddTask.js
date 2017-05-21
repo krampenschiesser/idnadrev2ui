@@ -13,8 +13,9 @@
 import React, {Component} from "react"
 import Task from "../../store/idnadrev/Task";
 import {observer, inject} from 'mobx-react';
+import {observable} from "mobx";
 import {
-  Article, Box, Footer, Form, FormField, FormFields, Section
+  Article, Box, Footer, Form, FormField, FormFields, Section, Tab, Tabs
 } from "grommet";
 import SiteTitle from "../../navigation/SiteTitle";
 import MobxReactFormDevTools from 'mobx-react-form-devtools';
@@ -24,6 +25,7 @@ import TagFormEditor from "../../form/FormTagEditor";
 import FormTextInput from "../../form/FormTextInput";
 import FormMarkdownEditor from "../../form/FormMarkdownEditor";
 import FormSubmitButton from "../../form/FormSubmitButton";
+import FormRepoSelection from "../../form/FormRepoSelection";
 
 const fields = {
   name: {
@@ -49,7 +51,7 @@ const fields = {
     rules: 'string',
   },
   context: {
-    label: 'Content',
+    label: 'Context',
     rules: 'string',
   },
   estimatedTime: {
@@ -61,9 +63,11 @@ const fields = {
     fields: [
       {
         name: 'time',
+        label: 'Deletation Time',
         rules: 'date|required_with:to',
       }, {
         name: 'to',
+        label: 'Delegated To',
         rules: 'string|required_with:time',
       },
     ]
@@ -150,6 +154,7 @@ MobxReactFormDevTools.register({form});
 @inject("uistore", "store")
 @observer
 export default class AddTask extends Component {
+  @observable tabIndex = 0;
 
   componentDidMount() {
     form.store = this.props.store;
@@ -166,26 +171,100 @@ export default class AddTask extends Component {
     this.refocus();
   }
 
+  onTabSelect = (index) => {
+    this.tabIndex = index
+  }
+
+  onFormKeyDown = (e) => {
+    if(! e.altKey) {
+      return;
+    }
+    let add = 0;
+    if (e.key === "PageDown") {
+      add = +1;
+    } else if (e.key === "PageUp") {
+      add = -1;
+    } else {
+      return
+    }
+
+    let temp = this.tabIndex + add;
+    if (temp > 2) {
+      temp = 0
+    } else if (temp < 0) {
+      temp = 2;
+    }
+    this.tabIndex = temp;
+    e.stopPropagation()
+  }
 
   render() {
     const allTags = this.props.store.tags;
+
+    const main = (
+      <Box>
+        <FormField label={form.$('name').label} error={form.$('name').error}>
+          <FormTextInput autoFocus={true} ref={(i) => this.nameInput = i} form={form}
+                         name="name"/>
+        </FormField>
+        <FormField label="Tags">
+          <TagFormEditor form={form} name="tags" allTags={allTags}/>
+        </FormField>
+        <FormField label="Content">
+          <FormMarkdownEditor onSubmit={this.onSubmit} form={form} name="content"/>
+        </FormField>
+        <FormField label="Repository">
+          <FormRepoSelection />
+        </FormField>
+      </Box>
+    );
+
+    const details = (
+      <Box>
+        <FormField label={form.$('context').label} error={form.$('context').error}>
+          <FormTextInput autoFocus={true} form={form} name="context"/>
+        </FormField>
+        <FormField label={form.$('state').label} error={form.$('state').error}>
+          <FormTextInput form={form} name="state"/>
+        </FormField>
+        <FormField label={form.$('parent').label} error={form.$('parent').error}>
+          <FormTextInput form={form} name="parent"/>
+        </FormField>
+        <FormField label={form.$('estimatedTime').label} error={form.$('estimatedTime').error}>
+          <FormTextInput form={form} name="estimatedTime"/>
+        </FormField>
+        <FormField label={form.$('delegation.to').label} error={form.$('delegation.to').error}>
+          <FormTextInput form={form} name="delegation.to"/>
+        </FormField>
+      </Box>
+    )
+
+    const scheduling = (
+      <Box>
+        <FormField label={form.$('parent').label} error={form.$('parent').error}>
+          <FormTextInput autoFocus={true} form={form} name="parent"/>
+        </FormField>
+      </Box>
+    )
+
     return (
-      <Article >
+      <Article onKeyDown={this.onFormKeyDown}>
         <SiteTitle title="Add Task"/>
         <Section>
           <Box direction="row" full={true} justify="center" responsive={false}>
             <Form onSubmit={form.onSubmit}>
-              <FormFields>
-                <FormField label={form.$('name').label} error={form.$('name').error}>
-                  <FormTextInput autoFocus={true} ref={(i) => this.nameInput = i} form={form}
-                                 name="name"/>
-                </FormField>
-                <FormField label="Tags">
-                  <TagFormEditor form={form} name="tags" allTags={allTags}/>
-                </FormField>
-                <FormField label="content">
-                  <FormMarkdownEditor onSubmit={this.onSubmit} form={form} name="content"/>
-                </FormField>
+              <FormFields >
+                <Tabs responsive={false} activeIndex={this.tabIndex} onActive={this.onTabSelect}>
+                  <Tab title='Main'>
+                    {main}
+                  </Tab>
+                  <Tab title='Details'>
+                    {details}
+                  </Tab>
+                  <Tab title='Scheduling'>
+                    {scheduling}
+                  </Tab>
+                </Tabs>
               </FormFields>
               <Footer>
                 <FormSubmitButton onClick={this.onSubmit} form={form}/>

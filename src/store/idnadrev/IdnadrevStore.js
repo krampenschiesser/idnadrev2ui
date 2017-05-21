@@ -33,6 +33,7 @@ export default class IdnadrevStore {
   @action
   setSelectedRepositoryId(id) {
     this.selectedRepositoryId = id
+    console.log("Now using repository " + id)
   }
 
 
