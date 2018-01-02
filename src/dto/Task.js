@@ -52,8 +52,6 @@ var WorkUnit = /** @class */ (function () {
 exports.WorkUnit = WorkUnit;
 var DelegationState = /** @class */ (function () {
     function DelegationState() {
-        this.time = null;
-        this.to = null;
     }
     __decorate([
         mobx_1.observable
@@ -64,38 +62,62 @@ var DelegationState = /** @class */ (function () {
     return DelegationState;
 }());
 exports.DelegationState = DelegationState;
-var Scheduling = /** @class */ (function () {
-    function Scheduling() {
-        this.duration = null;
-        this.scheduledDateTime = null;
-        this.scheduledDateOnly = false;
-        this.proposedDateTime = null;
-        this.proposedDateOnly = false;
+var ProposedDateTime = /** @class */ (function () {
+    function ProposedDateTime() {
+        this.proposedDateOnly = true;
     }
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "duration", void 0);
+    ], ProposedDateTime.prototype, "proposedDateTime", void 0);
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "scheduledDateTime", void 0);
+    ], ProposedDateTime.prototype, "proposedDateOnly", void 0);
+    return ProposedDateTime;
+}());
+exports.ProposedDateTime = ProposedDateTime;
+var ProposedWeekDayYear = /** @class */ (function () {
+    function ProposedWeekDayYear() {
+    }
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "scheduledDateOnly", void 0);
+    ], ProposedWeekDayYear.prototype, "proposedYear", void 0);
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "proposedDateTime", void 0);
+    ], ProposedWeekDayYear.prototype, "proposedWeek", void 0);
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "proposedDateOnly", void 0);
+    ], ProposedWeekDayYear.prototype, "proposedWeekDay", void 0);
+    return ProposedWeekDayYear;
+}());
+exports.ProposedWeekDayYear = ProposedWeekDayYear;
+var FixedScheduling = /** @class */ (function () {
+    function FixedScheduling() {
+        this.scheduledDateOnly = false;
+    }
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "proposedYear", void 0);
+    ], FixedScheduling.prototype, "scheduledDateTime", void 0);
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "proposedWeek", void 0);
+    ], FixedScheduling.prototype, "scheduledDateOnly", void 0);
     __decorate([
         mobx_1.observable
-    ], Scheduling.prototype, "proposedWeekDay", void 0);
+    ], FixedScheduling.prototype, "duration", void 0);
+    return FixedScheduling;
+}());
+exports.FixedScheduling = FixedScheduling;
+var Scheduling = /** @class */ (function () {
+    function Scheduling() {
+    }
+    __decorate([
+        mobx_1.observable
+    ], Scheduling.prototype, "fixedScheduling", void 0);
+    __decorate([
+        mobx_1.observable
+    ], Scheduling.prototype, "proposedWeekDayYear", void 0);
+    __decorate([
+        mobx_1.observable
+    ], Scheduling.prototype, "proposedDate", void 0);
     return Scheduling;
 }());
 exports.Scheduling = Scheduling;
@@ -180,6 +202,13 @@ var Task = /** @class */ (function (_super) {
     Object.defineProperty(Task.prototype, "isFinished", {
         get: function () {
             return this.details.finished != null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Task.prototype, "context", {
+        get: function () {
+            return this.details.context;
         },
         enumerable: true,
         configurable: true

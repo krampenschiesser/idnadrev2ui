@@ -1,3 +1,7 @@
 export class Tag {
-    name: string
+  name: string
+
+  constructor(name: string) {
+    this.name = name
+  }
 }

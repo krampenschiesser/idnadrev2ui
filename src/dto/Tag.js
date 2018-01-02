@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Tag = /** @class */ (function () {
-    function Tag() {
+    function Tag(name) {
+        this.name = name;
     }
     return Tag;
 }());

@@ -1,19 +1,20 @@
 import * as React from 'react';
 import Button from 'antd/lib/button';
 import './App.css';
-import {AddTag} from "./ui/common/AddTag";
 import {GlobalStore} from "./store/GlobalStore";
+import Thought from "./dto/Thought";
+import {Tag} from "./dto/Tag";
+import TagContainer from "./ui/common/TagContainer";
 
 class App extends React.Component {
-  addTag = (val: string) => {
-    console.log(val)
-  }
 
   render() {
+    let thought = new Thought("test",[new Tag("bla")]);
     return (
       <div className="App">
         <Button type="primary">Button</Button>
-        <AddTag onAdd={this.addTag} store={new GlobalStore()}/>
+
+        <TagContainer item={thought} store={new GlobalStore()}/>
       </div>
     );
   }
