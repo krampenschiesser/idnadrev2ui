@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow,configure} from 'enzyme';
 import TagContainer from "./TagContainer";
-import {Icon, AutoComplete, Tag} from "antd"
+import {AutoComplete, Tag} from "antd"
 
 import Adapter from 'enzyme-adapter-react-16';
 import Thought from "../../dto/Thought";
