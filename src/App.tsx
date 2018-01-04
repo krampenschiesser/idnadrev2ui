@@ -13,6 +13,7 @@ import {
 
 // import DevTools from "mobx-react-devtools";
 import {NavigationContainer} from "./ui/NavigationContainer";
+import {AddThought} from "./ui/thought/AddThought";
 
 
 const globalStore = new GlobalStore();
@@ -28,7 +29,7 @@ class App extends React.Component {
                     <Router>
                         <NavigationContainer>
                             <Route exact path='/thought'/>
-                            <Route path='/thought/add'/>
+                            <Route path='/thought/add' component={AddThought}/>
                             <Route path='/thought/process'/>
 
                             <Route exact path='/doc'/>
