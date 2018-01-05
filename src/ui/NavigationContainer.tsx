@@ -32,14 +32,12 @@ export class NavigationContainer extends React.Component<NavigationContainerProp
                 <Layout>
                     <Header style={{background: '#fff', padding: 0}}>
                         <Icon
-                            style={{ fontSize: 24, cursor: 'pointer'}}
+                            style={{ fontSize: 24, cursor: 'pointer',margin: '20px 12px 12px 16px'}}
                             type={this.menuVisible ? 'menu-unfold' : 'menu-fold'}
                             onClick={this.toggle}
                         />
-                        <p>Header</p>
                     </Header>
-                    <Content>
-                        <p>Content</p>
+                    <Content style={{ margin: '24px 16px 0' }}>
                         {this.props.children}
                     </Content>
                 </Layout>

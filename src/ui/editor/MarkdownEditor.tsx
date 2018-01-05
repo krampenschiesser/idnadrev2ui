@@ -9,11 +9,13 @@ import {UnControlled as CodeMirror} from 'react-codemirror2';
 import './MarkdownEditor.css';
 import {observable} from 'mobx';
 
-
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
 require('codemirror/theme/neat.css');
+require('codemirror/theme/ttcn.css');
 
+require('codemirror/mode/gfm/gfm');
+require('codemirror/mode/javascript/javascript');
 
 export interface MarkdownEditorProps {
     item: IdnadrevFile<any, string>;
@@ -41,8 +43,8 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
                     className='MarkdownEditor'
                     value={this.props.item.content}
                     options={{
-                        mode: 'markdown',
-                        theme: 'material',
+                        mode: 'gfm',
+                        theme: 'ttcn',
                         lineNumbers: true
                     }}
                     onChange={(editor, data, value) => {

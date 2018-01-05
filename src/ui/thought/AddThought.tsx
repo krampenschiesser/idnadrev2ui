@@ -8,6 +8,9 @@ import TagFormItem from "../form/TagFormItem";
 import {GlobalStore} from "../../store/GlobalStore";
 import {observable} from "mobx";
 import Thought from "../../dto/Thought";
+import MarkdownFormItem from '../form/MarkdownFormItem';
+import FormItem from 'antd/lib/form/FormItem';
+import Button from 'antd/lib/button/button';
 
 // const FormItem = Form.Item;
 
@@ -30,9 +33,15 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
 
         // const {getFieldDecorator} = this.props.form;
         return (
-            <Form>
+            <Form layout='horizontal'>
                 <NameFormItem form={this.props.form}/>
                 <TagFormItem form={this.props.form} store={this.props.store} file={this.thought} />
+                <MarkdownFormItem form={this.props.form} item={this.thought}/>
+                <FormItem
+                    wrapperCol={{ span: 12, offset: 6 }}
+                >
+                    <Button type="primary" htmlType="submit">Submit</Button>
+                </FormItem>
             </Form>
         );
     }

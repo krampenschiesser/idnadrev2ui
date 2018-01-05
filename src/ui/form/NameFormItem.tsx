@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {Form, Input} from "antd";
+import {Input} from "antd";
 import {FormComponentProps} from 'antd/lib/form';
 import {observer} from "mobx-react";
+import FormItem from 'antd/lib/form/FormItem';
 
-const FormItem = Form.Item;
 
 export interface NameFormItemProps extends FormComponentProps {
     name?: string;
@@ -14,7 +14,7 @@ export default class NameFormItem extends React.Component<NameFormItemProps, obj
     render() {
         const {getFieldDecorator} = this.props.form;
         return (
-            <FormItem label="name">
+            <FormItem labelCol={{span: 1}}  wrapperCol={{span: 8}} label="Name" colon={true}>
                 {getFieldDecorator('name', {
                     rules: [{
                         type: 'string', message: 'The input is no valid string',
