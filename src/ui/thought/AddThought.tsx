@@ -30,6 +30,9 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
     @observable thought: Thought;
 
     componentWillMount() {
+        if (this.props.thought) {
+            this.thought = this.props.thought;
+        }
         this.thought = new Thought('');
         this.props.uiStore.header = 'Add thought';
     }

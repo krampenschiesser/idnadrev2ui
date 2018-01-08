@@ -38,37 +38,30 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
 
     }
 
+    onRow = (record: Thought, index: number) => {
+        console.log(record)
+        return <span>hhellllo</span>
+    }
+
     render() {
-        let thoughts= this.thoughts
+        let thoughts = this.thoughts
         if (thoughts === undefined) {
-            thoughts=[]
-        // }else {
-        //     thoughts=thoughts.slice()
+            thoughts = []
         }
-        // let thought = new Thought('bla');
-        // let inst = Object.assign({}, thought);
-        // for (let prop in inst) {
-        //     console.log(prop);
-        //     console.log(inst[prop]);
-        //     if (inst[prop] instanceof Date) {
-        //         // inst[prop] = inst[prop].toString();
-        //     }
-        // }
-        // let thoughts = [inst];
-        // console.log(inst);
 
         return (
             <Row>
                 <Col span={12}>
-                    <Table rowKey='id' dataSource={thoughts}>
+                    <Table onRow={this.onRow} rowKey='id' dataSource={thoughts}>
                         <Column dataIndex='created' title='Created' render={dateCell}/>
                         <Column dataIndex='name' title='Name'/>
                         <Column dataIndex='repositoryId' title='Repository'/>
                         <Column key='action' title='Action' render={(text, record) => (
                             <div>
-                                <Icon type="schedule"/>
-                                <Icon type="book"/>
-                                <Icon type="delete"/>
+                                <Icon title='To Task' type="schedule"/>
+                                <Icon title='To Document' type="book"/>
+                                <Icon title='Delete' type="delete"/>
+                                <Icon title='Postpone' type="delete"/>
                             </div>
                         )}/>
                     </Table>
