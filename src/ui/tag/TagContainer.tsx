@@ -1,6 +1,6 @@
 import {observer} from 'mobx-react';
 import * as React from 'react';
-import { AutoComplete, Tag} from 'antd';
+import {AutoComplete, Tag} from 'antd';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import {GlobalStore} from '../../store/GlobalStore';
 import {observable} from 'mobx';
@@ -54,7 +54,10 @@ export default class TagContainer extends React.Component<TagContainerProps, obj
         return (
             <div>
                 {autocomplete}
-                {this.fileTags.map(e => <Tag key={e} closable onClose={() => this.removeTag(e)}>{e}</Tag>)}
+                {this.fileTags.map(e =>
+                    <Tag color={this.props.store.getTagColor(e)} key={e} closable onClose={() => this.removeTag(e)}>
+                        <span style={{fontSize: 16, fontWeight: 'bold'}}>{e}</span>
+                    </Tag>)}
             </div>
         );
     }

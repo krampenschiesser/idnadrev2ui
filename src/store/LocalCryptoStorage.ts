@@ -1,87 +1,155 @@
-let scrypt = require('scryptsy');
-let chacha = require('chacha');
+// import {action, computed} from 'mobx';
 
-var isNode = require('detect-node');
-import * as encoding from "text-encoding";
+import {observable} from 'mobx';
+
+let scrypt = require('scryptsy');
+// let chacha = require('chacha/browser');
+let nacl_factory = require('js-nacl');
+
+var nacl: any = null;
+nacl_factory.instantiate((ready: any) => {
+    console.log("NaCl is ready");
+    nacl = ready;
+});
 
 type Password = string;
-export type AuthTag = Uint8Array;
 export type Nonce = Uint8Array;
 type Key = Uint8Array;
 export type EncryptedData = Uint8Array;
 
 export default class LocalCryptoStorage {
-  static storage: any = window.localStorage;
-  static crypto: any = window.crypto;
+    static storage: Storage = window.localStorage;
+    static sessionStorage: Storage = window.sessionStorage;
+    static crypto: RandomSource = window.crypto;
 
-  key: Key;
+    private key: Key | null;
+    @observable loggedIn: boolean;
 
-
-  constructor(key: Key) {
-    this.key = key;
-  }
-
-  encrypt(data: string, nonce: Nonce): [EncryptedData, AuthTag] {
-    let cipher = chacha.createCipher(this.key, nonce);
-    cipher.setAAD(nonce);
-    let buffer = cipher.update(data, 'utf8', 'binary');
-    cipher.final('binary');
-    let authTag = cipher.getAuthTag();
-    return [buffer, authTag];
-  }
-
-  decrypt(data: EncryptedData, nonce: Nonce, authTag: AuthTag): string {
-    let decipher = chacha.createDecipher(this.key, nonce);
-    decipher.setAAD(nonce);
-    decipher.setAuthTag(authTag);
-    let json = decipher.update(data, 'binary', 'utf8');
-    decipher.final();
-    return json;
-  }
-
-  static exists(): boolean {
-    let salt = this.storage.getItem('salt');
-    let verification = this.storage.getItem('verification');
-    return salt !== null && verification !== null;
-  }
-
-  static open(pw: Password): LocalCryptoStorage | undefined {
-    let salt = this.storage.getItem('salt');
-    let existingVerification = this.storage.getItem('verification');
-    if (salt === null || existingVerification === null) {
-      return undefined;
+    constructor(key: Key | null) {
+        this.key = key;
+        if (key == null) {
+            let item = LocalCryptoStorage.sessionStorage.getItem('key');
+            if (item !== null) {
+                this.key = fromHex(item);
+            }
+        }
+        if (this.key !== null) {
+            this.loggedIn = true;
+        }
     }
 
-    let key = scrypt(pw, salt, 16384, 8, 1, 32)
-    let verification = scrypt(key, salt, 16384, 8, 1, 32).toString('hex')
-
-    if (existingVerification !== verification) {
-      return undefined;
-    } else {
-      return new LocalCryptoStorage(key);
+    // @computed
+    get isLoggedIn(): boolean {
+        return this.loggedIn;
     }
-  }
 
-  static create(pw: Password): LocalCryptoStorage {
-    let array = new Uint32Array(32);
-    this.crypto.getRandomValues(array);
-
-    let saltString;
-    if (isNode) {
-      saltString = new encoding.TextDecoder().decode(array);
-    } else {
-      saltString = new TextDecoder().decode(array);
+    // @action
+    set setLoggedIn(loggedIn: boolean) {
+        this.loggedIn = loggedIn;
     }
-    this.storage.setItem('salt', saltString);
 
-    let key = scrypt(pw, saltString, 16384, 8, 1, 32)
-    let verification = scrypt(key, saltString, 16384, 8, 1, 32).toString('hex')
-    this.storage.setItem('verification', verification)
+    get getKey(): Key {
+        if (this.key === null) {
+            let key = LocalCryptoStorage.sessionStorage.getItem('key');
+            if (key !== null) {
+                this.key = fromHex(key);
+            }
+        }
+        if (this.key === null) {
+            throw 'Key not present';
+        } else {
+            return this.key;
+        }
+    }
 
-    return new LocalCryptoStorage(key);
-  }
+    set setKey(key: Key) {
+        let text = toHex8(key);
+        LocalCryptoStorage.sessionStorage.setItem('key', text);
+        this.key = key;
+        this.loggedIn = true;
+    }
 
-  getRandomValues(array: Uint8Array) {
-    LocalCryptoStorage.crypto.getRandomValues(array);
-  }
+
+    encrypt(data: string): [EncryptedData, Nonce] {
+        let key = this.getKey;
+        let message = nacl.encode_utf8(data);
+        let nonce = nacl.crypto_secretbox_random_nonce();
+        let encrypted = nacl.crypto_secretbox(message,nonce,key);
+
+        return [encrypted, nonce];
+    }
+
+    decrypt(data: EncryptedData, nonce: Nonce, ): string {
+        let decoded = nacl.crypto_secretbox_open(data, nonce, this.getKey);
+        let result = nacl.decode_utf8(decoded);
+
+        return result;
+    }
+
+    exists(): boolean {
+        let salt = LocalCryptoStorage.storage.getItem('salt');
+        let verification = LocalCryptoStorage.storage.getItem('verification');
+        return salt !== null && verification !== null;
+    }
+
+    open(pw: Password): boolean {
+        let salt = LocalCryptoStorage.storage.getItem('salt');
+        let existingVerification = LocalCryptoStorage.storage.getItem('verification');
+        if (salt === null || existingVerification === null) {
+            return false;
+        }
+
+        let key = scrypt(pw, salt, 16384, 8, 1, 32);
+        let verification = scrypt(key, salt, 16384, 8, 1, 32).toString('hex');
+
+        if (existingVerification !== verification) {
+            return false;
+        } else {
+            this.setKey = key;
+            return true;
+        }
+    }
+
+    create(pw: Password): void {
+        let array = new Uint32Array(32);
+        LocalCryptoStorage.crypto.getRandomValues(array);
+
+        let saltString = toHex32(array);
+        LocalCryptoStorage.storage.setItem('salt', saltString);
+
+        let key = scrypt(pw, saltString, 16384, 8, 1, 32);
+        let verification = scrypt(key, saltString, 16384, 8, 1, 32).toString('hex');
+        LocalCryptoStorage.storage.setItem('verification', verification);
+
+        this.setKey = key;
+    }
+
+    getRandomValues(array: Uint8Array) {
+        LocalCryptoStorage.crypto.getRandomValues(array);
+    }
+}
+
+function toHex32(array: Uint32Array): string {
+    return toHex8(Uint8Array.from(array));
+}
+
+function toHex8(array: Uint8Array): string {
+    let hexStr = '';
+    for (let i = 0; i < array.length; i++) {
+        let hex = (array[i] & 0xff).toString(16);
+        hex = (hex.length === 1) ? '0' + hex : hex;
+        hexStr += hex;
+    }
+
+    return hexStr.toUpperCase();
+}
+
+function fromHex(hex: string): Uint8Array {
+
+    let array = [];
+    for (let i = 0, len = hex.length; i < len; i += 2) {
+        array.push(parseInt(hex.substr(i, 2), 16));
+    }
+
+    return new Uint8Array(array);
 }

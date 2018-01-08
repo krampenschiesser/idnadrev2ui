@@ -1,13 +1,10 @@
 import * as React from 'react';
-// import {Tag, Icon, AutoComplete} from "antd";
-// import {observable} from "mobx";
-// import {GlobalStore} from "../../store/GlobalStore";
 import {observer} from 'mobx-react';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import ReactMarkdown from 'react-markdown';
 import {UnControlled as CodeMirror} from 'react-codemirror2';
 import './MarkdownEditor.css';
 import {observable} from 'mobx';
+import {MarkdownViewer} from './MarkdownViewer';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
@@ -52,7 +49,7 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
                     }}
                 />
 
-                <ReactMarkdown source={this.text} />
+                <MarkdownViewer text={this.text}/>
             </div>
         );
     }

@@ -9,19 +9,28 @@
  * except according to those terms.
  */
 
-import IdnadrevFile from "./IdnadrevFile";
-import {FileType} from "./FileType";
-import {Tag} from "./Tag";
+import IdnadrevFile from './IdnadrevFile';
+import {FileType} from './FileType';
+import {Tag} from './Tag';
 
 export class ThoughtDetails {
-  showAgainAfter: Date | null;
+    showAgainAfter: Date | null;
 }
 
 export default class Thought extends IdnadrevFile<ThoughtDetails, string> {
-  constructor(name: string, tags: Tag[] = [], content: string = '') {
-    super(name, FileType.Thought);
-    this.tags = tags;
-    this.content = content;
-    this.details = new ThoughtDetails();
-  }
+    constructor(name: string, tags: Tag[] = [], content: string = '') {
+        super(name, FileType.Thought);
+        this.tags = tags;
+        this.content = content;
+        this.details = new ThoughtDetails();
+    }
+
+    isPostPoned(): boolean {
+        return this.details.showAgainAfter === null || this.details.showAgainAfter <= new Date();
+    }
+
+    withContent(content: string) : Thought {
+        this.content=content;
+        return this;
+    }
 }

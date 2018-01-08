@@ -12,8 +12,8 @@ export interface NavigationContainerProps {
     uiStore: UiStore;
 }
 
-@observer
 @inject('uiStore')
+@observer
 export class NavigationContainer extends React.Component<NavigationContainerProps, object> {
     @observable menuVisible: boolean;
 
@@ -41,9 +41,7 @@ export class NavigationContainer extends React.Component<NavigationContainerProp
                                 type={this.menuVisible ? 'menu-unfold' : 'menu-fold'}
                                 onClick={this.toggle}
                             />
-                            <span style={{marginLeft: '32px'}}>
-                            <NavigationTitle />
-                            </span>
+                            <NavigationTitle uiStore={this.props.uiStore}/>
                         </h1>
                     </Header>
                     <Content style={{margin: '24px 16px 0'}}>

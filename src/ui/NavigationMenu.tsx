@@ -4,7 +4,6 @@ import {Menu, Icon} from 'antd';
 import {observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
 import UiStore from '../store/UiStore';
-import {match} from 'react-router-dom'
 
 const {SubMenu} = Menu;
 
@@ -14,23 +13,20 @@ export interface NavigationMenuProps {
 }
 
 export interface NavigationTitleProps {
+    uiStore: UiStore
 }
 
 @observer
 export class NavigationTitle extends React.Component<NavigationTitleProps, object> {
     render() {
-        let path = match.path;
-        return <h1>header</h1>;
+        let header = this.props.uiStore.header;
+        return <span style={{marginLeft: '32px'}}>{header}</span>;
     }
 }
 
 @observer
 export class NavigationMenu extends React.Component<NavigationMenuProps, object> {
     render() {
-        if(this.props.match){
-        this.props.uiStore.path=this.props.match.path;
-        }
-
         let thoughtLink = <Link to='/thought'><Icon type="coffee"/>Thought</Link>;
         let thoughtViewLink = <Link to='/thought'><Icon type="desktop"/>View</Link>;
         let thoughtAddLink = <Link to='/thought/add'><Icon type="plus-circle-o"/>Add</Link>;

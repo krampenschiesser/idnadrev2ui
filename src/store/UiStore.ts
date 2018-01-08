@@ -16,7 +16,7 @@ export enum UiOrientation {
 export default class UiStore {
     @observable uiWidth: UiWidth = UiWidth.lg;
     @observable uiOrientation = UiOrientation.Landscape;
-    @observable path: string = '/';
+    @observable header: string = '';
 
     @action
     updateWidth(width: number, height: number) {
