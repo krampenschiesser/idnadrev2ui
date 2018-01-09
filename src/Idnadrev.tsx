@@ -12,6 +12,7 @@ import {NavigationContainer} from './ui/NavigationContainer';
 import {AddThought} from './ui/thought/AddThought';
 import UiStore from './store/UiStore';
 import ViewThoughts from './ui/thought/ViewThought';
+import ProcessThoughts from './ui/thought/ProcessThoughts';
 
 
 export interface IdnadrevProps {
@@ -50,7 +51,7 @@ class Idnadrev extends React.Component<IdnadrevProps, any> {
                         <NavigationContainer uiStore={uiStore}>
                             <Route exact path='/thought' component={ViewThoughts}/>
                             <Route path='/thought/add' component={AddThought}/>
-                            <Route path='/thought/process'/>
+                            <Route path='/thought/process' component={ProcessThoughts}/>
 
                             <Route exact path='/doc'/>
                             <Route path='/doc/edit'/>

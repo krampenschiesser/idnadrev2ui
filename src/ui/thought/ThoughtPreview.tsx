@@ -6,6 +6,7 @@ import Col from 'antd/lib/grid/col';
 import {GlobalStore} from '../../store/GlobalStore';
 import TagViewer from '../tag/TagViewer';
 import {MarkdownViewer} from '../editor/MarkdownViewer';
+import Card from 'antd/lib/card';
 
 
 export interface ThoughtPreviewProps {
@@ -16,30 +17,33 @@ export interface ThoughtPreviewProps {
 @observer
 export default class ThoughtPreview extends React.Component<ThoughtPreviewProps, object> {
     render() {
-
         const thought = this.props.thought;
+
         if (thought) {
-            return (
+            let title = (
                 <div>
                     <Row>
-                        <Col span={24}>
-                            <h1>{thought.name}</h1>
+                        <Col span={12}>
+                            <h2>{thought.name}</h2>
+                        </Col>
+                        <Col style={{marginTop: 10, textAlign: 'right'}} span={12}>
+                            <span>{thought.updated.toLocaleDateString() + '   ' + thought.updated.toLocaleTimeString()}</span>
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24}>
+                        <Col>
                             <TagViewer store={this.props.store} item={thought}/>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <MarkdownViewer text={thought.content}/>
                         </Col>
                     </Row>
                 </div>
             );
+            return (
+                <Card title={title}>
+                    <MarkdownViewer text={thought.content}/>
+                </Card>
+            );
         } else {
-            return <div />
+            return <div/>;
         }
     }
 }
