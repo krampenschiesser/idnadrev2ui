@@ -6,8 +6,9 @@ import Thought from '../../dto/Thought';
 import UiStore from '../../store/UiStore';
 import ThoughtPreview from './ThoughtPreview';
 import {Layout} from 'antd';
+import Pagination from "antd/lib/pagination/Pagination";
 
-const {Footer, Sider, Content} = Layout;
+const {Footer, Content} = Layout;
 
 export interface ProcessThoughtsProps {
     store: GlobalStore
@@ -34,11 +35,14 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
             console.error('Could not load thoughts', e);
             console.error(e);
         });
+        // window.onK
+        window.addEventListener('onkeydown',this.onKeyPress)
     }
 
-    showMarkdownPreview = (thought: Thought) => {
-        this.previewThought = thought;
-    };
+    componentWillUnmount() {
+        window.removeEventListener('onkeydown',this.onKeyPress)
+    }
+
     toTask = () => {
 
     };
@@ -52,31 +56,70 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
 
     };
 
+    switchThought = (page: number) => {
+        if (this.thoughts.length > page - 1) {
+            this.previewThought = this.thoughts[page - 1];
+        }
+    };
+
+    next = () => {
+        if (this.getPageNumber() < this.thoughts.length ) {
+            console.log("next page "+this.getPageNumber() + 1);
+            this.switchThought(this.getPageNumber() + 1)
+        }
+    };
+
+    previous = () => {
+        if (this.getPageNumber() > 1) {
+            this.switchThought(this.getPageNumber() - 1)
+        }
+    };
+
+    onKeyPress = (e: KeyboardEvent) => {
+        console.log(e)
+        if (e.key === 'ArrowLeft') {
+            this.previous();
+            e.preventDefault()
+        }
+        if (e.key === 'ArrowRight') {
+            this.next();
+            e.preventDefault()
+        }
+    };
+
+
     render() {
         let thoughts = this.thoughts;
         if (thoughts === undefined) {
             thoughts = [];
         }
+        let pageNumber = this.getPageNumber();
 
         return (
-            <Layout>
-                <Content>
-                    <Layout>
-                        <Sider style={{background: '#fff'}}>
-                            blubb
-                        </Sider>
-                        <Content>
-                            <ThoughtPreview thought={this.previewThought} store={this.props.store}/>
-                        </Content>
-                        <Sider style={{background: '#fff'}}>
-                            bla
-                        </Sider>
-                    </Layout>
-                </Content>
-                <Footer>
-                    foot
-                </Footer>
-            </Layout>
+            <div>
+                <Layout>
+                    <Content>
+                        <Layout>
+                            <Content>
+                                <ThoughtPreview thought={this.previewThought} store={this.props.store}/>
+                            </Content>
+                        </Layout>
+                    </Content>
+                    <Footer style={{textAlign: 'center'}}>
+                        <Pagination current={pageNumber} pageSize={1}
+                                    total={thoughts.length} onChange={this.switchThought}/>
+                    </Footer>
+                </Layout>
+            </div>
         );
+    }
+
+    private getPageNumber(): number {
+        let pageNumber = 0;
+        if (this.previewThought != null) {
+            pageNumber = this.thoughts.indexOf(this.previewThought);
+        }
+        pageNumber += 1;
+        return pageNumber;
     }
 }
