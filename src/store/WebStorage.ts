@@ -4,7 +4,7 @@ import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, {EncryptedData, Nonce} from './LocalCryptoStorage';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import {generateThoughts} from './DummyData.tsx';
+import {generateTasks, generateThoughts} from './DummyData.tsx';
 
 export function prepareForDb(obj: any): any {
     let entries = Object.entries(obj);
@@ -140,13 +140,16 @@ export default class WebStorage extends Dexie {
             docs: 'id',
             thoughts: 'id, details.showAgainAfter',
         });
-        this.on('populate', () => generateThoughts().forEach(t => this.store(t)));
+        this.on('populate', () => {
+            generateThoughts().forEach(t => this.store(t));
+            generateTasks().forEach(t => this.store(t));
+        });
     }
 
     store<T>(obj: T): Promise<string> {
         let json = JSON.stringify(obj);
 
-        let [encrypted, nonce ] = this.localCrypto.encrypt(json);
+        let [encrypted, nonce] = this.localCrypto.encrypt(json);
 
         if (obj instanceof Thought) {
             let data: PersistedThought = {

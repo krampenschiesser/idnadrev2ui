@@ -17,98 +17,101 @@ import {Tag} from "./Tag";
 
 
 export enum TaskState {
-  None,
-  Later,
-  Delegated,
-  Asap
+    None,
+    Later,
+    Delegated,
+    Asap
 }
 
 export class WorkUnit {
-  @observable start: Date;
-  @observable end: Date | null = null;
+    @observable start: Date;
+    @observable end: Date | null = null;
 
-  constructor() {
-    this.start = new Date();
-  }
+    constructor() {
+        this.start = new Date();
+    }
 
 }
 
 export class DelegationState {
-  @observable time: Date;
-  @observable to: string;
+    @observable time: Date;
+    @observable to: string;
 }
 
 export class ProposedDateTime {
-  @observable proposedDateTime: Date;
-  @observable proposedDateOnly: boolean = true;
+    @observable proposedDateTime: Date;
+    @observable proposedDateOnly: boolean = true;
 }
 
 export class ProposedWeekDayYear {
-  @observable proposedYear: number;
-  @observable proposedWeek: number | null;
-  @observable proposedWeekDay: number | null;
+    @observable proposedYear: number;
+    @observable proposedWeek: number | null;
+    @observable proposedWeekDay: number | null;
 }
 
 export class FixedScheduling {
-  @observable scheduledDateTime: Date;
-  @observable scheduledDateOnly: boolean = false;
-  @observable duration: number;
+    @observable scheduledDateTime: Date;
+    @observable scheduledDateOnly: boolean = false;
+    @observable duration: number;
 }
 
 export class Scheduling {
-  @observable fixedScheduling: FixedScheduling | null;
-  @observable proposedWeekDayYear: ProposedWeekDayYear | null;
-  @observable proposedDate: ProposedDateTime | null;
+    @observable fixedScheduling: FixedScheduling | null;
+    @observable proposedWeekDayYear: ProposedWeekDayYear | null;
+    @observable proposedDate: ProposedDateTime | null;
 }
 
 export class TaskDetails {
-  @observable state: TaskState = TaskState.None;
-  @observable parent: FileId | null;
-  @observable context: TaskContext | null;
-  @observable estimatedTime: number | null;
-  @observable delegation: DelegationState | null;
-  @observable schedule: Scheduling | null;
-  @observable workUnits: WorkUnit[] = [];
-  @observable finished: Date | null;
+    @observable state: TaskState = TaskState.None;
+    @observable parent: FileId | null;
+    @observable context: TaskContext | null;
+    @observable estimatedTime: number | null;
+    @observable delegation: DelegationState | null;
+    @observable schedule: Scheduling | null;
+    @observable workUnits: WorkUnit[] = [];
+    @observable finished: Date | null;
 }
 
-export class TaskContext {
-  name: string;
-}
+export type TaskContext = string;
 
 export default class Task extends IdnadrevFile<TaskDetails, string> {
-  constructor(name: string, tags: Tag[] = [], content: string = '') {
-    super(name, FileType.Task)
-    this.tags = tags
-    this.content = content
-    this.details = new TaskDetails();
-  }
-
-  get state() {
-    return this.details.state
-  }
-
-  get parent() {
-    return this.details.parent
-  }
-
-  set parent(id) {
-    this.details.parent = id;
-  }
-
-  get isDelegated() {
-    if (this.details.delegation) {
-      return this.details.delegation.to !== null;
-    } else {
-      return false;
+    constructor(name: string, tags: Tag[] = [], content: string = '') {
+        super(name, FileType.Task)
+        this.tags = tags
+        this.content = content
+        this.details = new TaskDetails();
     }
-  }
 
-  get isFinished() {
-    return this.details.finished != null;
-  }
+    get state() {
+        return this.details.state
+    }
 
-  get context() {
-    return this.details.context;
-  }
+    get parent() {
+        return this.details.parent
+    }
+
+    set parent(id) {
+        this.details.parent = id;
+    }
+
+    get isDelegated() {
+        if (this.details.delegation) {
+            return this.details.delegation.to !== null;
+        } else {
+            return false;
+        }
+    }
+
+    get isFinished() {
+        return this.details.finished != null;
+    }
+
+    get context() {
+        return this.details.context;
+    }
+
+    withContent(content: string): Task {
+        this.content = content;
+        return this;
+    }
 }

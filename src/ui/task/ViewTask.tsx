@@ -28,12 +28,12 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
     }
 
     componentDidMount() {
-        // this.props.store.getOpenThoughts().then((t: Thought[]) => {
-        //     this.thoughts = t;
-        // }).catch(e => {
-        //     console.error('Could not load thoughts', e);
-        //     console.error(e);
-        // });
+        this.props.store.getTasks().then((t: Task[]) => {
+            this.thoughts = t;
+        }).catch(e => {
+            console.error('Could not load thoughts', e);
+            console.error(e);
+        });
 
     }
 
