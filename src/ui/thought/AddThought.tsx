@@ -14,6 +14,9 @@ import Button from 'antd/lib/button/button';
 import UiStore from '../../store/UiStore';
 import {FormConstants} from '../form/FormConstants';
 import RepositoryFormItem from '../form/RepositoryFormItem';
+import Row from 'antd/lib/grid/row';
+import Col from 'antd/lib/grid/col';
+import ThoughtPreview from './ThoughtPreview';
 
 // const FormItem = Form.Item;
 
@@ -38,18 +41,25 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
     }
 
     render() {
-
-        // const {getFieldDecorator} = this.props.form;
         return (
-            <Form layout='horizontal'>
-                <NameFormItem form={this.props.form}/>
-                <TagFormItem form={this.props.form} store={this.props.store} file={this.thought}/>
-                <MarkdownFormItem form={this.props.form} item={this.thought}/>
-                <RepositoryFormItem file={this.thought} store={this.props.store} form={this.props.form}/>
-                <FormItem wrapperCol={{offset: FormConstants.buttonOffset}}>
-                    <Button type="primary" htmlType="submit">Submit</Button>
-                </FormItem>
-            </Form>
+            <Row>
+                <Col span={12}>
+                    <Form layout='horizontal'>
+                        <NameFormItem file={this.thought} form={this.props.form}/>
+                        <TagFormItem form={this.props.form} store={this.props.store} file={this.thought}/>
+                        <MarkdownFormItem form={this.props.form} item={this.thought}/>
+                        <RepositoryFormItem file={this.thought} store={this.props.store} form={this.props.form}/>
+                        <FormItem wrapperCol={{offset: FormConstants.buttonOffset}}>
+                            <Button type="primary" htmlType="submit">Submit</Button>
+                        </FormItem>
+                    </Form>
+                </Col>
+                <Col span={12}>
+                    <div style={{marginLeft: 20}}>
+                        <ThoughtPreview thought={this.thought} store={this.props.store}/>
+                    </div>
+                </Col>
+            </Row>
         );
     }
 }

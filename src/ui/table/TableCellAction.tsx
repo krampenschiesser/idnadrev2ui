@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Icon from 'antd/lib/icon';
 import {observer} from 'mobx-react';
-import './TableCellAction.css';
 import {observable} from 'mobx';
 
 export interface ViewThoughtProps {

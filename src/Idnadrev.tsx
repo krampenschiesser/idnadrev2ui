@@ -7,7 +7,7 @@ import {
     Route,
 } from 'react-router-dom';
 
-// import DevTools from "mobx-react-devtools";
+import DevTools from "mobx-react-devtools";
 import {NavigationContainer} from './ui/NavigationContainer';
 import {AddThought} from './ui/thought/AddThought';
 import UiStore from './store/UiStore';
@@ -65,7 +65,7 @@ class Idnadrev extends React.Component<IdnadrevProps, any> {
                         </NavigationContainer>
                     </Router>
                 </Provider>
-                {/*<DevTools/>*/}
+                <DevTools/>
             </div>
         );
     }

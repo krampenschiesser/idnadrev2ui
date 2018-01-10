@@ -11,7 +11,7 @@ import Col from 'antd/lib/grid/col';
 import ThoughtPreview from './ThoughtPreview';
 import {dateCell} from '../table/DateCell';
 import HoverCell from '../table/HoverCell';
-import TableCellAction from '../table/TableCellAction';
+import {DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask} from './ThoughtActions';
 
 
 export interface ViewThoughtProps {
@@ -48,7 +48,7 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
     toDocument = () => {
 
     };
-    delete= () => {
+    delete = () => {
 
     };
     postpone = () => {
@@ -72,19 +72,19 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
                         <Column dataIndex='created' title='Created' render={dateCell}/>
                         <Column dataIndex='name' title='Name' render={markdownHover}/>
                         <Column dataIndex='repositoryId' title='Repository'/>
-                        <Column key='action' title='Action' render={(text, record) => (
+                        <Column key='action' title='Action' render={(text, record: Thought) => (
                             <div>
-                                <TableCellAction icon='schedule' title='To Document' callback={this.toTask}/>
-                                <TableCellAction icon='book' title='To Document' callback={this.toDocument}/>
-                                <TableCellAction icon='delete' title='Delete' callback={this.delete}/>
-                                <TableCellAction icon='hourglass' title='Postpone' callback={this.postpone}/>
+                                <ThoughtToTask asIcon thought={record}/>
+                                <ThoughtToDocument asIcon thought={record}/>
+                                <PostponeThought asIcon thought={record}/>
+                                <DeleteThought asIcon thought={record}/>
                             </div>
                         )}/>
                     </Table>
                 </Col>
                 <Col span={12}>
-                    <div style={{marginLeft: 20}} >
-                    <ThoughtPreview thought={this.previewThought} store={this.props.store}/>
+                    <div style={{marginLeft: 20}}>
+                        <ThoughtPreview showActions thought={this.previewThought} store={this.props.store}/>
                     </div>
                 </Col>
             </Row>

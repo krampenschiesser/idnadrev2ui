@@ -6,11 +6,11 @@ interface DefaultFormItemProps {
 }
 
 class FormConstantsProps {
-    labelSpan: number = 1;
+    labelSpan: number = 3;
     labelOffset: number = 0;
-    wrapperSpan: number = 8;
+    wrapperSpan: number = 21;
     wrapperOffset: number = 0;
-    buttonOffset: number = 4;
+    buttonOffset: number = 12;
 
     getItemProps(): DefaultFormItemProps {
         return {

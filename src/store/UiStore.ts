@@ -33,7 +33,6 @@ export default class UiStore {
         } else {
             this.uiWidth = UiWidth.xxl;
         }
-        console.log(this.uiWidth)
     }
 
     @computed get isMobile(): boolean {

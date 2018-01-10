@@ -10,28 +10,29 @@
  */
 
 
-import { v4 as uuid } from 'uuid';
-import {FileType} from "./FileType";
-import {Tag} from "./Tag";
-import {FileId} from "./FileId";
-import {RepositoryId} from "./RepositoryId";
+import {v4 as uuid} from 'uuid';
+import {FileType} from './FileType';
+import {Tag} from './Tag';
+import {FileId} from './FileId';
+import {RepositoryId} from './RepositoryId';
+import {observable} from 'mobx';
 
 
-export default abstract class IdnadrevFile<Details,Content> {
-    repository: RepositoryId;
+export default abstract class IdnadrevFile<Details, Content> {
+    @observable repository: RepositoryId;
     id: FileId;
     version: number;
-    name: string;
+    @observable name: string;
 
     created: Date;
     updated: Date;
     deleted: Date;
 
     fileType: FileType;
-    tags: Tag[];
+    @observable tags: Tag[];
 
-    details: Details;
-    content: Content;
+    @observable details: Details;
+    @observable content: Content;
 
 
     constructor(name: string, fileType: FileType) {

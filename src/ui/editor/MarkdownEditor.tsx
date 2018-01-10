@@ -3,8 +3,6 @@ import {observer} from 'mobx-react';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import {UnControlled as CodeMirror} from 'react-codemirror2';
 import './MarkdownEditor.css';
-import {observable} from 'mobx';
-import {MarkdownViewer} from './MarkdownViewer';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
@@ -20,7 +18,7 @@ export interface MarkdownEditorProps {
 
 @observer
 export class MarkdownEditor extends React.Component<MarkdownEditorProps, object> {
-    @observable text: string;
+    text: string;
 
 
     constructor(props: MarkdownEditorProps, context: any) {
@@ -29,7 +27,6 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
     }
 
     onTextChange = (edited: string) => {
-        this.text = edited;
         this.props.item.content = edited;
     };
 
@@ -45,11 +42,9 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
                         lineNumbers: true
                     }}
                     onChange={(editor, data, value) => {
-                        this.text = value;
+                        this.onTextChange(value);
                     }}
                 />
-
-                <MarkdownViewer text={this.text}/>
             </div>
         );
     }

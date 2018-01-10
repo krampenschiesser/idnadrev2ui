@@ -7,19 +7,30 @@ import {GlobalStore} from '../../store/GlobalStore';
 import TagViewer from '../tag/TagViewer';
 import {MarkdownViewer} from '../editor/MarkdownViewer';
 import Card from 'antd/lib/card';
-
+import {DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask} from './ThoughtActions';
 
 export interface ThoughtPreviewProps {
     thought: Thought | null
     store: GlobalStore
+    showActions?: boolean;
 }
 
 @observer
 export default class ThoughtPreview extends React.Component<ThoughtPreviewProps, object> {
     render() {
         const thought = this.props.thought;
+        const showActions = this.props.showActions === undefined ? false : this.props.showActions;
 
-        if (thought) {
+        if (thought!==null) {
+            let actions: React.ReactNode[] = [];
+            if (showActions) {
+                actions = [
+                    <ThoughtToTask thought={thought} />,
+                    <ThoughtToDocument thought={thought} />,
+                    <PostponeThought thought={thought} />,
+                    <DeleteThought thought={thought} />,
+                ];
+            }
             let title = (
                 <div>
                     <Row>
@@ -38,7 +49,7 @@ export default class ThoughtPreview extends React.Component<ThoughtPreviewProps,
                 </div>
             );
             return (
-                <Card title={title}>
+                <Card actions={actions} title={title}>
                     <MarkdownViewer text={thought.content}/>
                 </Card>
             );

@@ -6,7 +6,7 @@ import Thought from '../../dto/Thought';
 import UiStore from '../../store/UiStore';
 import ThoughtPreview from './ThoughtPreview';
 import {Layout} from 'antd';
-import Pagination from "antd/lib/pagination/Pagination";
+import Pagination from 'antd/lib/pagination/Pagination';
 
 const {Footer, Content} = Layout;
 
@@ -14,6 +14,8 @@ export interface ProcessThoughtsProps {
     store: GlobalStore
     uiStore: UiStore
 }
+
+function noop(){}
 
 @inject('store', 'uiStore')
 @observer
@@ -35,12 +37,13 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
             console.error('Could not load thoughts', e);
             console.error(e);
         });
-        // window.onK
-        window.addEventListener('onkeydown',this.onKeyPress)
+        window.onkeydown = this.onKeyPress//fixme replace with below and get that working
+        // window.addEventListener('onkeydown', this.onKeyPress, true);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('onkeydown',this.onKeyPress)
+        window.onkeydown=noop
+        // window.removeEventListener('onkeydown', this.onKeyPress);
     }
 
     toTask = () => {
@@ -63,27 +66,27 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
     };
 
     next = () => {
-        if (this.getPageNumber() < this.thoughts.length ) {
-            console.log("next page "+this.getPageNumber() + 1);
-            this.switchThought(this.getPageNumber() + 1)
+        if (this.getPageNumber() < this.thoughts.length) {
+            console.log('next page ' + this.getPageNumber() + 1);
+            this.switchThought(this.getPageNumber() + 1);
         }
     };
 
     previous = () => {
         if (this.getPageNumber() > 1) {
-            this.switchThought(this.getPageNumber() - 1)
+            this.switchThought(this.getPageNumber() - 1);
         }
     };
 
     onKeyPress = (e: KeyboardEvent) => {
-        console.log(e)
+        console.log(e);
         if (e.key === 'ArrowLeft') {
             this.previous();
-            e.preventDefault()
+            e.preventDefault();
         }
         if (e.key === 'ArrowRight') {
             this.next();
-            e.preventDefault()
+            e.preventDefault();
         }
     };
 
@@ -101,7 +104,7 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
                     <Content>
                         <Layout>
                             <Content>
-                                <ThoughtPreview thought={this.previewThought} store={this.props.store}/>
+                                <ThoughtPreview showActions thought={this.previewThought} store={this.props.store}/>
                             </Content>
                         </Layout>
                     </Content>
