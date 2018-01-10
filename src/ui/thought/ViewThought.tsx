@@ -74,10 +74,10 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
                         <Column dataIndex='repositoryId' title='Repository'/>
                         <Column key='action' title='Action' render={(text, record: Thought) => (
                             <div>
-                                <ThoughtToTask asIcon thought={record}/>
-                                <ThoughtToDocument asIcon thought={record}/>
-                                <PostponeThought asIcon thought={record}/>
-                                <DeleteThought asIcon thought={record}/>
+                                <ThoughtToTask store={this.props.store} asIcon thought={record}/>
+                                <ThoughtToDocument store={this.props.store} asIcon thought={record}/>
+                                <PostponeThought store={this.props.store} asIcon thought={record}/>
+                                <DeleteThought store={this.props.store} asIcon thought={record}/>
                             </div>
                         )}/>
                     </Table>

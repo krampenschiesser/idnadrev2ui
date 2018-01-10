@@ -4,24 +4,26 @@ import {observer} from 'mobx-react';
 import {observable} from 'mobx';
 import Button from 'antd/lib/button/button';
 import Thought from '../../dto/Thought';
+import {GlobalStore} from "../../store/GlobalStore";
 
 export interface ThoughtActionProps {
     hoverColor?: string
     asIcon?: boolean;
     thought: Thought;
+    store: GlobalStore;
 }
 
 
 class ThoughtAction extends React.Component<ThoughtActionProps, object> {
     @observable hover: boolean = false;
 
-    callback = (thought: Thought) => {
+    callback = (thought: Thought, store: GlobalStore) => {
     };
 
     icon: string;
     title: string;
 
-    constructor(callback: (thought: Thought) => void, icon: string, title: string, props: ThoughtActionProps) {
+    constructor(callback: (thought: Thought, store: GlobalStore) => void, icon: string, title: string, props: ThoughtActionProps) {
         super(props);
         this.callback = callback;
         this.icon = icon;
@@ -38,12 +40,14 @@ class ThoughtAction extends React.Component<ThoughtActionProps, object> {
         if (this.props.asIcon) {
             return (
                 <span onMouseEnter={() => this.hover = true} onMouseLeave={() => this.hover = false}>
-                    <Icon onClick={() => this.callback(this.props.thought)} style={actionStyle} title={this.title}
+                    <Icon onClick={() => this.callback(this.props.thought, this.props.store)} style={actionStyle}
+                          title={this.title}
                           type={this.icon}/>
                 </span>
             );
         } else {
-            return <Button icon={this.icon} onClick={() => this.callback(this.props.thought)}>{this.title}</Button>;
+            return <Button icon={this.icon}
+                           onClick={() => this.callback(this.props.thought, this.props.store)}>{this.title}</Button>;
         }
     }
 }
@@ -76,15 +80,18 @@ export class DeleteThought extends ThoughtAction {
     }
 }
 
-function toTask(thought: Thought): void {
+function toTask(thought: Thought, store: GlobalStore): void {
 
 }
-function toDocument(thought: Thought): void {
+
+function toDocument(thought: Thought, store: GlobalStore): void {
 
 }
-function postponeThought(thought: Thought): void {
+
+function postponeThought(thought: Thought, store: GlobalStore): void {
 
 }
-function deleteThought(thought: Thought): void {
+
+function deleteThought(thought: Thought, store: GlobalStore): void {
 
 }

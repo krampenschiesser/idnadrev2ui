@@ -21,14 +21,14 @@ export default class ThoughtPreview extends React.Component<ThoughtPreviewProps,
         const thought = this.props.thought;
         const showActions = this.props.showActions === undefined ? false : this.props.showActions;
 
-        if (thought!==null) {
+        if (thought !== null) {
             let actions: React.ReactNode[] = [];
             if (showActions) {
                 actions = [
-                    <ThoughtToTask thought={thought} />,
-                    <ThoughtToDocument thought={thought} />,
-                    <PostponeThought thought={thought} />,
-                    <DeleteThought thought={thought} />,
+                    <ThoughtToTask store={this.props.store} thought={thought}/>,
+                    <ThoughtToDocument store={this.props.store} thought={thought}/>,
+                    <PostponeThought store={this.props.store} thought={thought}/>,
+                    <DeleteThought store={this.props.store} thought={thought}/>,
                 ];
             }
             let title = (
