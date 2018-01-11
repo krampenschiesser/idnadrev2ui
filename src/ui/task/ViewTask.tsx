@@ -12,6 +12,7 @@ import TaskPreview from './TaskPreview';
 import HoverCell from '../table/HoverCell';
 import {FileId} from '../../dto/FileId';
 import {TaskFilter} from '../../store/TaskFilter';
+import {TaskFilterView} from './TaskFilter';
 
 
 export interface ViewTaskProps {
@@ -36,14 +37,14 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
 
     }
 
-    reload() {
+    reload = () => {
         this.props.store.getTasks(this.filter).then((t: Task[]) => {
             this.tasks = t;
         }).catch(e => {
             console.error('Could not load tasks', e);
             console.error(e);
         });
-    }
+    };
 
     showMarkdownPreview = (task: Task) => {
         this.previewTask = task;
@@ -87,6 +88,7 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
             <div>
                 <Row>
                     <Col span={12}>
+                        <TaskFilterView filter={this.filter} reload={this.reload}/>
                     </Col>
                     <Col span={12}>
                     </Col>
