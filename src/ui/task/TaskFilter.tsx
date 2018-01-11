@@ -20,7 +20,7 @@ class NameFilter extends React.Component<TaskFilterProps, object> {
         } else {
             this.props.filter.name = undefined;
         }
-        this.props.reload();
+        this.props.reload();//fixme reload after timeout after last modification
     };
 
     render() {
