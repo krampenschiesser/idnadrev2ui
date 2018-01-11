@@ -32,7 +32,7 @@ class NameFilter extends React.Component<TaskFilterProps, object> {
                         type: 'string', message: 'The input is no valid string',
                     }],
                 })(
-                    <Input value={name} onChange={this.onChange}/>
+                    <Input onChange={this.onChange}/>
                 )}
             </FormItem>
         );
@@ -42,10 +42,26 @@ class NameFilter extends React.Component<TaskFilterProps, object> {
 
 @observer
 class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
+    lastEdit: number;
+
+    reload = () => {
+        const timeout = 80;
+        this.lastEdit = new Date().getTime();
+        setTimeout(() => {
+            let now = new Date().getTime();
+            if (now -this.lastEdit >= timeout) {
+                console.log("reloading")
+                this.props.reload();
+            } else {
+                console.log("not reloading",now -this.lastEdit )
+            }
+        }, timeout);
+    };
+
     render() {
         return (
             <Form layout='inline'>
-                <NameFilter {...this.props}/>
+                <NameFilter form={this.props.form} filter={this.props.filter} reload={this.reload}/>
             </Form>
         );
     }

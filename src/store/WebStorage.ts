@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import Task, {TaskContext, TaskState} from '../dto/Task';
+import Task, {default as Task, TaskContext, TaskState} from '../dto/Task';
 import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, {EncryptedData, Nonce} from './LocalCryptoStorage';
@@ -8,6 +8,7 @@ import {generateTasks, generateThoughts} from './DummyData';
 import {TaskFilter} from './TaskFilter';
 import {FileId} from '../dto/FileId';
 import {Tag} from '../dto/Tag';
+import {isNullOrUndefined} from "util";
 
 export function prepareForDb(obj: any): any {
     let entries = Object.entries(obj);
@@ -215,7 +216,7 @@ export default class WebStorage extends Dexie {
         return this.tasks.where('id').equals(id).first().then(persistedTask => toTask(persistedTask, this.localCrypto));
     }
 
-    getTasks(filter?: TaskFilter) {
+    getTasks(filter?: TaskFilter): Promise<Task[]> {
         let finished: boolean = filter && filter.finished !== undefined ? filter.finished : false;
         let delegated: boolean | null = filter && filter.delegated !== undefined ? filter.delegated : null;
         let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
@@ -253,7 +254,7 @@ export default class WebStorage extends Dexie {
         let remainingTimeLessThen: number | null = filter && filter.remainingTimeLessThen !== undefined ? filter.remainingTimeLessThen : null;
         let tags: Tag[] | null = filter && filter.tags !== undefined ? filter.tags : null;
 
-        return mappedTasks.then(tasks => tasks.filter(t => {
+        let resultingTasks = mappedTasks.then(tasks => tasks.filter(t => {
             let valid = true;
             if (valid && name !== null) {
                 valid = t.name.toLowerCase().indexOf(name) > 0;
@@ -315,5 +316,26 @@ export default class WebStorage extends Dexie {
             }
             return valid;
         }));
+        const loadParent = (t: Task): Promise<[Task, Promise<Task | undefined>] | undefined> => {
+            if (t.parent) {
+                let promise = this.tasks.get(t.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
+                // return promise;
+            } else {
+                return undefined;
+            }
+        }
+        let retval: Promise<Task[]> = resultingTasks.then(tasks => {
+            let copy: Task[] = tasks.slice();
+            let parentLoads: Promise<Task>[] = [];
+            tasks.forEach(t => {
+                let temp = t;
+                if (temp.parent) {
+                    let promise = this.tasks.get(temp.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
+                    parentLoads.push(promise);
+                }
+            });
+            return copy;
+        });
+        return retval;
     }
 }

@@ -34,12 +34,16 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
 
     componentDidMount() {
         this.reload();
-
     }
 
     reload = () => {
         this.props.store.getTasks(this.filter).then((t: Task[]) => {
+            this.tasks =[]
+            console.log(t)
             this.tasks = t;
+            if (t.length == 0) {
+                this.previewTask = null;
+            }
         }).catch(e => {
             console.error('Could not load tasks', e);
             console.error(e);
@@ -81,7 +85,7 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
                 data.push(t);
             }
         });
-
+        console.log(data)
         let markdownHover = (name: string, record: Task, index: number) => {
             return <HoverCell onHover={() => this.showMarkdownPreview(record)}>{name}</HoverCell>;
         };
