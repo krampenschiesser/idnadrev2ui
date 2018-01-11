@@ -22,8 +22,8 @@ export function prepareForDb(obj: any): any {
 }
 
 interface PersistedTaskDetails {
-    finished: boolean;
-    delegation: boolean;
+    finished: number;
+    delegation: number;
     context: TaskContext | null;
     state: TaskState;
 }
@@ -167,13 +167,16 @@ export default class WebStorage extends Dexie {
             };
             return this.docs.put(data);
         } else if (obj instanceof Task) {
+            if (obj.children) {
+                obj.children = undefined;
+            }
             let data: PersistedTask = {
                 data: encrypted,
                 nonce: nonce,
                 id: obj.id,
                 details: {
-                    finished: obj.isFinished,
-                    delegation: obj.isDelegated,
+                    finished: obj.isFinished ? 1 : 0,
+                    delegation: obj.isDelegated ? 1 : 0,
                     context: obj.context,
                     state: obj.state
                 }
@@ -210,4 +213,10 @@ export default class WebStorage extends Dexie {
     }
 
 
+    getUnfinishedTasks() {
+        return this.tasks.where('details.finished').equals(0).toArray().then(tasks => tasks
+            .map(t => toTask(t, this.localCrypto))
+            .filter(t => t !== undefined)
+        );
+    }
 }

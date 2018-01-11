@@ -75,6 +75,8 @@ export class TaskDetails {
 export type TaskContext = string;
 
 export default class Task extends IdnadrevFile<TaskDetails, string> {
+    children?: Task[];
+
     constructor(name: string, tags: Tag[] = [], content: string = '') {
         super(name, FileType.Task)
         this.tags = tags

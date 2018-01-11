@@ -3,6 +3,7 @@ import {observable} from 'mobx';
 import {RepositoryId} from '../dto/RepositoryId';
 import WebStorage from './WebStorage';
 import Thought from '../dto/Thought';
+import Task from '../dto/Task';
 
 export interface IGlobalStore {
     getTagsStartingWith(input: string): string[];
@@ -54,5 +55,9 @@ export class GlobalStore implements IGlobalStore {
 
     getOpenThoughts(): Promise<Thought[]> {
         return this.webStorage.loadOpenThoughts();
+    }
+
+    getUnfinishedTasks() : Promise<Task[]>{
+        return this.webStorage.getUnfinishedTasks();
     }
 }

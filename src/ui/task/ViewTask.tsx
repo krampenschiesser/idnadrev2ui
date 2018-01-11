@@ -5,11 +5,12 @@ import {observable} from 'mobx';
 import UiStore from '../../store/UiStore';
 import Table from 'antd/lib/table/Table';
 import Column from 'antd/lib/table/Column';
-import Task from "../../dto/Task";
-import Row from "antd/lib/grid/row";
-import Col from "antd/lib/grid/col";
-import TaskPreview from "./TaskPreview";
-import HoverCell from "../table/HoverCell";
+import Task from '../../dto/Task';
+import Row from 'antd/lib/grid/row';
+import Col from 'antd/lib/grid/col';
+import TaskPreview from './TaskPreview';
+import HoverCell from '../table/HoverCell';
+import {FileId} from '../../dto/FileId';
 
 
 export interface ViewTaskProps {
@@ -28,10 +29,10 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
     }
 
     componentDidMount() {
-        this.props.store.getTasks().then((t: Task[]) => {
-            this.thoughts = t;
+        this.props.store.getUnfinishedTasks().then((t: Task[]) => {
+            this.tasks = t;
         }).catch(e => {
-            console.error('Could not load thoughts', e);
+            console.error('Could not load tasks', e);
             console.error(e);
         });
 
@@ -41,77 +42,43 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
         this.previewTask = task;
     };
 
-    rowSelection = () =>{
-
-    };
-
     render() {
-        const data = [{
-            id: 1,
-            name: 'Barbequeue',
-            context: 'none',
-            parent: null,
-            content: '# hungry',
-            updated: new Date(),
-            tags: [],
-            children: [
-                {
-                    id: 2,
-                    name: 'Go to store',
-                    context: 'car',
-                    content: '__slow moving__**traffic**',
-                    parent: 1,
-                    updated: new Date(),
-                    tags: [],
-                    children: [
-                        {
-                            id: 3,
-                            context: 'store',
-                            name: 'Buy beef',
-                            content: 'Yummy',
-                            updated: new Date(),
-                            parent: 2,
-                            tags: []
-                        }, {
-                            id: 4,
-                            context: 'store',
-                            name: 'Buy beer',
-                            content: 'Fuck yeah',
-                            updated: new Date(),
-                            parent: 2,
-                            tags: []
-                        },
-                    ],
-                }
-            ]
-        }, {
-            id: 42,
-            name: 'Take safety break',
-            updated: new Date(),
-            content: 'oh **yeah**',
-            tags: []
+        const tasks: Task[] = this.tasks === undefined ? [] : this.tasks;
+        console.log(tasks.length);
+        let map: Map<FileId, Task> = new Map();
 
-        }];
+        tasks.forEach(t => {
+            map.set(t.id, Object.assign(new Task(''), t));
+        });
+
+        let data: Task[] = [];
+        map.forEach((t, key) => {
+            if (t.details.parent) {
+                let parent = map.get(t.details.parent);
+                if (parent) {
+                    let childArray = parent.children;
+                    if (!childArray) {
+                        childArray = [];
+                        parent.children = childArray;
+                    }
+                    let item = map.get(t.id);
+                    if (item) {
+                        childArray.push(item);
+                    }
+                }
+            }else {
+                data.push(t)
+            }
+        });
 
         let markdownHover = (name: string, record: Task, index: number) => {
             return <HoverCell onHover={() => this.showMarkdownPreview(record)}>{name}</HoverCell>;
         };
-        const rowSelection = {
-            onChange: (selectedRowKeys: any, selectedRows: any) => {
-                console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            },
-            onSelect: (record: any, selected: any, selectedRows: any) => {
-                console.log(record, selected, selectedRows);
-            },
-            onSelectAll: (selected: any, selectedRows: any, changeRows: any) => {
-                console.log(selected, selectedRows, changeRows);
-            },
-        };
         return (
             <Row>
                 <Col span={12}>
-                    <Table rowSelection={rowSelection} rowKey='id' dataSource={data}>
-                        <Column dataIndex='name' title='Name' />
+                    <Table rowKey='id' dataSource={data}>
+                        <Column dataIndex='name' title='Name'/>
                         <Column width='10%' dataIndex='context' title='Context' render={markdownHover}/>
                         <Column width='10%' dataIndex='repository' title='Repository'/>
                     </Table>
