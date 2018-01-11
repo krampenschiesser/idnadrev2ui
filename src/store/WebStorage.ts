@@ -4,7 +4,10 @@ import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, {EncryptedData, Nonce} from './LocalCryptoStorage';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import {generateTasks, generateThoughts} from './DummyData.tsx';
+import {generateTasks, generateThoughts} from './DummyData';
+import {TaskFilter} from './TaskFilter';
+import {FileId} from '../dto/FileId';
+import {Tag} from '../dto/Tag';
 
 export function prepareForDb(obj: any): any {
     let entries = Object.entries(obj);
@@ -212,11 +215,105 @@ export default class WebStorage extends Dexie {
         return this.tasks.where('id').equals(id).first().then(persistedTask => toTask(persistedTask, this.localCrypto));
     }
 
+    getTasks(filter?: TaskFilter) {
+        let finished: boolean = filter && filter.finished !== undefined ? filter.finished : false;
+        let delegated: boolean | null = filter && filter.delegated !== undefined ? filter.delegated : null;
+        let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
+        let state: TaskState | null = filter && filter.state !== undefined ? filter.state : null;
 
-    getUnfinishedTasks() {
-        return this.tasks.where('details.finished').equals(0).toArray().then(tasks => tasks
-            .map(t => toTask(t, this.localCrypto))
-            .filter(t => t !== undefined)
-        );
+        let promise = this.tasks.where('details.finished').equals(finished ? 1 : 0).and(t => {
+            let valid = true;
+            if (delegated !== null) {
+                valid = t.details.delegation === (delegated ? 1 : 0);
+            }
+            if (valid && context !== null) {
+                if (t.details.context) {
+                    valid = t.details.context.toLowerCase() == context.toLowerCase();
+                } else {
+                    valid = false;
+                }
+            }
+            if (valid && state !== null) {
+                if (t.details.state) {
+                    valid = t.details.state === state;
+                } else {
+                    valid = false;
+                }
+            }
+            return valid;
+        }).toArray();
+
+        let mappedTasks: Promise<Task[]> = promise.then(tasks => tasks.map(t => toTask(t, this.localCrypto)).filter(t => t !== undefined));
+
+        let name: string | null = filter && filter.name !== undefined ? filter.name.toLowerCase() : null;
+        let delegatedTo: string | null = filter && filter.delegatedTo !== undefined ? filter.delegatedTo.toLowerCase() : null;
+        let parent: FileId | null = filter && filter.parent !== undefined ? filter.parent : null;
+        let scheduled: boolean | null = filter && filter.scheduled !== undefined ? filter.scheduled : null;
+        let proposed: boolean | null = filter && filter.proposed !== undefined ? filter.proposed : null;
+        let remainingTimeLessThen: number | null = filter && filter.remainingTimeLessThen !== undefined ? filter.remainingTimeLessThen : null;
+        let tags: Tag[] | null = filter && filter.tags !== undefined ? filter.tags : null;
+
+        return mappedTasks.then(tasks => tasks.filter(t => {
+            let valid = true;
+            if (valid && name !== null) {
+                valid = t.name.toLowerCase().indexOf(name) > 0;
+            }
+            if (valid && delegatedTo !== null) {
+                if (t.details.delegation && t.details.delegation.to) {
+                    valid = t.details.delegation.to.toLowerCase().indexOf(delegatedTo) > 0;
+                } else {
+                    valid = false;
+                }
+            }
+            if (valid && parent !== null) {
+                if (t.details.parent) {
+                    valid = t.details.parent == parent;
+                } else {
+                    valid = false;
+                }
+            }
+            if (valid && scheduled !== null) {
+                if (scheduled) {
+                    valid = !!t.details.schedule && !!t.details.schedule.fixedScheduling;
+                } else {
+                    valid = !t.details.schedule || !t.details.schedule.fixedScheduling;
+                }
+            }
+            if (valid && proposed !== null) {
+                if (proposed) {
+                    valid = !!t.details.schedule && (!!t.details.schedule.proposedDate || !!t.details.schedule.proposedWeekDayYear);
+                } else {
+                    valid = !t.details.schedule || (!t.details.schedule.proposedDate && !t.details.schedule.proposedWeekDayYear);
+                }
+            }
+            if (valid && remainingTimeLessThen !== null) {
+                let estimatedTime = t.details.estimatedTime;
+                if (estimatedTime) {
+                    let sum = 0;
+                    t.details.workUnits.filter(u => u.end !== null).map(u => {
+                        if (u.end === null) {
+                            throw 'cannot happen, just for TS';
+                        } else {
+                            return (u.end.getTime() - u.start.getTime());
+                        }
+                    }).forEach(time => sum = +time);
+                    let remaining = estimatedTime - sum;
+                    if (remaining > 0) {
+                        valid = remaining < remainingTimeLessThen;
+                    } else {
+                        valid = false;
+                    }
+                } else {
+                    valid = false;
+                }
+            }
+            if (valid && tags !== null) {
+                tags.map(requestedTag => {
+                    let requestedTagName = requestedTag.name.toLowerCase();
+                    return t.tags.some(tag => tag.name.toLowerCase() == requestedTagName);
+                }).forEach(found => valid = valid && found);
+            }
+            return valid;
+        }));
     }
 }

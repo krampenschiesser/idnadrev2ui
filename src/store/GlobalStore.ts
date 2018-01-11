@@ -4,6 +4,7 @@ import {RepositoryId} from '../dto/RepositoryId';
 import WebStorage from './WebStorage';
 import Thought from '../dto/Thought';
 import Task from '../dto/Task';
+import {TaskFilter} from './TaskFilter';
 
 export interface IGlobalStore {
     getTagsStartingWith(input: string): string[];
@@ -57,7 +58,7 @@ export class GlobalStore implements IGlobalStore {
         return this.webStorage.loadOpenThoughts();
     }
 
-    getUnfinishedTasks() : Promise<Task[]>{
-        return this.webStorage.getUnfinishedTasks();
+    getTasks(filter?: TaskFilter) : Promise<Task[]>{
+        return this.webStorage.getTasks(filter);
     }
 }

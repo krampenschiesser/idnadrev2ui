@@ -65,7 +65,7 @@ export class TaskDetails {
     @observable state: TaskState = TaskState.None;
     @observable parent: FileId | null;
     @observable context: TaskContext | null;
-    @observable estimatedTime: number | null;
+    @observable estimatedTime: Seconds | null;
     @observable delegation: DelegationState | null;
     @observable schedule: Scheduling | null;
     @observable workUnits: WorkUnit[] = [];
@@ -73,6 +73,7 @@ export class TaskDetails {
 }
 
 export type TaskContext = string;
+export type Seconds = number;
 
 export default class Task extends IdnadrevFile<TaskDetails, string> {
     children?: Task[];

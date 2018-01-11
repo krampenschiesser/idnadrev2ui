@@ -11,6 +11,7 @@ import Col from 'antd/lib/grid/col';
 import TaskPreview from './TaskPreview';
 import HoverCell from '../table/HoverCell';
 import {FileId} from '../../dto/FileId';
+import {TaskFilter} from '../../store/TaskFilter';
 
 
 export interface ViewTaskProps {
@@ -24,18 +25,24 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
     @observable tasks: Task[];
     @observable previewTask: Task | null = null;
 
+    filter: TaskFilter = {finished: false};
+
     componentWillMount() {
         this.props.uiStore.header = 'View Tasks';
     }
 
     componentDidMount() {
-        this.props.store.getUnfinishedTasks().then((t: Task[]) => {
+        this.reload();
+
+    }
+
+    reload() {
+        this.props.store.getTasks(this.filter).then((t: Task[]) => {
             this.tasks = t;
         }).catch(e => {
             console.error('Could not load tasks', e);
             console.error(e);
         });
-
     }
 
     showMarkdownPreview = (task: Task) => {
@@ -47,8 +54,10 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
         console.log(tasks.length);
         let map: Map<FileId, Task> = new Map();
 
+        let fileIds: FileId[] = [];
         tasks.forEach(t => {
             map.set(t.id, Object.assign(new Task(''), t));
+            fileIds.push(t.id);
         });
 
         let data: Task[] = [];
@@ -66,8 +75,8 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
                         childArray.push(item);
                     }
                 }
-            }else {
-                data.push(t)
+            } else {
+                data.push(t);
             }
         });
 
@@ -75,21 +84,28 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
             return <HoverCell onHover={() => this.showMarkdownPreview(record)}>{name}</HoverCell>;
         };
         return (
-            <Row>
-                <Col span={12}>
-                    <Table rowKey='id' dataSource={data}>
-                        <Column dataIndex='name' title='Name'/>
-                        <Column width='10%' dataIndex='context' title='Context' render={markdownHover}/>
-                        <Column width='10%' dataIndex='repository' title='Repository'/>
-                    </Table>
-                </Col>
-                <Col span={12}>
-                    <div style={{marginLeft: 20}}>
-                        <TaskPreview task={this.previewTask} store={this.props.store}/>
-                    </div>
-                </Col>
-            </Row>
-
+            <div>
+                <Row>
+                    <Col span={12}>
+                    </Col>
+                    <Col span={12}>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Table expandedRowKeys={fileIds} rowKey='id' dataSource={data}>
+                            <Column dataIndex='name' title='Name'/>
+                            <Column dataIndex='context' title='Context' render={markdownHover}/>
+                            <Column dataIndex='repository' title='Repository'/>
+                        </Table>
+                    </Col>
+                    <Col span={12}>
+                        <div style={{marginLeft: 20}}>
+                            <TaskPreview task={this.previewTask} store={this.props.store}/>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
         );
     }
 }
