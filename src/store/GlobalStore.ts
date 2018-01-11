@@ -36,9 +36,7 @@ export class GlobalStore implements IGlobalStore {
         let newVar = this.assignedColors.get(tag);
         if (newVar === undefined) {
             let index = Math.floor(Math.random() * this.colors.length);
-            console.log(index);
             let color = this.colors[index];
-            console.log(color);
             this.assignedColors.set(tag, color);
             return color;
         } else {

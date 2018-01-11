@@ -52,7 +52,6 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
 
     render() {
         const tasks: Task[] = this.tasks === undefined ? [] : this.tasks;
-        console.log(tasks.length);
         let map: Map<FileId, Task> = new Map();
 
         let fileIds: FileId[] = [];
@@ -75,6 +74,8 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
                     if (item) {
                         childArray.push(item);
                     }
+                } else {
+                    data.push(t);
                 }
             } else {
                 data.push(t);
