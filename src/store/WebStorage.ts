@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import Task, {default as Task, TaskContext, TaskState} from '../dto/Task';
+import Task, {TaskContext, TaskState} from '../dto/Task';
 import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, {EncryptedData, Nonce} from './LocalCryptoStorage';
@@ -8,7 +8,6 @@ import {generateTasks, generateThoughts} from './DummyData';
 import {TaskFilter} from './TaskFilter';
 import {FileId} from '../dto/FileId';
 import {Tag} from '../dto/Tag';
-import {isNullOrUndefined} from "util";
 
 export function prepareForDb(obj: any): any {
     let entries = Object.entries(obj);
@@ -316,26 +315,39 @@ export default class WebStorage extends Dexie {
             }
             return valid;
         }));
-        const loadParent = (t: Task): Promise<[Task, Promise<Task | undefined>] | undefined> => {
-            if (t.parent) {
-                let promise = this.tasks.get(t.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
-                // return promise;
-            } else {
-                return undefined;
-            }
-        }
-        let retval: Promise<Task[]> = resultingTasks.then(tasks => {
-            let copy: Task[] = tasks.slice();
-            let parentLoads: Promise<Task>[] = [];
-            tasks.forEach(t => {
-                let temp = t;
-                if (temp.parent) {
-                    let promise = this.tasks.get(temp.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
-                    parentLoads.push(promise);
+
+        let retval: Promise<(Task | undefined)[][]> = resultingTasks.then(tasks => {
+            let map = tasks.map(t => this.loadParent(t));
+
+            return Promise.all(map);
+        });
+        return retval.then(r => {
+            let tasks: Task[] = [];
+            r.forEach(t => {
+                t.forEach(o => {
+                    if (o !== undefined) {
+                        tasks.push(o);
+                    }
+                });
+            });
+            return tasks;
+        });
+    }
+
+    loadParent(t: Task): Promise<(Task | undefined)[]> {
+        if (t.parent) {
+            let promise = this.tasks.get(t.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
+            promise.then(parent => {
+                if (parent !== undefined) {
+                    return this.loadParent(parent);
+                } else {
+                    return Promise.resolve(undefined);
                 }
             });
-            return copy;
-        });
-        return retval;
+            let taskPromise: Promise<Task | undefined> = Promise.resolve(t);
+            let promise2: Promise<(Task | undefined)[]> = Promise.all([promise, taskPromise]);
+            return promise2;
+        }
+        return Promise.resolve([t]);
     }
 }
