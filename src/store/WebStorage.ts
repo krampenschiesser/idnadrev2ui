@@ -328,7 +328,7 @@ export default class WebStorage extends Dexie {
                     if (o !== undefined) {
                         tasks.push(o);
                     }
-                });
+                })
             });
             return tasks;
         });
@@ -337,17 +337,20 @@ export default class WebStorage extends Dexie {
     loadParent(t: Task): Promise<(Task | undefined)[]> {
         if (t.parent) {
             let promise = this.tasks.get(t.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
-            promise.then(parent => {
+            let more: Promise<(Task | undefined)[]> = promise.then(parent => {
                 if (parent !== undefined) {
                     return this.loadParent(parent);
                 } else {
                     return Promise.resolve(undefined);
                 }
             });
-            let taskPromise: Promise<Task | undefined> = Promise.resolve(t);
-            let promise2: Promise<(Task | undefined)[]> = Promise.all([promise, taskPromise]);
-            return promise2;
+            return more.then(tasks => {
+                let all = tasks.filter(task => task !== undefined);
+                all.push(t);
+                return all
+            });
+        } else {
+            return Promise.resolve([t]);
         }
-        return Promise.resolve([t]);
     }
 }

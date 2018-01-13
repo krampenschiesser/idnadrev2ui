@@ -3,8 +3,9 @@ import {observable} from 'mobx';
 import {RepositoryId} from '../dto/RepositoryId';
 import WebStorage from './WebStorage';
 import Thought from '../dto/Thought';
-import Task from '../dto/Task';
+import Task, {TaskContext} from '../dto/Task';
 import {TaskFilter} from './TaskFilter';
+import {Tag} from "../dto/Tag";
 
 export interface IGlobalStore {
     getTagsStartingWith(input: string): string[];
@@ -16,13 +17,18 @@ export class GlobalStore implements IGlobalStore {
     @observable lastSelectedRepository: RepositoryId | null = null;
     webStorage: WebStorage;
 
+    @observable tags: Map<string, Tag>;
+    @observable contexts: Map<string, TaskContext>;
+
 
     constructor(webStorage: WebStorage) {
         this.webStorage = webStorage;
+        this.webStorage.getInitialTags()
     }
 
     getTagsStartingWith(input: string): string[] {
-        return ['beer', 'steak', 'pipe'].filter(val => val.toLocaleLowerCase().startsWith(input.toLocaleLowerCase()));
+        input = input.toLocaleLowerCase();
+        return Array.from(this.tags.keys()).filter(tag => tag.startsWith(input))
     }
 
     getTagColor(tag: string): string {
@@ -56,7 +62,7 @@ export class GlobalStore implements IGlobalStore {
         return this.webStorage.loadOpenThoughts();
     }
 
-    getTasks(filter?: TaskFilter) : Promise<Task[]>{
+    getTasks(filter?: TaskFilter): Promise<Task[]> {
         return this.webStorage.getTasks(filter);
     }
 }
