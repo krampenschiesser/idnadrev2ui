@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var Document_1 = require("../Document");
 var Task_1 = require("../Task");
 var Thought_1 = require("../Thought");

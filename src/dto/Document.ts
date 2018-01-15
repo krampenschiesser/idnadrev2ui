@@ -1,7 +1,6 @@
-import IdnadrevFile from "./IdnadrevFile";
-import {Tag} from "./Tag";
-import {FileType} from "./FileType";
-
+import IdnadrevFile from './IdnadrevFile';
+import { Tag } from './Tag';
+import { FileType } from './FileType';
 
 export default class Document extends IdnadrevFile<string, string> {
   constructor(name: string, tags: Tag[] = [], content: string = '') {

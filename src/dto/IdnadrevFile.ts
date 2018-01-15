@@ -9,44 +9,40 @@
  * except according to those terms.
  */
 
-
-import {v4 as uuid} from 'uuid';
-import {FileType} from './FileType';
-import {Tag} from './Tag';
-import {FileId} from './FileId';
-import {RepositoryId} from './RepositoryId';
-import {observable} from 'mobx';
-
+import { v4 as uuid } from 'uuid';
+import { FileType } from './FileType';
+import { Tag } from './Tag';
+import { FileId } from './FileId';
+import { RepositoryId } from './RepositoryId';
+import { observable } from 'mobx';
 
 export default abstract class IdnadrevFile<Details, Content> {
-    @observable repository: RepositoryId;
-    id: FileId;
-    version: number;
-    @observable name: string;
+  @observable repository: RepositoryId;
+  id: FileId;
+  version: number;
+  @observable name: string;
 
-    created: Date;
-    updated: Date;
-    deleted: Date;
+  created: Date;
+  updated: Date;
+  deleted: Date;
 
-    fileType: FileType;
-    @observable tags: Tag[];
+  fileType: FileType;
+  @observable tags: Tag[];
 
-    @observable details: Details;
-    @observable content: Content;
+  @observable details: Details;
+  @observable content: Content;
 
+  constructor(name: string, fileType: FileType) {
+    this.id = uuid();
+    this.name = name;
+    this.created = new Date();
+    this.updated = this.created;
+    this.version = 0;
+    this.tags = [];
+    this.fileType = fileType;
+  }
 
-    constructor(name: string, fileType: FileType) {
-        this.id = uuid();
-        this.name = name;
-        this.created = new Date();
-        this.updated = this.created;
-        this.version = 0;
-        this.tags = [];
-        this.fileType = fileType;
-    }
-
-
-    addTag(tag: Tag) {
-        this.tags.push(tag);
-    }
+  addTag(tag: Tag) {
+    this.tags.push(tag);
+  }
 }

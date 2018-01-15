@@ -1,5 +1,5 @@
 export enum FileType {
-    Thought,
-    Task,
-    Document,
+  Thought,
+  Task,
+  Document,
 }

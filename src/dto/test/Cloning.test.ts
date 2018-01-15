@@ -1,7 +1,7 @@
-import Document from "../Document"
-import Task from "../Task";
-import Thought from "../Thought";
-import {prepareForDb} from '../../store/WebStorage'
+import Document from '../Document';
+import Task from '../Task';
+import Thought from '../Thought';
+import { prepareForDb } from '../../store/WebStorage';
 
 let structuredClone = require('realistic-structured-clone');
 

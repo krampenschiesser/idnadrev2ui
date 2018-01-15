@@ -9,7 +9,7 @@
  * option. This file may not be copied, modified, or distributed
  * except according to those terms.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var uuid_1 = require("uuid");
 var IdnadrevFile = /** @class */ (function () {
     function IdnadrevFile(name, fileType) {
@@ -21,6 +21,7 @@ var IdnadrevFile = /** @class */ (function () {
         this.tags = [];
         this.fileType = fileType;
     }
+
     IdnadrevFile.prototype.addTag = function (tag) {
         this.tags.push(tag);
     };

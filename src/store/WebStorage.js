@@ -1,19 +1,28 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        ({__proto__: []} instanceof Array && function (d, b) {
+            d.__proto__ = b;
+        }) ||
+        function (d, b) {
+            for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+        };
     return function (d, b) {
         extendStatics(d, b);
-        function __() { this.constructor = d; }
+
+        function __() {
+            this.constructor = d;
+        }
+
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var dexie_1 = require("dexie");
 var Task_1 = require("../dto/Task");
 var Thought_1 = require("../dto/Thought");
 var Document_1 = require("../dto/Document");
+
 function prepareForDb(obj) {
     var entries = Object.entries(obj);
     var clone = {};
@@ -28,7 +37,9 @@ function prepareForDb(obj) {
     }
     return clone;
 }
+
 exports.prepareForDb = prepareForDb;
+
 function fileDates(file) {
     if (typeof file.created === 'string') {
         file.created = new Date(file.created);
@@ -40,6 +51,7 @@ function fileDates(file) {
         file.deleted = new Date(file.deleted);
     }
 }
+
 function toThought(persisted, localCrypto) {
     if (persisted === undefined) {
         return persisted;
@@ -51,7 +63,9 @@ function toThought(persisted, localCrypto) {
     fileDates(thought);
     return thought;
 }
+
 exports.toThought = toThought;
+
 function toTask(persisted, localCrypto) {
     if (persisted === undefined) {
         return persisted;
@@ -87,7 +101,9 @@ function toTask(persisted, localCrypto) {
     }
     return task;
 }
+
 exports.toTask = toTask;
+
 function toDocument(persisted, localCrypto) {
     if (persisted === undefined) {
         return persisted;
@@ -99,8 +115,10 @@ function toDocument(persisted, localCrypto) {
     fileDates(doc);
     return doc;
 }
+
 var WebStorage = /** @class */ (function (_super) {
     __extends(WebStorage, _super);
+
     function WebStorage(crypto) {
         var _this = _super.call(this, "IdnadrevDb") || this;
         _this.localCrypto = crypto;
@@ -111,6 +129,7 @@ var WebStorage = /** @class */ (function (_super) {
         });
         return _this;
     }
+
     WebStorage.prototype.store = function (obj) {
         var json = JSON.stringify(obj);
         var nonce = new Uint8Array(12);
@@ -156,15 +175,21 @@ var WebStorage = /** @class */ (function (_super) {
     };
     WebStorage.prototype.loadThoughtById = function (id) {
         var _this = this;
-        return this.thoughts.where('id').equals(id).first().then(function (persistedThought) { return toThought(persistedThought, _this.localCrypto); });
+        return this.thoughts.where('id').equals(id).first().then(function (persistedThought) {
+            return toThought(persistedThought, _this.localCrypto);
+        });
     };
     WebStorage.prototype.loadDocumentById = function (id) {
         var _this = this;
-        return this.docs.where('id').equals(id).first().then(function (persistedDoc) { return toDocument(persistedDoc, _this.localCrypto); });
+        return this.docs.where('id').equals(id).first().then(function (persistedDoc) {
+            return toDocument(persistedDoc, _this.localCrypto);
+        });
     };
     WebStorage.prototype.loadTaskById = function (id) {
         var _this = this;
-        return this.tasks.where('id').equals(id).first().then(function (persistedTask) { return toTask(persistedTask, _this.localCrypto); });
+        return this.tasks.where('id').equals(id).first().then(function (persistedTask) {
+            return toTask(persistedTask, _this.localCrypto);
+        });
     };
     return WebStorage;
 }(dexie_1.default));

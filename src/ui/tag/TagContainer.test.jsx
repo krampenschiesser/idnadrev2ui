@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var react_1 = require("react");
 var enzyme_1 = require("enzyme");
 var TagContainer_1 = require("./TagContainer");
@@ -12,9 +12,11 @@ console.log(GlobalStore);
 GlobalStore.prototype.getTagsStartingWith = jest.fn();
 GlobalStore.prototype.getTagsStartingWith.mockImplementation(function (input) {
     var strings = ["steak", "beer", "potatoes"];
-    return strings.filter(function (s) { return s.toLocaleLowerCase().startsWith(input.toLocaleLowerCase()); });
+    return strings.filter(function (s) {
+        return s.toLocaleLowerCase().startsWith(input.toLocaleLowerCase());
+    });
 });
-enzyme_1.configure({ adapter: new enzyme_adapter_react_16_1.default() });
+enzyme_1.configure({adapter: new enzyme_adapter_react_16_1.default()});
 test('TagContainer test', function () {
     var globalStore = new GlobalStore();
     var thought = new Thought_1.default("test", [new Tag_1.Tag("hello")]);

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Tag, Icon, AutoComplete} from "antd";
-import {observable} from "mobx";
-import {GlobalStore} from "../../store/GlobalStore";
-import {observer} from "mobx-react";
+import { Tag, Icon, AutoComplete } from 'antd';
+import { observable } from 'mobx';
+import { GlobalStore } from '../../store/GlobalStore';
+import { observer } from 'mobx-react';
 
 export interface AddTagProps {
   onAdd: (tag: string) => void;
@@ -20,13 +20,13 @@ export class AddTag extends React.Component<AddTagProps, object> {
   };
 
   toggle = () => {
-    console.log('here')
+    console.log('here');
     this.edit = !this.edit;
   };
 
   onChange = (data: string) => {
-    console.log(data)
-  }
+    console.log(data);
+  };
 
   render() {
     if (this.edit) {

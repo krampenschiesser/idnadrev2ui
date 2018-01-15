@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var FileType;
 (function (FileType) {
     FileType[FileType["Thought"] = 0] = "Thought";

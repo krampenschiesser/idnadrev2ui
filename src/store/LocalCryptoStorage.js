@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 var scrypt = require('scryptsy');
 var chacha = require('chacha');
 var isNode = require('detect-node');
@@ -8,6 +8,7 @@ var LocalCryptoStorage = /** @class */ (function () {
     function LocalCryptoStorage(key) {
         this.key = key;
     }
+
     LocalCryptoStorage.prototype.encrypt = function (data, nonce) {
         var cipher = chacha.createCipher(this.key, nonce);
         cipher.setAAD(nonce);
