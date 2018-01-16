@@ -69,6 +69,7 @@ export class TaskDetails {
   @observable schedule: Scheduling | null;
   @observable workUnits: WorkUnit[] = [];
   @observable finished: Date | null;
+  @observable action: boolean;
 }
 
 export type TaskContext = string;

@@ -28,3 +28,12 @@ export function generateTasks(): Task[] {
   t3.parent = t2.id;
   return [t1, t2, t3, t4, t5, t6];
 }
+
+export function generateManyTasks(): Task[] {
+  let retval =[];
+  for(let i=0; i<20000;i++) {
+      let t = new Task('Task '+i).withContent('# Task'+i);
+      retval.push(t)
+  }
+  return retval
+}

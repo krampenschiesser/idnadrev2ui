@@ -32,13 +32,6 @@ export class GlobalStore {
   }
 
   getTagColor(tag: string): string {
-    // if (tag === 'beer') {
-    //     return 'red';
-    // } else if (tag === 'steak') {
-    //     return 'green';
-    // } else if (tag === 'pipe') {
-    //     return 'blue';
-    // } else {
     let newVar = this.assignedColors.get(tag);
     if (newVar === undefined) {
       let index = Math.floor(Math.random() * this.colors.length);
@@ -48,7 +41,6 @@ export class GlobalStore {
     } else {
       return newVar;
     }
-    // }
   }
 
   getOpenRepositories(): Repository[] {
