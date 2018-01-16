@@ -13,6 +13,7 @@ import { TaskState } from '../../dto/Task';
 import TagContainer from '../tag/TagContainer';
 import { observable, observe } from 'mobx';
 import { Tag } from '../../dto/Tag';
+import Checkbox from 'antd/lib/checkbox/Checkbox';
 
 export interface TaskFilterProps extends FormComponentProps {
   filter: TaskFilter;
@@ -20,13 +21,22 @@ export interface TaskFilterProps extends FormComponentProps {
   store: GlobalStore;
 }
 
-class NameFilter extends React.Component<TaskFilterProps, object> {
+class StringFilter extends React.Component<TaskFilterProps, object> {
+  private label: string;
+  private callback: (param: string | undefined) => void;
+
+  constructor(props: TaskFilterProps, callback: (param: string | undefined) => void, label: string) {
+    super(props);
+    this.label = label;
+    this.callback = callback;
+  }
+
   onChange = (text: React.ChangeEvent<HTMLInputElement>) => {
     let value = text.target.value;
     if (value) {
-      this.props.filter.name = value;
+      this.callback(value);
     } else {
-      this.props.filter.name = undefined;
+      this.callback(undefined);
     }
     this.props.reload();
   };
@@ -34,8 +44,8 @@ class NameFilter extends React.Component<TaskFilterProps, object> {
   render() {
     const {getFieldDecorator} = this.props.form;
     return (
-      <FormItem label='Name' colon={true}>
-        {getFieldDecorator('name', {
+      <FormItem label={this.label} colon={true}>
+        {getFieldDecorator(this.label, {
           rules: [{
             type: 'string', message: 'The input is no valid string',
           }],
@@ -44,6 +54,22 @@ class NameFilter extends React.Component<TaskFilterProps, object> {
         )}
       </FormItem>
     );
+  }
+}
+
+class NameFilter extends StringFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (str) => {
+      this.props.filter.name = str;
+    }, 'Name');
+  }
+}
+
+class DelegatedToFilter extends StringFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (str) => {
+      this.props.filter.delegatedTo = str;
+    }, 'Delegated to');
   }
 }
 
@@ -125,16 +151,6 @@ class TagFilter extends React.Component<TaskFilterProps, object> {
     this.props.reload();
   }));
 
-  // onChange = (value: any) => {
-  //     console.log(value);
-  //     if (value) {
-  //         this.props.filter.state = value;
-  //     } else {
-  //         this.props.filter.state = undefined;
-  //     }
-  //     this.props.reload();//fixme reload after timeout after last modification
-  // };
-
   render() {
     const {getFieldDecorator} = this.props.form;
     return (
@@ -146,6 +162,76 @@ class TagFilter extends React.Component<TaskFilterProps, object> {
     );
   }
 }
+
+class BooleanFilter extends React.Component<TaskFilterProps, object> {
+  private callback: (enabled: boolean) => void;
+  private label: string;
+
+  constructor(props: TaskFilterProps, callback: (enabled: boolean) => void, label: string) {
+    super(props);
+    this.callback = callback;
+    this.label = label;
+
+  }
+
+// tslint:disable-next-line
+  onChange = (value: any) => {
+    if (value) {
+      this.callback(true);
+    } else {
+      this.callback(false);
+    }
+    this.props.reload();
+  };
+
+  render() {
+
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <FormItem label={this.label} colon={true}>
+        {getFieldDecorator(this.label, {
+          rules: [],
+        })(
+          <Checkbox onChange={this.onChange} />
+        )}
+      </FormItem>
+    );
+  }
+}
+
+class FinishFilter extends BooleanFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (val) => {
+      this.props.filter.finished = val;
+    }, 'Finished');
+  }
+}
+
+class DelegatedFilter extends BooleanFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (val) => {
+      this.props.filter.delegated = val;
+    }, 'Delegated');
+  }
+}
+
+class ScheduledFilter extends BooleanFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (val) => {
+      this.props.filter.scheduled = val;
+    }, 'Scheduled');
+  }
+}
+
+class ProposedFilter extends BooleanFilter {
+  constructor(props: TaskFilterProps) {
+    super(props, (val) => {
+      this.props.filter.proposed = val;
+    }, 'Proposed');
+  }
+}
+
+//todo: parent selection filter, remaining time filter
 
 @observer
 class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
@@ -172,6 +258,11 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
         <ContextFilter {...newProps} reload={this.reload}/>
         <TaskStateFilter {...newProps} reload={this.reload}/>
         <TagFilter {...newProps} reload={this.reload}/>
+        <FinishFilter {...newProps} reload={this.reload}/>
+        <DelegatedFilter {...newProps} reload={this.reload}/>
+        <ScheduledFilter {...newProps} reload={this.reload}/>
+        <ProposedFilter {...newProps} reload={this.reload}/>
+        <DelegatedToFilter {...newProps} reload={this.reload}/>
       </Form>
     );
   }

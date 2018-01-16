@@ -90,10 +90,10 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
     return (
       <div>
         <Row>
-          <Col span={12}>
+          <Col span={24}>
             <TaskFilterView store={this.props.store} filter={this.filter} reload={this.reload}/>
           </Col>
-          <Col span={12}/>
+          {/*<Col span={12}/>*/}
         </Row>
         <Row>
           <Col span={12}>
