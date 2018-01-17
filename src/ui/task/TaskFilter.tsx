@@ -16,6 +16,7 @@ import { Tag } from '../../dto/Tag';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import InputNumber from 'antd/lib/input-number';
 import { ChangeEvent } from 'react';
+import { IdnadrevFileSelection } from '../selection/IdnadrevFileSelection';
 
 export interface TaskFilterProps extends FormComponentProps {
   filter: TaskFilter;
@@ -298,6 +299,7 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
         <ProposedFilter {...newProps} reload={this.reload}/>
         <DelegatedToFilter {...newProps} reload={this.reload}/>
         <RemainingTimeFilter {...newProps} reload={this.reload}/>
+        <IdnadrevFileSelection store={this.props.store}/>
       </Form>
     );
   }

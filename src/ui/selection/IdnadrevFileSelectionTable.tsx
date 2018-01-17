@@ -9,16 +9,22 @@ import Column from 'antd/lib/table/Column';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import { FileType } from '../../dto/FileType';
+import { Tag } from '../../dto/Tag';
+import { TableRowSelection } from 'antd/es/table/interface';
+import Input from 'antd/lib/input/Input';
+import { tagsCell } from '../table/TagsCell';
+import ClickCell from '../table/ClickCell';
 
 export interface IdnadrevFileSelectionTableProps {
   fileType?: FileType;
   nameFilter?: string;
+  tags: Tag[];
   store: GlobalStore;
 }
 
 class NameFilter extends React.Component<object, object> {
   render() {
-    return <div/>;
+    return <Input/>;
   }
 }
 
@@ -33,6 +39,14 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
   }
 
   render() {
+    const rowSelection: TableRowSelection<IdnadrevFile<{}, {}>> = {
+      type: 'radio',
+      onSelect: (record: IdnadrevFile<{}, {}>, selected: boolean, selectedRows: Object[]) => console.log('selected', record, selected, selectedRows)
+    };
+
+    let rowClick = (name: string, record: IdnadrevFile<{}, {}>, index: number) => {
+      return <ClickCell onClick={() => console.log('selected ', name, record)}>{name}</ClickCell>;
+    };
     return (
       <div>
         <Row>
@@ -42,9 +56,10 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
         </Row>
         <Row>
           <Col>
-            <Table dataSource={this.files} rowKey='id'>
-              <Column dataIndex='name' title='Name'/>
+            <Table rowSelection={rowSelection} dataSource={this.files} rowKey='id'>
+              <Column dataIndex='name' title='Name' render={rowClick}/>
               <Column dataIndex='updated' title='Updated' render={dateCell}/>
+              <Column dataIndex='tags' title='Tags' render={tagsCell}/>
             </Table>
           </Col>
         </Row>
