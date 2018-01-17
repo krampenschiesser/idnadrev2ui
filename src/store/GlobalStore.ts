@@ -6,6 +6,8 @@ import Thought from '../dto/Thought';
 import Task, { TaskContext } from '../dto/Task';
 import { TaskFilter } from './TaskFilter';
 import { Tag } from '../dto/Tag';
+import IdnadrevFile from '../dto/IdnadrevFile';
+import { FileType } from '../dto/FileType';
 
 export class GlobalStore {
   colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
@@ -56,5 +58,10 @@ export class GlobalStore {
 
   getTasks(filter?: TaskFilter): Promise<Task[]> {
     return this.webStorage.getTasks(filter);
+  }
+
+  getAllFiles(fileType?: FileType, nameFilter?: string): Promise<IdnadrevFile<{}, {}>[]> {
+    // return Promise.resolve([]);
+    return this.getOpenThoughts();
   }
 }

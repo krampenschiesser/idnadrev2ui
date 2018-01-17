@@ -4,7 +4,7 @@ import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, { EncryptedData, Nonce } from './LocalCryptoStorage';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import {generateTasks, generateThoughts} from './DummyData';
+import { generateTasks, generateThoughts } from './DummyData';
 import { TaskFilter } from './TaskFilter';
 import { FileId } from '../dto/FileId';
 import { Tag } from '../dto/Tag';
@@ -136,7 +136,7 @@ export default class WebStorage extends Dexie {
   }
 
   store<T>(obj: T): Promise<string> {
-    console.log('storing %o',obj)
+    console.log('storing %o', obj);
     let json = JSON.stringify(obj);
 
     let [encrypted, nonce] = this.localCrypto.encrypt(json);

@@ -1,5 +1,7 @@
 export enum FileType {
-  Thought,
-  Task,
-  Document,
+  Task = 'Task',
+  Document = 'Document',
+  Thought = 'Thought',
+  Image = 'Image',
+  Binary = 'Binary',
 }

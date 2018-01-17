@@ -30,10 +30,10 @@ export function generateTasks(): Task[] {
 }
 
 export function generateManyTasks(): Task[] {
-  let retval =[];
-  for(let i=0; i<20000;i++) {
-      let t = new Task('Task '+i).withContent('# Task'+i);
-      retval.push(t)
+  let retval = [];
+  for (let i = 0; i < 20000; i++) {
+    let t = new Task('Task ' + i).withContent('# Task' + i);
+    retval.push(t);
   }
-  return retval
+  return retval;
 }
