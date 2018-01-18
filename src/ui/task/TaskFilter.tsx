@@ -17,6 +17,8 @@ import Checkbox from 'antd/lib/checkbox/Checkbox';
 import InputNumber from 'antd/lib/input-number';
 import { ChangeEvent } from 'react';
 import { IdnadrevFileSelection } from '../selection/IdnadrevFileSelection';
+import IdnadrevFile from '../../dto/IdnadrevFile';
+import { FileType } from '../../dto/FileType';
 
 export interface TaskFilterProps extends FormComponentProps {
   filter: TaskFilter;
@@ -285,6 +287,16 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
     setTimeout(callback, timeout);
   };
 
+  selectParent = (file: IdnadrevFile<{}, {}> | undefined) => {
+    console.log('here', file);
+    if (file) {
+      this.props.filter.parent = file.id;
+    } else {
+      this.props.filter.parent = undefined;
+    }
+    this.reload();
+  };
+
   render() {
     const {reload, ...newProps} = this.props;
     return (
@@ -299,7 +311,7 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
         <ProposedFilter {...newProps} reload={this.reload}/>
         <DelegatedToFilter {...newProps} reload={this.reload}/>
         <RemainingTimeFilter {...newProps} reload={this.reload}/>
-        <IdnadrevFileSelection store={this.props.store}/>
+        <IdnadrevFileSelection fileType={FileType.Task} store={this.props.store} onSelect={this.selectParent}/>
       </Form>
     );
   }

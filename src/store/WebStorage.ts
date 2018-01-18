@@ -8,6 +8,7 @@ import { generateTasks, generateThoughts } from './DummyData';
 import { TaskFilter } from './TaskFilter';
 import { FileId } from '../dto/FileId';
 import { Tag } from '../dto/Tag';
+import { FileType } from '../dto/FileType';
 
 interface PersistedTaskDetails {
   finished: number;
@@ -383,5 +384,44 @@ export default class WebStorage extends Dexie {
       ctxs.forEach(t => all.add(t));
       return all;
     });
+  }
+
+  getAllFiles(fileType: FileType | undefined, nameFilter: string | undefined): Promise<IdnadrevFile<{}, {}>[]> {
+    let allPromises: Promise<(IdnadrevFile<{}, {}> | undefined)[]>[] = [];
+
+    let lowerCase = nameFilter ? nameFilter.toLowerCase() : '';
+    let filter = nameFilter ? (file: IdnadrevFile<{}, {}> | undefined) => {
+      if (file === undefined) {
+        return false;
+      } else {
+        return file.name.toLowerCase().indexOf(lowerCase) > 0;
+      }
+    } : (file: IdnadrevFile<{}, {}>) => file !== undefined;
+
+    if (fileType === FileType.Task || fileType === undefined) {
+      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.tasks.toArray().then(tasks => tasks.map(t => toTask(t, this.localCrypto)).filter(filter));
+      allPromises.push(promise);
+    }
+    if (fileType === FileType.Thought || fileType === undefined) {
+      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.thoughts.toArray().then(tasks => tasks.map(t => toThought(t, this.localCrypto)).filter(filter));
+      allPromises.push(promise);
+    }
+    if (fileType === FileType.Document || fileType === undefined) {
+      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.docs.toArray().then(tasks => tasks.map(t => toDocument(t, this.localCrypto)).filter(filter));
+      allPromises.push(promise);
+    }
+
+    let final = Promise.all(allPromises).then(files => {
+      let res: IdnadrevFile<{}, {}>[] = [];
+      files.forEach(f => f.forEach(o => {
+          if (o !== undefined) {
+            res.push(o);
+          }
+        }
+      ));
+      return res;
+    });
+
+    return final;
   }
 }

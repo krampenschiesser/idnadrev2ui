@@ -20,17 +20,30 @@ export interface IdnadrevFileSelectionTableProps {
   nameFilter?: string;
   tags: Tag[];
   store: GlobalStore;
+  onSelect: (file: IdnadrevFile<{}, {}>) => void;
 }
 
-class NameFilter extends React.Component<object, object> {
+interface NameFilterProps {
+  value?: string;
+  callback: (value: string) => void;
+}
+
+class NameFilter extends React.Component<NameFilterProps, object> {
   render() {
-    return <Input/>;
+    return <Input onChange={(e) => this.props.callback(e.target.value)} defaultValue={this.props.value}/>;
   }
 }
 
 @observer
 export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSelectionTableProps, object> {
-  @observable files: IdnadrevFile<{}, {}>[];
+  @observable files: IdnadrevFile<{}, {}>[] = [];
+  @observable selectedFile: IdnadrevFile<{}, {}> | undefined;
+  @observable nameFilter: string | undefined;
+
+  constructor(props: IdnadrevFileSelectionTableProps) {
+    super(props);
+    this.nameFilter = props.nameFilter;
+  }
 
   componentDidMount() {
     this.props.store.getAllFiles(this.props.fileType, this.props.nameFilter)//
@@ -39,24 +52,48 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
   }
 
   render() {
+    let data = this.files;
+
+    let currentRows = this.selectedFile === undefined ? [] : [this.selectedFile.id];
+
     const rowSelection: TableRowSelection<IdnadrevFile<{}, {}>> = {
       type: 'radio',
-      onSelect: (record: IdnadrevFile<{}, {}>, selected: boolean, selectedRows: Object[]) => console.log('selected', record, selected, selectedRows)
+      selectedRowKeys: currentRows,
+      onSelect: (record: IdnadrevFile<{}, {}>, selected: boolean, selectedRows: Object[]) => {
+        if (selected) {
+          this.selectedFile = record;
+          this.props.onSelect(record);
+        } else {
+          this.selectedFile = undefined;
+        }
+      }
     };
 
-    let rowClick = (name: string, record: IdnadrevFile<{}, {}>, index: number) => {
-      return <ClickCell onClick={() => console.log('selected ', name, record)}>{name}</ClickCell>;
+    const rowClick = (name: string, record: IdnadrevFile<{}, {}>, index: number) => {
+      return (
+        <ClickCell
+          onClick={() => {
+            this.selectedFile = record;
+            this.props.onSelect(record);
+          }}>{name}</ClickCell>
+      );
     };
+
+    if (this.nameFilter) {
+      const needle = this.nameFilter.toLowerCase();
+      data = data.filter(f => f.name.toLowerCase().indexOf(needle) > 0);
+    }
+
     return (
       <div>
         <Row>
           <Col>
-            <NameFilter/>
+            <NameFilter value={this.nameFilter} callback={(v) => this.nameFilter = v}/>
           </Col>
         </Row>
         <Row>
           <Col>
-            <Table rowSelection={rowSelection} dataSource={this.files} rowKey='id'>
+            <Table rowSelection={rowSelection} dataSource={data} rowKey='id'>
               <Column dataIndex='name' title='Name' render={rowClick}/>
               <Column dataIndex='updated' title='Updated' render={dateCell}/>
               <Column dataIndex='tags' title='Tags' render={tagsCell}/>

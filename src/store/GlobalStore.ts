@@ -61,7 +61,6 @@ export class GlobalStore {
   }
 
   getAllFiles(fileType?: FileType, nameFilter?: string): Promise<IdnadrevFile<{}, {}>[]> {
-    // return Promise.resolve([]);
-    return this.getOpenThoughts();
+    return this.webStorage.getAllFiles(fileType, nameFilter);
   }
 }
