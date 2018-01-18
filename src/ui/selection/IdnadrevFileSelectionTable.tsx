@@ -14,6 +14,7 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import Input from 'antd/lib/input/Input';
 import { tagsCell } from '../table/TagsCell';
 import ClickCell from '../table/ClickCell';
+import { PaginationProps } from 'antd/lib/pagination/Pagination';
 
 export interface IdnadrevFileSelectionTableProps {
   fileType?: FileType;
@@ -79,6 +80,8 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
       );
     };
 
+    const pagination: PaginationProps = {pageSize: 5};
+
     if (this.nameFilter) {
       const needle = this.nameFilter.toLowerCase();
       data = data.filter(f => f.name.toLowerCase().indexOf(needle) > 0);
@@ -93,7 +96,7 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
         </Row>
         <Row>
           <Col>
-            <Table rowSelection={rowSelection} dataSource={data} rowKey='id'>
+            <Table pagination={pagination} rowSelection={rowSelection} dataSource={data} rowKey='id'>
               <Column dataIndex='name' title='Name' render={rowClick}/>
               <Column dataIndex='updated' title='Updated' render={dateCell}/>
               <Column dataIndex='tags' title='Tags' render={tagsCell}/>
