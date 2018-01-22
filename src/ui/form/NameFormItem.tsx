@@ -38,9 +38,9 @@ export default class NameFormItem extends React.Component<NameFormItemProps, obj
             type: 'string', message: 'The input is no valid string',
           }, {
             required: true, message: 'A name is required',
-          }],
+          }], initialValue: this.name
         })(
-          <Input value={name} onChange={this.onChange}/>
+          <Input onChange={this.onChange}/>
         )}
       </FormItem>
     );

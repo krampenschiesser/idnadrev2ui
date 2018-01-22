@@ -117,4 +117,8 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     this.content = content;
     return this;
   }
+
+  isActionable(): boolean {
+    return this.details.estimatedTime !== null || this.details.action;
+  }
 }

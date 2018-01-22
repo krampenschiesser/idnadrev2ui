@@ -14,6 +14,7 @@ import UiStore from './store/UiStore';
 import ViewThoughts from './ui/thought/ViewThought';
 import ProcessThoughts from './ui/thought/ProcessThoughts';
 import ViewTask from './ui/task/ViewTask';
+import { AddTask } from './ui/task/AddTask';
 
 export interface IdnadrevProps {
   store: GlobalStore;
@@ -57,7 +58,8 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
               <Route path='/doc/edit'/>
 
               <Route exact path='/task' component={ViewTask}/>
-              <Route path='/task/edit'/>
+              <Route path='/task/edit' component={AddTask}/>
+              <Route path='/task/add' component={AddTask}/>
 
               <Route exact path='/repo'/>
               <Route path='/repo/login'/>

@@ -1,12 +1,21 @@
 import { action, computed, observable } from 'mobx';
 
-export enum UiWidth {
-  xs,
-  sm,
-  md,
-  lg,
-  xl,
-  xxl
+export enum UiWidthClass {
+  xs = 'xs',
+  sm = 'sm',
+  md = 'md',
+  lg = 'lg',
+  xl = 'xl',
+  xxl = 'xxl'
+}
+
+export enum UiWidthDimension {
+  xs = 0,
+  sm = 576,
+  md = 768,
+  lg = 992,
+  xl = 1200,
+  xxl = 1600,
 }
 
 export enum UiOrientation {
@@ -15,29 +24,41 @@ export enum UiOrientation {
 }
 
 export default class UiStore {
-  @observable uiWidth: UiWidth = UiWidth.lg;
+  @observable uiWidthClass: UiWidthClass = UiWidthClass.lg;
+  @observable uiWidth: number = 992;
   @observable uiOrientation = UiOrientation.Landscape;
   @observable header: string = '';
 
   @action
   updateWidth(width: number, height: number) {
-    if (width < 576) {
-      this.uiWidth = UiWidth.xs;
-    } else if (width < 768) {
-      this.uiWidth = UiWidth.sm;
-    } else if (width < 992) {
-      this.uiWidth = UiWidth.md;
-    } else if (width < 1200) {
-      this.uiWidth = UiWidth.lg;
-    } else if (width < 1600) {
-      this.uiWidth = UiWidth.xl;
+    if (width < UiWidthDimension.sm) {
+      this.uiWidthClass = UiWidthClass.xs;
+    } else if (width < UiWidthDimension.md) {
+      this.uiWidthClass = UiWidthClass.sm;
+    } else if (width < UiWidthDimension.lg) {
+      this.uiWidthClass = UiWidthClass.md;
+    } else if (width < UiWidthDimension.xl) {
+      this.uiWidthClass = UiWidthClass.lg;
+    } else if (width < UiWidthDimension.xxl) {
+      this.uiWidthClass = UiWidthClass.xl;
     } else {
-      this.uiWidth = UiWidth.xxl;
+      this.uiWidthClass = UiWidthClass.xxl;
+    }
+    this.uiWidth = width;
+
+    if (width > height) {
+      this.uiOrientation = UiOrientation.Landscape;
+    } else {
+      this.uiOrientation = UiOrientation.Portrait;
     }
   }
 
   @computed get isMobile(): boolean {
-    return this.uiWidth === UiWidth.xs;
+    return this.uiWidthClass === UiWidthClass.xs;
+  }
+
+  @computed get displaysize(): string {
+    return this.uiWidthClass.toString();
   }
 
 }

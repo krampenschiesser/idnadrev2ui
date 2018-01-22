@@ -5,7 +5,7 @@ import { inject, observer } from 'mobx-react';
 import { NavigationMenu, NavigationTitle } from './NavigationMenu';
 import UiStore from '../store/UiStore';
 
-const {Header, Sider, Content} = Layout;
+const {Header, Sider, Content, Footer} = Layout;
 
 export interface NavigationContainerProps {
   children: {};
@@ -48,6 +48,9 @@ export class NavigationContainer extends React.Component<NavigationContainerProp
           <Content style={{margin: '24px 16px 0'}}>
             {this.props.children}
           </Content>
+          <Footer>
+            <p>Displaysize: <b>{this.props.uiStore.displaysize}</b></p>
+          </Footer>
         </Layout>
       </Layout>
 

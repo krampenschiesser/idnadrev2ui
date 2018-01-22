@@ -381,7 +381,7 @@ export default class WebStorage extends Dexie {
 
     return contexts.then(ctxs => {
       let all = new Set<TaskContext>();
-      ctxs.forEach(t => all.add(t));
+      ctxs.filter(c => c !== '').forEach(t => all.add(t));
       return all;
     });
   }

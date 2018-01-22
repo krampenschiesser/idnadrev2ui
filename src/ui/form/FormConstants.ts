@@ -24,6 +24,22 @@ class FormConstantsProps {
       }
     };
   }
+
+  getHalfItemProps(indent?: number): DefaultFormItemProps {
+    if (indent === undefined) {
+      indent = 6;
+    }
+    return {
+      labelCol: {
+        span: indent,
+        offset: this.labelOffset
+      },
+      wrapperCol: {
+        span: 24 - indent,
+        offset: this.wrapperOffset
+      }
+    };
+  }
 }
 
 export const FormConstants = new FormConstantsProps();
