@@ -14,6 +14,7 @@ import IdnadrevFile from './IdnadrevFile';
 import { FileType } from './FileType';
 import { FileId } from './FileId';
 import { Tag } from './Tag';
+import moment = require('moment');
 
 export enum TaskState {
   None = 'None',
@@ -43,15 +44,15 @@ export class ProposedDateTime {
 }
 
 export class ProposedWeekDayYear {
-  @observable proposedYear: number;
-  @observable proposedWeek: number | null;
-  @observable proposedWeekDay: number | null;
+  @observable proposedYear: number = moment().year();
+  @observable proposedWeek: number = moment().isoWeek();
+  @observable proposedWeekDay?: number;
 }
 
 export class FixedScheduling {
-  @observable scheduledDateTime: Date;
+  @observable scheduledDateTime?: Date;
   @observable scheduledDateOnly: boolean = false;
-  @observable duration: number;
+  @observable duration?: number;
 }
 
 export class Scheduling {

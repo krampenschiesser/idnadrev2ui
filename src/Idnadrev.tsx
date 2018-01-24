@@ -15,6 +15,11 @@ import ViewThoughts from './ui/thought/ViewThought';
 import ProcessThoughts from './ui/thought/ProcessThoughts';
 import ViewTask from './ui/task/ViewTask';
 import { AddTask } from './ui/task/AddTask';
+import LocaleProvider from 'antd/lib/locale-provider';
+import en_US from 'antd/lib/locale-provider/en_US';
+import moment from 'moment';
+
+moment.locale('en');
 
 export interface IdnadrevProps {
   store: GlobalStore;
@@ -47,26 +52,28 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
     let store = this.props.store;
     return (
       <div className='App'>
-        <Provider store={store} uiStore={uiStore}>
-          <Router>
-            <NavigationContainer uiStore={uiStore}>
-              <Route exact path='/thought' component={ViewThoughts}/>
-              <Route path='/thought/add' component={AddThought}/>
-              <Route path='/thought/process' component={ProcessThoughts}/>
+        <LocaleProvider locale={en_US}>
+          <Provider store={store} uiStore={uiStore}>
+            <Router>
+              <NavigationContainer uiStore={uiStore}>
+                <Route exact path='/thought' component={ViewThoughts}/>
+                <Route path='/thought/add' component={AddThought}/>
+                <Route path='/thought/process' component={ProcessThoughts}/>
 
-              <Route exact path='/doc'/>
-              <Route path='/doc/edit'/>
+                <Route exact path='/doc'/>
+                <Route path='/doc/edit'/>
 
-              <Route exact path='/task' component={ViewTask}/>
-              <Route path='/task/edit' component={AddTask}/>
-              <Route path='/task/add' component={AddTask}/>
+                <Route exact path='/task' component={ViewTask}/>
+                <Route path='/task/edit' component={AddTask}/>
+                <Route path='/task/add' component={AddTask}/>
 
-              <Route exact path='/repo'/>
-              <Route path='/repo/login'/>
-              <Route path='/repo/create'/>
-            </NavigationContainer>
-          </Router>
-        </Provider>
+                <Route exact path='/repo'/>
+                <Route path='/repo/login'/>
+                <Route path='/repo/create'/>
+              </NavigationContainer>
+            </Router>
+          </Provider>
+        </LocaleProvider>
         <DevTools/>
       </div>
     );

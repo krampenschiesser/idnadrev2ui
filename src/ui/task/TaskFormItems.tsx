@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormComponentProps } from 'antd/lib/form';
 import { observer } from 'mobx-react';
 import FormItem from 'antd/lib/form/FormItem';
-import Task, { Seconds, TaskState } from '../../dto/Task';
+import Task, { FixedScheduling, ProposedWeekDayYear, Scheduling, Seconds, TaskState } from '../../dto/Task';
 import Select from 'antd/lib/select';
 import { GlobalStore } from '../../store/GlobalStore';
 import { FormConstants } from '../form/FormConstants';
@@ -16,6 +16,10 @@ import InputNumber from 'antd/lib/input-number';
 import Switch from 'antd/lib/switch';
 import Icon from 'antd/lib/icon';
 import UiStore from '../../store/UiStore';
+import { DatePicker } from 'antd';
+import moment from 'moment';
+import TimePicker from 'antd/lib/time-picker';
+import WeekPicker from 'antd/lib/date-picker/WeekPicker';
 
 const Option = Select.Option;
 
@@ -202,6 +206,157 @@ export class ActionableFormItem extends React.Component<TaskFormItemProps, objec
           <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>} defaultChecked={this.actionable} onChange={this.onChange}/>
         )}
       </FormItem>
+    );
+  }
+}
+
+function getFixedSchedule(task: Task): FixedScheduling {
+  let schedule = task.details.schedule;
+  if (!schedule) {
+    schedule = new Scheduling();
+    task.details.schedule = schedule;
+  }
+  let fixedScheduling = schedule.fixedScheduling;
+  if (!fixedScheduling) {
+    schedule.proposedDate = null;
+    schedule.proposedWeekDayYear = null;
+    fixedScheduling = new FixedScheduling();
+    schedule.fixedScheduling = fixedScheduling;
+  }
+  return fixedScheduling;
+}
+
+function getProposedWeekYear(task: Task): ProposedWeekDayYear {
+  let schedule = task.details.schedule;
+  if (!schedule) {
+    schedule = new Scheduling();
+    task.details.schedule = schedule;
+  }
+  let proposedWeekDayYear = schedule.proposedWeekDayYear;
+  if (!proposedWeekDayYear) {
+    schedule.fixedScheduling = null;
+    schedule.proposedDate = null;
+    proposedWeekDayYear = new ProposedWeekDayYear();
+    schedule.proposedWeekDayYear = proposedWeekDayYear;
+  }
+  return proposedWeekDayYear;
+}
+
+@observer
+export class FixedDateFormItem extends React.Component<TaskFormItemProps, object> {
+  date: Date | undefined;
+
+  componentDidMount() {
+    let schedule = this.props.task.details.schedule;
+    if (schedule) {
+      let fixedScheduling = schedule.fixedScheduling;
+      if (fixedScheduling) {
+        this.date = fixedScheduling.scheduledDateTime;
+      }
+    }
+  }
+
+  onDateChange = (date: moment.Moment) => {
+    let fixedScheduling = getFixedSchedule(this.props.task);
+    fixedScheduling.scheduledDateTime = date.toDate();
+  };
+
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <div>
+        <FormItem {...FormConstants.getHalfItemProps(this.props.indent)} label='Date' colon={true}>
+          {getFieldDecorator('fixedDate', {
+            rules: [],
+          })(
+            <DatePicker onChange={this.onDateChange}/>
+          )}
+        </FormItem>
+      </div>
+    );
+  }
+}
+
+@observer
+export class ProposedWeekYearFormItem extends React.Component<TaskFormItemProps, object> {
+  proposedYear: number | undefined;
+  proposedWeek: number | undefined;
+
+  componentDidMount() {
+    let schedule = this.props.task.details.schedule;
+    if (schedule) {
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      if (proposedWeekDayYear) {
+        this.proposedYear = proposedWeekDayYear.proposedYear;
+        this.proposedWeek = proposedWeekDayYear.proposedWeek;
+      }
+    }
+  }
+
+  onDateChange = (date: moment.Moment) => {
+    let fixedScheduling = getProposedWeekYear(this.props.task);
+    fixedScheduling.proposedYear = date.year();
+    fixedScheduling.proposedWeek = date.isoWeek();
+  };
+
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <div>
+        <FormItem {...FormConstants.getHalfItemProps(this.props.indent)} label='Week' colon={true}>
+          {getFieldDecorator('fixedDate', {
+            rules: [],
+          })(
+            <WeekPicker onChange={this.onDateChange} />
+          )}
+        </FormItem>
+      </div>
+    );
+  }
+}
+
+@observer
+export class FixedTimeFormItem extends React.Component<TaskFormItemProps, object> {
+  date: Date | undefined;
+  dateOnly: boolean | undefined;
+
+  componentDidMount() {
+    let schedule = this.props.task.details.schedule;
+    if (schedule) {
+      let fixedScheduling = schedule.fixedScheduling;
+      if (fixedScheduling) {
+        this.date = fixedScheduling.scheduledDateTime;
+        this.dateOnly = fixedScheduling.scheduledDateOnly;
+      }
+    }
+  }
+
+  onTimeChange = (time: moment.Moment) => {
+    if (!time) {
+      getFixedSchedule(this.props.task).scheduledDateOnly = true;
+    } else {
+      let fixedScheduling = getFixedSchedule(this.props.task);
+      let scheduledDateTime = fixedScheduling.scheduledDateTime;
+      if (scheduledDateTime) {
+        fixedScheduling.scheduledDateTime = moment(scheduledDateTime).hours(time.hours()).minutes(time.minutes()).toDate();
+      } else {
+        fixedScheduling.scheduledDateTime = moment().hours(time.hours()).minutes(time.minutes()).toDate();
+      }
+    }
+  };
+
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <div>
+        <FormItem {...FormConstants.getHalfItemProps(this.props.indent)} label='Time' colon={true}>
+          {getFieldDecorator('fixedTime', {
+            rules: [], initialValue: this.date ? moment(this.date) : undefined
+          })(
+            <TimePicker format={'HH:mm'} onChange={this.onTimeChange}/>
+          )}
+        </FormItem>
+      </div>
     );
   }
 }

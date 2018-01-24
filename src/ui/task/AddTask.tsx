@@ -17,7 +17,7 @@ import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import TaskPreview from './TaskPreview';
 import Task from '../../dto/Task';
-import { ActionableFormItem, ContextFormItem, EstimatedTimeFormItem, TaskParentFormItem, TaskStateFormItem } from './TaskFormItems';
+import { ActionableFormItem, ContextFormItem, EstimatedTimeFormItem, FixedDateFormItem, FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem } from './TaskFormItems';
 import Tabs from 'antd/lib/tabs';
 
 const Tab = Tabs.TabPane;
@@ -89,6 +89,42 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
     );
   };
 
+  renderScheduling = () => {
+    const {task, ...newProps} = this.props;
+    const halfIndent = this.props.uiStore.uiWidth >= UiWidthDimension.xl ? 6 : 3;
+    return (
+      <div>
+        <Row>
+          <h2>Fixed date:</h2>
+          <Col xl={12}>
+            <FixedDateFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+          <Col xl={12}>
+            <FixedTimeFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+        </Row>
+        <Row>
+          <h2>Proposed week:</h2>
+          <Col xl={12}>
+            <ProposedWeekYearFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+          <Col xl={12}>
+            <FixedTimeFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+        </Row>
+        <Row>
+          <h2>Proposed date:</h2>
+          <Col xl={12}>
+            <FixedDateFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+          <Col xl={12}>
+            <FixedTimeFormItem indent={halfIndent} {...newProps} task={this.task}/>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
   render() {
     return (
       <Form layout='horizontal'>
@@ -99,7 +135,7 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
                 {this.renderGeneral()}
               </Tab>
               <Tab key='scheduling' tab='Scheduling'>
-                <p>Bla</p>
+                {this.renderScheduling()}
               </Tab>
               <Tab key='delegation' tab='Delegation'>
                 <p>Bla</p>
