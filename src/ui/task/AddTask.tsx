@@ -17,7 +17,7 @@ import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import TaskPreview from './TaskPreview';
 import Task from '../../dto/Task';
-import { ActionableFormItem, ContextFormItem, EstimatedTimeFormItem, FixedDateFormItem, FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem } from './TaskFormItems';
+import { ActionableFormItem, ContextFormItem, EstimatedTimeFormItem, FixedDateFormItem, FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem, WeekOnlyFormItem } from './TaskFormItems';
 import Tabs from 'antd/lib/tabs';
 
 const Tab = Tabs.TabPane;
@@ -111,14 +111,8 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
           <Col xl={12}>
             <FixedTimeFormItem indent={halfIndent} {...newProps} task={this.task}/>
           </Col>
-        </Row>
-        <Row>
-          <h2>Proposed date:</h2>
           <Col xl={12}>
-            <FixedDateFormItem indent={halfIndent} {...newProps} task={this.task}/>
-          </Col>
-          <Col xl={12}>
-            <FixedTimeFormItem indent={halfIndent} {...newProps} task={this.task}/>
+            <WeekOnlyFormItem indent={halfIndent} {...newProps} task={this.task}/>
           </Col>
         </Row>
       </div>

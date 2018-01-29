@@ -52,9 +52,9 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
     let store = this.props.store;
     return (
       <div className='App'>
-        <LocaleProvider locale={en_US}>
-          <Provider store={store} uiStore={uiStore}>
-            <Router>
+        <Provider store={store} uiStore={uiStore} antLocale={en_US}>
+          <Router>
+            <LocaleProvider locale={en_US}>
               <NavigationContainer uiStore={uiStore}>
                 <Route exact path='/thought' component={ViewThoughts}/>
                 <Route path='/thought/add' component={AddThought}/>
@@ -71,9 +71,9 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
                 <Route path='/repo/login'/>
                 <Route path='/repo/create'/>
               </NavigationContainer>
-            </Router>
-          </Provider>
-        </LocaleProvider>
+            </LocaleProvider>
+          </Router>
+        </Provider>
         <DevTools/>
       </div>
     );

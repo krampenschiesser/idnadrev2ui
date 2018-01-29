@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FormComponentProps } from 'antd/lib/form';
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import FormItem from 'antd/lib/form/FormItem';
 import Task, { FixedScheduling, ProposedWeekDayYear, Scheduling, Seconds, TaskState } from '../../dto/Task';
 import Select from 'antd/lib/select';
@@ -19,7 +19,6 @@ import UiStore from '../../store/UiStore';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 import TimePicker from 'antd/lib/time-picker';
-import WeekPicker from 'antd/lib/date-picker/WeekPicker';
 
 const Option = Select.Option;
 
@@ -28,6 +27,8 @@ export interface TaskFormItemProps extends FormComponentProps {
   store: GlobalStore;
   uiStore: UiStore;
   indent?: number;
+  // tslint:disable-next-line
+  antLocale?: any;
 }
 
 @observer
@@ -277,10 +278,12 @@ export class FixedDateFormItem extends React.Component<TaskFormItemProps, object
   }
 }
 
+@inject('antLocale')
 @observer
 export class ProposedWeekYearFormItem extends React.Component<TaskFormItemProps, object> {
   proposedYear: number | undefined;
   proposedWeek: number | undefined;
+  proposedDate: Date | undefined;
 
   componentDidMount() {
     let schedule = this.props.task.details.schedule;
@@ -304,10 +307,10 @@ export class ProposedWeekYearFormItem extends React.Component<TaskFormItemProps,
     return (
       <div>
         <FormItem {...FormConstants.getHalfItemProps(this.props.indent)} label='Week' colon={true}>
-          {getFieldDecorator('fixedDate', {
+          {getFieldDecorator('proposedWeek', {
             rules: [],
           })(
-            <WeekPicker onChange={this.onDateChange} />
+            <DatePicker onChange={this.onDateChange}/>
           )}
         </FormItem>
       </div>
@@ -357,6 +360,39 @@ export class FixedTimeFormItem extends React.Component<TaskFormItemProps, object
           )}
         </FormItem>
       </div>
+    );
+  }
+}
+
+@observer
+export class WeekOnlyFormItem extends React.Component<TaskFormItemProps, object> {
+  weekOnly: boolean | undefined;
+
+  componentDidMount() {
+    let schedule = this.props.task.details.schedule;
+    if (schedule && schedule.proposedWeekDayYear) {
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      this.weekOnly = !proposedWeekDayYear.proposedWeekDay;
+    }
+  }
+
+  onChange = (checked: boolean) => {
+    let proposedWeekYear = getProposedWeekYear(this.props.task);
+    if (checked) {
+      proposedWeekYear.proposedWeekDay = undefined;
+    }
+  };
+
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <FormItem {...FormConstants.getHalfItemProps(this.props.indent)} label='Week only' colon={true}>
+        {getFieldDecorator('weekOnly', {
+          rules: [],
+        })(
+          <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>} defaultChecked={this.weekOnly} onChange={this.onChange}/>
+        )}
+      </FormItem>
     );
   }
 }
