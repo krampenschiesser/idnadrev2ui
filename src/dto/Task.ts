@@ -25,17 +25,39 @@ export enum TaskState {
 
 export class WorkUnit {
   @observable start: Date;
-  @observable end: Date | null = null;
+  @observable end?: Date;
 
   constructor() {
     this.start = new Date();
   }
 
+  getDurationInMinutes() {
+    let now = this.end ? this.end : new Date();
+    return moment(now).diff(moment(this.start), 'minutes');
+  }
+}
+
+export class Delegation {
+  @observable delegationStarted: Date;
+  @observable to: string;
+}
+
+export class DelegationHistory extends Delegation {
+  @observable delegationStarted: Date;
+  @observable delegationEnded: Date;
+  @observable to: string;
+
+  constructor(original: Delegation) {
+    super();
+    this.delegationStarted = original.delegationStarted;
+    this.to = original.to;
+    this.delegationEnded = new Date();
+  }
 }
 
 export class DelegationState {
-  @observable time: Date;
-  @observable to: string;
+  history: DelegationHistory[] = [];
+  current?: Delegation;
 }
 
 export class ProposedDateTime {
@@ -56,20 +78,20 @@ export class FixedScheduling {
 }
 
 export class Scheduling {
-  @observable fixedScheduling: FixedScheduling | null;
-  @observable proposedWeekDayYear: ProposedWeekDayYear | null;
-  @observable proposedDate: ProposedDateTime | null;
+  @observable fixedScheduling?: FixedScheduling;
+  @observable proposedWeekDayYear?: ProposedWeekDayYear;
+  @observable proposedDate?: ProposedDateTime;
 }
 
 export class TaskDetails {
   @observable state: TaskState = TaskState.None;
-  @observable parent: FileId | null;
-  @observable context: TaskContext | null;
-  @observable estimatedTime: Seconds | null;
-  @observable delegation: DelegationState | null;
-  @observable schedule: Scheduling | null;
+  @observable parent?: FileId;
+  @observable context?: TaskContext;
+  @observable estimatedTime?: Seconds;
+  @observable delegation: DelegationState = new DelegationState();
+  @observable schedule?: Scheduling;
   @observable workUnits: WorkUnit[] = [];
-  @observable finished: Date | null;
+  @observable finished?: Date;
   @observable action: boolean;
 }
 
@@ -90,20 +112,16 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     return this.details.state;
   }
 
-  get parent(): FileId | null {
+  get parent(): FileId | undefined {
     return this.details.parent;
   }
 
-  set parent(id: FileId | null) {
+  set parent(id: FileId | undefined) {
     this.details.parent = id;
   }
 
   get isDelegated() {
-    if (this.details.delegation) {
-      return this.details.delegation.to !== null;
-    } else {
-      return false;
-    }
+    return this.details.delegation.current;
   }
 
   get isFinished() {

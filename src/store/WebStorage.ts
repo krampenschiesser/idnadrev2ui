@@ -13,7 +13,7 @@ import { FileType } from '../dto/FileType';
 interface PersistedTaskDetails {
   finished: number;
   delegation: number;
-  context: TaskContext | null;
+  context?: TaskContext;
   state: TaskState;
 }
 
@@ -78,9 +78,18 @@ export function toTask(persisted: PersistedTask | undefined, localCrypto: LocalC
   if (typeof  task.details.finished === 'string') {
     task.details.finished = new Date(task.details.finished);
   }
-  if (task.details.delegation && typeof  task.details.delegation.time === 'string') {
-    task.details.delegation.time = new Date(task.details.delegation.time);
+  let current = task.details.delegation.current;
+  if (current && typeof  current.delegationStarted === 'string') {
+    current.delegationStarted = new Date(current.delegationStarted);
   }
+  task.details.delegation.history.forEach(h => {
+    if (typeof h.delegationStarted === 'string') {
+      h.delegationStarted = new Date(h.delegationStarted);
+    }
+    if (typeof h.delegationEnded === 'string') {
+      h.delegationEnded = new Date(h.delegationEnded);
+    }
+  });
   if (task.details.schedule) {
     let fixedScheduling = task.details.schedule.fixedScheduling;
     if (fixedScheduling && typeof fixedScheduling.scheduledDateTime === 'string') {
@@ -247,8 +256,8 @@ export default class WebStorage extends Dexie {
         valid = t.name.toLowerCase().indexOf(name) > 0;
       }
       if (valid && delegatedTo !== null) {
-        if (t.details.delegation && t.details.delegation.to) {
-          valid = t.details.delegation.to.toLowerCase().indexOf(delegatedTo) > 0;
+        if (t.details.delegation.current && t.details.delegation.current.to) {
+          valid = t.details.delegation.current.to.toLowerCase().indexOf(delegatedTo) > 0;
         } else {
           valid = false;
         }
@@ -279,7 +288,7 @@ export default class WebStorage extends Dexie {
         if (estimatedTime) {
           let sum = 0;
           t.details.workUnits.filter(u => u.end !== null).map(u => {
-            if (u.end === null) {
+            if (u.end === undefined) {
               throw 'cannot happen, just for TS';
             } else {
               return (u.end.getTime() - u.start.getTime());

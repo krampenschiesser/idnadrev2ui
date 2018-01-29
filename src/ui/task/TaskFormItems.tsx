@@ -2,7 +2,11 @@ import * as React from 'react';
 import { FormComponentProps } from 'antd/lib/form';
 import { inject, observer } from 'mobx-react';
 import FormItem from 'antd/lib/form/FormItem';
-import Task, { FixedScheduling, ProposedWeekDayYear, Scheduling, Seconds, TaskState } from '../../dto/Task';
+import Task, {
+  Delegation,
+  DelegationHistory, FixedScheduling, ProposedWeekDayYear, Scheduling, Seconds,
+  TaskState
+} from '../../dto/Task';
 import Select from 'antd/lib/select';
 import { GlobalStore } from '../../store/GlobalStore';
 import { FormConstants } from '../form/FormConstants';
@@ -19,6 +23,8 @@ import UiStore from '../../store/UiStore';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 import TimePicker from 'antd/lib/time-picker';
+import Input from 'antd/lib/input/Input';
+import { ChangeEvent } from 'react';
 
 const Option = Select.Option;
 
@@ -33,7 +39,7 @@ export interface TaskFormItemProps extends FormComponentProps {
 
 @observer
 export class ContextFormItem extends React.Component<TaskFormItemProps, object> {
-  context: string | null;
+  context: string | undefined;
   allContexts: string[];
 
   componentDidMount() {
@@ -47,10 +53,10 @@ export class ContextFormItem extends React.Component<TaskFormItemProps, object> 
     if (value) {
       this.props.task.details.context = value;
       if (value === '') {
-        this.props.task.details.context = null;
+        this.props.task.details.context = undefined;
       }
     } else {
-      this.props.task.details.context = null;
+      this.props.task.details.context = undefined;
     }
   };
 
@@ -112,7 +118,7 @@ export class TaskStateFormItem extends React.Component<TaskFormItemProps, object
 
 @observer
 export class TaskParentFormItem extends React.Component<TaskFormItemProps, object> {
-  @observable parent: FileId | null;
+  @observable parent?: FileId;
 
   componentDidMount() {
     this.parent = this.props.task.parent;
@@ -129,7 +135,7 @@ export class TaskParentFormItem extends React.Component<TaskFormItemProps, objec
     if (parent) {
       this.props.task.parent = parent.id;
     } else {
-      this.props.task.parent = null;
+      this.props.task.parent = undefined;
     }
   };
 
@@ -150,7 +156,7 @@ export class TaskParentFormItem extends React.Component<TaskFormItemProps, objec
 
 @observer
 export class EstimatedTimeFormItem extends React.Component<TaskFormItemProps, object> {
-  estimatedTime: Seconds | null;
+  estimatedTime?: Seconds;
 
   componentDidMount() {
     this.estimatedTime = this.props.task.details.estimatedTime;
@@ -163,7 +169,7 @@ export class EstimatedTimeFormItem extends React.Component<TaskFormItemProps, ob
     if (value) {
       this.props.task.details.estimatedTime = value * 60;
     } else {
-      this.props.task.details.estimatedTime = null;
+      this.props.task.details.estimatedTime = undefined;
     }
   };
 
@@ -204,7 +210,8 @@ export class ActionableFormItem extends React.Component<TaskFormItemProps, objec
         {getFieldDecorator('actionable', {
           rules: [],
         })(
-          <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>} defaultChecked={this.actionable} onChange={this.onChange}/>
+          <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>}
+                  defaultChecked={this.actionable} onChange={this.onChange}/>
         )}
       </FormItem>
     );
@@ -219,8 +226,8 @@ function getFixedSchedule(task: Task): FixedScheduling {
   }
   let fixedScheduling = schedule.fixedScheduling;
   if (!fixedScheduling) {
-    schedule.proposedDate = null;
-    schedule.proposedWeekDayYear = null;
+    schedule.proposedDate = undefined;
+    schedule.proposedWeekDayYear = undefined;
     fixedScheduling = new FixedScheduling();
     schedule.fixedScheduling = fixedScheduling;
   }
@@ -235,8 +242,8 @@ function getProposedWeekYear(task: Task): ProposedWeekDayYear {
   }
   let proposedWeekDayYear = schedule.proposedWeekDayYear;
   if (!proposedWeekDayYear) {
-    schedule.fixedScheduling = null;
-    schedule.proposedDate = null;
+    schedule.fixedScheduling = undefined;
+    schedule.proposedDate = undefined;
     proposedWeekDayYear = new ProposedWeekDayYear();
     schedule.proposedWeekDayYear = proposedWeekDayYear;
   }
@@ -390,7 +397,60 @@ export class WeekOnlyFormItem extends React.Component<TaskFormItemProps, object>
         {getFieldDecorator('weekOnly', {
           rules: [],
         })(
-          <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>} defaultChecked={this.weekOnly} onChange={this.onChange}/>
+          <Switch checkedChildren={<Icon type='check'/>} unCheckedChildren={<Icon type='cross'/>}
+                  defaultChecked={this.weekOnly} onChange={this.onChange}/>
+        )}
+      </FormItem>
+    );
+  }
+}
+
+@observer
+export class DelegatedToFormItem extends React.Component<TaskFormItemProps, object> {
+  name: string | undefined;
+
+  componentDidMount() {
+    let current = this.props.task.details.delegation.current;
+    if (current) {
+      this.name = current.to;
+    }
+  }
+
+  onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    let delegation = this.props.task.details.delegation;
+    let input = event.target.value;
+
+    let current = delegation.current;
+    if (current) {
+      let start = moment(current.delegationStarted);
+      let now = moment();
+      let delta = now.diff(start, 'minute');
+      if (delta > 2) {
+        let history = new DelegationHistory(current);
+        delegation.history.push(history);
+        delegation.current = undefined;
+      }
+    } else {
+      delegation.current = new Delegation();
+    }
+
+    if (input && input !== '') {
+      if (delegation.current) {
+        delegation.current.to = input;
+      }
+    } else {
+      delegation.current = undefined;
+    }
+  };
+
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <FormItem {...FormConstants.getItemProps()} label='Delegated to' colon={true}>
+        {getFieldDecorator('delegationTo', {
+          rules: [],
+        })(
+          <Input onChange={this.onChange}/>
         )}
       </FormItem>
     );

@@ -17,7 +17,10 @@ import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import TaskPreview from './TaskPreview';
 import Task from '../../dto/Task';
-import { ActionableFormItem, ContextFormItem, EstimatedTimeFormItem, FixedDateFormItem, FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem, WeekOnlyFormItem } from './TaskFormItems';
+import {
+  ActionableFormItem, ContextFormItem, DelegatedToFormItem, EstimatedTimeFormItem, FixedDateFormItem,
+  FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem, WeekOnlyFormItem
+} from './TaskFormItems';
 import Tabs from 'antd/lib/tabs';
 
 const Tab = Tabs.TabPane;
@@ -119,6 +122,34 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
     );
   };
 
+  renderDelegation = () => {
+    const {task, ...newProps} = this.props;
+    // const halfIndent = this.props.uiStore.uiWidth >= UiWidthDimension.xl ? 6 : 3;
+    return (
+      <div>
+        <Row>
+          <Col xl={24}>
+            <DelegatedToFormItem {...newProps} task={this.task}/>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  renderWorkUnits = () => {
+    const {task, ...newProps} = this.props;
+    // const halfIndent = this.props.uiStore.uiWidth >= UiWidthDimension.xl ? 6 : 3;
+    return (
+      <div>
+        <Row>
+          <Col xl={24}>
+            <DelegatedToFormItem {...newProps} task={this.task}/>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
   render() {
     return (
       <Form layout='horizontal'>
@@ -132,10 +163,10 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
                 {this.renderScheduling()}
               </Tab>
               <Tab key='delegation' tab='Delegation'>
-                <p>Bla</p>
+                {this.renderDelegation()}
               </Tab>
               <Tab key='workunits' tab='Work Units'>
-                <p>Bla</p>
+                {this.renderWorkUnits()}
               </Tab>
             </Tabs>
           </Col>

@@ -8,26 +8,13 @@ interface DefaultFormItemProps {
 class FormConstantsProps {
   labelSpan: number = 3;
   labelOffset: number = 0;
-  wrapperSpan: number = 21;
+  wrapperSpan: number = 24;
   wrapperOffset: number = 0;
   buttonOffset: number = 12;
 
-  getItemProps(): DefaultFormItemProps {
-    return {
-      labelCol: {
-        span: this.labelSpan,
-        offset: this.labelOffset
-      },
-      wrapperCol: {
-        span: this.wrapperSpan,
-        offset: this.wrapperOffset
-      }
-    };
-  }
-
-  getHalfItemProps(indent?: number): DefaultFormItemProps {
+  getItemProps(indent?: number): DefaultFormItemProps {
     if (indent === undefined) {
-      indent = 6;
+      indent = 3;
     }
     return {
       labelCol: {
@@ -35,10 +22,14 @@ class FormConstantsProps {
         offset: this.labelOffset
       },
       wrapperCol: {
-        span: 24 - indent,
+        span: this.wrapperSpan - indent,
         offset: this.wrapperOffset
       }
     };
+  }
+
+  getHalfItemProps(indent?: number): DefaultFormItemProps {
+    return this.getItemProps(6);
   }
 }
 
