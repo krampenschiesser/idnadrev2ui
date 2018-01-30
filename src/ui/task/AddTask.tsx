@@ -22,6 +22,7 @@ import {
   FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem, WeekOnlyFormItem
 } from './TaskFormItems';
 import Tabs from 'antd/lib/tabs';
+import WorkUnitHistoryTable from './WorkUnitHistoryTable';
 
 const Tab = Tabs.TabPane;
 
@@ -143,7 +144,7 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
       <div>
         <Row>
           <Col xl={24}>
-            <DelegatedToFormItem {...newProps} task={this.task}/>
+            <WorkUnitHistoryTable {...newProps} task={this.task}/>
           </Col>
         </Row>
       </div>

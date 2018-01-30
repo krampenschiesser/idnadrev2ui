@@ -34,6 +34,7 @@ export class NavigationMenu extends React.Component<NavigationMenuProps, object>
     let taskLink = <Link to='/task'><Icon type='schedule'/>Task</Link>;
     let taskViewLink = <Link to='/task'><Icon type='desktop'/>View</Link>;
     let taskAddLink = <Link to='/task/add'><Icon type='plus-circle-o'/>Add</Link>;
+    let taskPlanLink = <Link to='/task/plan'><Icon type='calendar'/>Plan</Link>;
 
     let docLink = <Link to='/doc'><Icon type='book'/>Document</Link>;
     let docViewLink = <Link to='/doc'><Icon type='desktop'/>View</Link>;
@@ -66,6 +67,9 @@ export class NavigationMenu extends React.Component<NavigationMenuProps, object>
           </Menu.Item>
           <Menu.Item key='task-add'>
             {taskAddLink}
+          </Menu.Item>
+          <Menu.Item key='task-plan'>
+            {taskPlanLink}
           </Menu.Item>
         </SubMenu>
 

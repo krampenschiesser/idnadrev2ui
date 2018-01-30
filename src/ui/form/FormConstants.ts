@@ -29,7 +29,10 @@ class FormConstantsProps {
   }
 
   getHalfItemProps(indent?: number): DefaultFormItemProps {
-    return this.getItemProps(6);
+    if (!indent) {
+      indent = 6;
+    }
+    return this.getItemProps(indent);
   }
 }
 

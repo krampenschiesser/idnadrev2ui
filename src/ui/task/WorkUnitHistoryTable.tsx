@@ -15,8 +15,23 @@ export interface WorkUnitHistoryTableProps {
 @observer
 export default class WorkUnitHistoryTable extends React.Component<WorkUnitHistoryTableProps, object> {
   render() {
+    let workUnits = this.props.task ? this.props.task.details.workUnits : [];
+    let data = workUnits.map(w => {
+      let durationInMinutes = w.getDurationInMinutes();
+      let type = 'WorkUnit';
+      let id = type + w.start.toString();
+      return {
+        id: id,
+        type: type,
+        duration: durationInMinutes,
+        start: w.start,
+        end: w.end
+      };
+    });
+    data.sort((a, b) => a.start.getTime() - b.start.getTime());
+
     return (
-      <Table expandedRowKeys={fileIds} rowKey='id' dataSource={data}>
+      <Table rowKey='id' dataSource={data}>
         <Column dataIndex='type' title='Type'/>
         <Column dataIndex='start' title='Start' render={dateCell}/>
         <Column dataIndex='end' title='End' render={dateCell}/>

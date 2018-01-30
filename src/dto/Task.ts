@@ -31,6 +31,16 @@ export class WorkUnit {
     this.start = new Date();
   }
 
+  setEnd(end: Date): WorkUnit {
+    this.end = end;
+    return this;
+  }
+
+  setStart(start: Date): WorkUnit {
+    this.start = start;
+    return this;
+  }
+
   getDurationInMinutes() {
     let now = this.end ? this.end : new Date();
     return moment(now).diff(moment(this.start), 'minutes');

@@ -1,6 +1,7 @@
 import Thought from '../dto/Thought';
 import { Tag } from '../dto/Tag';
-import Task from '../dto/Task';
+import Task, { WorkUnit } from '../dto/Task';
+import moment from 'moment';
 
 export function generateThoughts(): Thought[] {
   let t1 = new Thought('test', [new Tag('tag1'), new Tag('tag2')]).withContent('hello world');
@@ -26,6 +27,10 @@ export function generateTasks(): Task[] {
   t4.parent = t3.id;
   t5.parent = t3.id;
   t3.parent = t2.id;
+
+  let start = moment().hours(-10).minutes(0).toDate();
+  let end = moment().hours(-10).minutes(+10).toDate();
+  t4.details.workUnits.push(new WorkUnit().setStart(start).setEnd(end));
   return [t1, t2, t3, t4, t5, t6];
 }
 
