@@ -82,7 +82,7 @@ export class ProposedWeekDayYear {
 }
 
 export class FixedScheduling {
-  @observable scheduledDateTime?: Date;
+  @observable scheduledDateTime: Date;
   @observable scheduledDateOnly: boolean = false;
   @observable duration?: number;
 }
@@ -150,4 +150,21 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
   isActionable(): boolean {
     return this.details.estimatedTime !== null || this.details.action;
   }
+
+  getScheduledDate(): Date | undefined {
+    if (this.details.schedule !== undefined && this.details.schedule.fixedScheduling !== undefined) {
+      return this.details.schedule.fixedScheduling.scheduledDateTime;
+    } else {
+      return undefined;
+    }
+  }
+
+  getProposedDate(): Date | undefined {
+    if (this.details.schedule !== undefined && this.details.schedule.proposedDate !== undefined) {
+      return this.details.schedule.proposedDate.proposedDateTime;
+    } else {
+      return undefined;
+    }
+  }
+
 }

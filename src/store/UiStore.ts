@@ -26,6 +26,7 @@ export enum UiOrientation {
 export default class UiStore {
   @observable uiWidthClass: UiWidthClass = UiWidthClass.lg;
   @observable uiWidth: number = 992;
+  @observable uiHeight: number = 800;
   @observable uiOrientation = UiOrientation.Landscape;
   @observable header: string = '';
 
@@ -45,6 +46,7 @@ export default class UiStore {
       this.uiWidthClass = UiWidthClass.xxl;
     }
     this.uiWidth = width;
+    this.uiHeight = height;
 
     if (width > height) {
       this.uiOrientation = UiOrientation.Landscape;

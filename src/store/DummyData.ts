@@ -1,6 +1,6 @@
 import Thought from '../dto/Thought';
 import { Tag } from '../dto/Tag';
-import Task, { WorkUnit } from '../dto/Task';
+import Task, { FixedScheduling, ProposedDateTime, Scheduling, WorkUnit } from '../dto/Task';
 import moment from 'moment';
 
 export function generateThoughts(): Thought[] {
@@ -31,7 +31,22 @@ export function generateTasks(): Task[] {
   let start = moment().hours(-10).minutes(0).toDate();
   let end = moment().hours(-10).minutes(+10).toDate();
   t4.details.workUnits.push(new WorkUnit().setStart(start).setEnd(end));
-  return [t1, t2, t3, t4, t5, t6];
+
+  let scheduled = new Task('scheduled');
+  let fixedScheduling = new FixedScheduling();
+  fixedScheduling.duration = 45;
+  fixedScheduling.scheduledDateTime = moment().add(1, 'day').toDate();
+
+  let schedule = new Scheduling();
+  schedule.fixedScheduling = fixedScheduling;
+  scheduled.details.schedule = schedule;
+
+  let proposed = new Task('proposed');
+  let scheduling = new Scheduling();
+  scheduling.proposedDate = new ProposedDateTime();
+  scheduling.proposedDate.proposedDateTime = moment().add(2, 'day').toDate();
+  proposed.details.schedule = scheduling;
+  return [t1, t2, t3, t4, t5, t6, scheduled, proposed];
 }
 
 export function generateManyTasks(): Task[] {
