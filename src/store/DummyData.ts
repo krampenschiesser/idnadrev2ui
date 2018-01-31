@@ -34,14 +34,15 @@ export function generateTasks(): Task[] {
 
   let scheduled = new Task('scheduled');
   let fixedScheduling = new FixedScheduling();
-  fixedScheduling.duration = 45;
-  fixedScheduling.scheduledDateTime = moment().add(1, 'day').toDate();
+  scheduled.details.estimatedTime = 45 * 60;
+  fixedScheduling.scheduledDateTime = moment().toDate();
 
   let schedule = new Scheduling();
   schedule.fixedScheduling = fixedScheduling;
   scheduled.details.schedule = schedule;
 
   let proposed = new Task('proposed');
+  proposed.details.estimatedTime = 60 * 60;
   let scheduling = new Scheduling();
   scheduling.proposedDate = new ProposedDateTime();
   scheduling.proposedDate.proposedDateTime = moment().add(2, 'day').toDate();

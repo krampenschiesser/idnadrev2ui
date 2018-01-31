@@ -84,7 +84,6 @@ export class ProposedWeekDayYear {
 export class FixedScheduling {
   @observable scheduledDateTime: Date;
   @observable scheduledDateOnly: boolean = false;
-  @observable duration?: number;
 }
 
 export class Scheduling {
