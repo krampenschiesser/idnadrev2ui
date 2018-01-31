@@ -5,10 +5,7 @@ import { observable } from 'mobx';
 import UiStore from '../../store/UiStore';
 import Task from '../../dto/Task';
 import { TaskFilter } from '../../store/TaskFilter';
-import Tabs from 'antd/lib/tabs';
 import PlanTaskDayView from './planning/PlanTaskDay';
-
-const Tab = Tabs.TabPane;
 
 export interface PlanTaskProps {
   store: GlobalStore;
@@ -50,18 +47,8 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
   render() {
     return (
       <div>
-        <Tabs>
-          <Tab key='today' tab='Day'>
-            <PlanTaskDayView tasks={this.tasks} date={this.date} fullDate={false} store={this.props.store}
-                             uiStore={this.props.uiStore}/>
-          </Tab>
-          <Tab key='week' tab='Week'>
-            <div/>
-          </Tab>
-          <Tab key='month' tab='Month/Year'>
-            <div/>
-          </Tab>
-        </Tabs>
+        <PlanTaskDayView tasks={this.tasks} date={this.date} fullDate={false} store={this.props.store}
+                         uiStore={this.props.uiStore}/>
       </div>
     );
   }

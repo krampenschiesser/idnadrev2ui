@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import { GlobalStore } from '../../../store/GlobalStore';
 import { observable } from 'mobx';
-import UiStore from '../../store/UiStore';
-import Task from '../../dto/Task';
-import { TaskFilter } from '../../store/TaskFilter';
+import UiStore from '../../../store/UiStore';
+import Task from '../../../dto/Task';
+import { TaskFilter } from '../../../store/TaskFilter';
 import Calendar, { CalendarMode } from 'antd/lib/calendar';
 import * as moment from 'moment';
 

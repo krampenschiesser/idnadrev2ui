@@ -9,6 +9,12 @@ import * as moment from 'moment';
 import BigCalendar from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
+// let withDragAndDrop = require('react-big-calendar/lib/addons/dragAndDrop');
+//@ts-ignore
+import * as withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
+
+const DragAndDropCalendar = withDragAndDrop(BigCalendar);
+
 BigCalendar.momentLocalizer(moment);
 
 export interface PlanTaskDayViewProps {
@@ -25,6 +31,7 @@ class Event {
   allDay: boolean = false;
   start: Date;
   end: Date;
+  task: Task;
 
   constructor(task: Task) {
     this.id = task.id;
@@ -41,6 +48,7 @@ class Event {
       this.start = proposedDate;
       this.end = end.toDate();
     }
+    this.task = task;
   }
 }
 
@@ -55,6 +63,14 @@ export default class PlanTaskDayView extends React.Component<PlanTaskDayViewProp
     this.props.uiStore.header = 'Plan Tasks';
   }
 
+  moveDate = (event: Event, start: moment.Moment, end: moment.Moment) => {
+    console.log('moved ', event, start, end);
+  };
+  resizeDate = (event: Event, start: moment.Moment, end: moment.Moment) => {
+    console.log('moved ', event, start, end);
+
+  };
+
   render() {
     // let date = moment(this.props.date);
     // let title = date.format('ddd, D');
@@ -66,8 +82,11 @@ export default class PlanTaskDayView extends React.Component<PlanTaskDayViewProp
 
     return (
       <div>
-        <BigCalendar
+        <DragAndDropCalendar
           events={events}
+          date={this.props.date}
+          onEventDrop={this.moveDate}
+          onEventResize={this.resizeDate}
         />
       </div>
     );
