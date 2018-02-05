@@ -5,7 +5,9 @@ import { observable } from 'mobx';
 import UiStore from '../../store/UiStore';
 import Task from '../../dto/Task';
 import { TaskFilter } from '../../store/TaskFilter';
-import PlanTaskDayView from './planning/PlanTaskDay';
+import WeekView from '../calendar/WeekView';
+import * as moment from 'moment';
+import CalendarEvent from '../calendar/CalendarEvent';
 
 export interface PlanTaskProps {
   store: GlobalStore;
@@ -33,7 +35,6 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
   reload = () => {
     this.props.store.getTasks(this.filter).then((t: Task[]) => {
       this.tasks = [];
-      console.log('reloaded');
       this.tasks = t;
       if (t.length === 0) {
         this.previewTask = null;
@@ -45,10 +46,27 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
   };
 
   render() {
+    let now = moment();
+    let week = moment().add(7, 'days');
+
+    let events: CalendarEvent[] = [];
+
+    for (let i = 0; i < 7; i++) {
+      let date = now.clone().add(i, 'days');
+      date.hour(Math.floor(Math.random() * 23));
+
+      let duration: number = 15 + Math.floor(Math.random() * 90);
+      let end = date.clone().add(duration, 'm');
+
+      events.push({
+        start: date,
+        end: end,
+        title: 'Event' + (i + 1),
+      });
+    }
     return (
       <div>
-        <PlanTaskDayView tasks={this.tasks} date={this.date} fullDate={false} store={this.props.store}
-                         uiStore={this.props.uiStore}/>
+        <WeekView events={events} startDate={now} endDate={week}/>
       </div>
     );
   }

@@ -1,0 +1,44 @@
+.calendar {
+
+}
+
+.cal-row {
+
+}
+
+.week {
+
+}
+
+.weekView {
+    display: flex;
+}
+
+.weekHeaderGap {
+
+}
+
+.weekHeaderDate {
+
+}
+
+.emptySlot {
+    border-top: 1px solid #f7f7f7;
+}
+
+.currentTimeIndicator {
+    height: 1px;
+    background-color: #74ad31;
+}
+
+.currentTimeIndicator::before {
+    display: block;
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    content: ' ';
+    background-color: #74ad31;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+}

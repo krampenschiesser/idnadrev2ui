@@ -7,13 +7,6 @@ import Task from '../../../dto/Task';
 import { TaskFilter } from '../../../store/TaskFilter';
 import * as moment from 'moment';
 import BigCalendar from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-// let withDragAndDrop = require('react-big-calendar/lib/addons/dragAndDrop');
-//@ts-ignore
-import * as withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
-
-const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
 BigCalendar.momentLocalizer(moment);
 
@@ -75,20 +68,13 @@ export default class PlanTaskDayView extends React.Component<PlanTaskDayViewProp
     // let date = moment(this.props.date);
     // let title = date.format('ddd, D');
 
-    let events = this.props.tasks.filter(t => t.getProposedDate() || t.getScheduledDate()).map(t => new Event(t));
+    // let events = this.props.tasks.filter(t => t.getProposedDate() || t.getScheduledDate()).map(t => new Event(t));
 
     // const startDay = moment(this.props.date).clone().hour(0).minute(0).second(0).millisecond(0);
     // const endDay = moment(this.props.date).clone().hour(23).minute(59).second(59).millisecond(999);
 
     return (
-      <div>
-        <DragAndDropCalendar
-          events={events}
-          date={this.props.date}
-          onEventDrop={this.moveDate}
-          onEventResize={this.resizeDate}
-        />
-      </div>
+      <div/>
     );
   }
 
