@@ -3,16 +3,19 @@ import { observer } from 'mobx-react';
 import CalendarEvent from './CalendarEvent';
 import moment from 'moment';
 import './calendar.css';
+import Tooltip from 'antd/lib/tooltip';
 
 export interface WeekViewProps {
   events: CalendarEvent[];
   startDate: moment.Moment;
   endDate: moment.Moment;
+  timeLabelWidth?: number;
 }
 
 export interface WeekHeaderProps {
   startDate: moment.Moment;
   days: number;
+  timeLabelWidth: number;
 }
 
 class WeekHeader extends React.Component<WeekHeaderProps, object> {
@@ -23,15 +26,22 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
 
     const cellWidth = 100 / (days + 1);
     const cellStyle = {display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%'};
+    const cellStyleTimeLabel = {
+      display: 'flex',
+      flexGrow: 0,
+      flexBasis: this.props.timeLabelWidth + 'px',
+      width: this.props.timeLabelWidth + 'px',
+    };
 
     let dayColumns = [];
     for (let i = 0; i < days; i++) {
-      dayColumns.push(<div style={cellStyle} className='weekHeaderDate' key={now.format()}>{now.format('ddd, L')}</div>);
+      let item = <div style={cellStyle} className='weekHeaderDate' key={now.format()}>{now.format('ddd, L')}</div>;
+      dayColumns.push(item);
       now.add(1, 'days');
     }
     return (
       <div style={{display: 'flex', width: '100%'}} className='weekHeader'>
-        <div style={cellStyle} className='weekHeaderGap'/>
+        <div style={cellStyleTimeLabel} className='weekHeaderGap'/>
         {dayColumns}
       </div>
     );
@@ -41,15 +51,23 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
 interface TimeSlotLabelProps {
   hour: number;
   height: number;
+  width: number;
 }
 
 class TimeSlotLabel extends React.Component<TimeSlotLabelProps, object> {
   render() {
-    let label = moment().hour(this.props.hour).format('HH:00 A');
+    let label = moment().hour(this.props.hour).format('HH:00');
     const key = 'timeslotlabel-' + this.props.hour;
     const style = {flex: '1 0 0'};
     return (
-      <div key={key} style={{display: 'flex', flexFlow: 'column nowrap', flexGrow: 1, minHeight: 40, flexBasis: '' + this.props.height + '%'}}>
+      <div key={key} style={{
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        flexGrow: 0,
+        minHeight: 40,
+        flexBasis: '' + this.props.height + '%',
+        width: this.props.width,
+      }}>
         <div style={style} className='emptySlot'><span>{label}</span></div>
         <div style={style} className='emptySlot'/>
 
@@ -58,12 +76,24 @@ class TimeSlotLabel extends React.Component<TimeSlotLabelProps, object> {
   }
 }
 
-class EmptySlot extends React.Component<TimeSlotLabelProps, object> {
+interface EmptySlotProps {
+  hour: number;
+  height: number;
+}
+
+class EmptySlot extends React.Component<EmptySlotProps, object> {
   render() {
     const key = 'emptySlot-' + this.props.hour;
     const style = {flex: '1 0 0'};
     return (
-      <div key={key} style={{display: 'flex', flexWrap: 'nowrap', flexFlow: 'column nowrap', flexGrow: 1, minHeight: 40, flexBasis: '' + this.props.height + '%'}}>
+      <div key={key} style={{
+        display: 'flex',
+        flexWrap: 'nowrap',
+        flexFlow: 'column nowrap',
+        flexGrow: 1,
+        minHeight: 40,
+        flexBasis: '' + this.props.height + '%'
+      }}>
         <div style={style} className='emptySlot'/>
         <div style={style} className='emptySlot'/>
       </div>
@@ -86,17 +116,55 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
     const top = 100 / (24 * 60) * startInMin;
     const height = 100 / (24 * 60) * duration;
 
+    let title = this.props.event.title;
+    let timeDisplay = start.format('HH:mm') + ' - ' + end.format('HH:mm');
+    return (
+      <Tooltip title={timeDisplay + '\n' + title}>
+        <div className='weekEvent'
+             style={{
+               display: 'flex',
+               top: '' + top + '%',
+               height: '' + height + '%',
+               left: '0%',
+               width: '100%',
+               position: 'absolute',
+               flexFlow: 'column wrap',
+               alignItems: 'flex-start',
+               overflow: 'hidden',
+             }}>
+          <div style={{flexGrow: 1}} className='weekEventDate'>
+            {timeDisplay}
+          </div>
+          <div style={{flexGrow: 1}} className='weekEventText'>
+            {title}
+          </div>
+        </div>
+      </Tooltip>
+    );
+  }
+}
+
+interface TimeIndicatorProps {
+  offset: number;
+}
+
+class TimeIndicator extends React.Component<TimeIndicatorProps, object> {
+  render() {
+    let now = moment();
+    let startInMin = now.hours() * 60 + now.minutes();
+
+    const top = 100 / (24 * 60) * startInMin;
+
     return (
       <div
-        style={{
-          backgroundColor: 'red',
-          display: 'flex',
-          top: '' + top + '%',
-          height: '' + height + '%',
-          left: '0%',
-          width: '100%',
-          position: 'absolute',
-        }}/>
+        className='currentTimeIndicator' style={{
+        display: 'block',
+        right: '0px',
+        left: this.props.offset,
+        top: top + '%',
+        position: 'absolute',
+        zIndex: 1
+      }}/>
     );
   }
 }
@@ -105,7 +173,7 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
 export default class WeekView extends React.Component<WeekViewProps, object> {
 
   render() {
-    // const dates = {startDate: this.props.startDate, endDate: this.props.endDate};
+    const timeLabelWidth = this.props.timeLabelWidth ? this.props.timeLabelWidth : 40;
     const start = this.props.startDate.hour(0).minute(0).second(0).millisecond(0);
     const end = this.props.endDate.hour(23).minute(59).second(59).millisecond(999);
 
@@ -116,7 +184,7 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     let emptySlots = [];
 
     for (let i = 0; i < 24; i++) {
-      timeSlotLabels.push(<TimeSlotLabel key={i} height={100 / 24} hour={i}/>);
+      timeSlotLabels.push(<TimeSlotLabel width={timeLabelWidth} key={i} height={100 / 24} hour={i}/>);
       emptySlots.push(<EmptySlot key={i} height={100 / 24} hour={i}/>);
     }
     const cellWidth = 100 / (days + 1);
@@ -135,17 +203,9 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
 
     return (
       <div style={{flexWrap: 'wrap', display: 'flex'}} className='weekView'>
-        <WeekHeader startDate={start} days={days}/>
+        <WeekHeader timeLabelWidth={timeLabelWidth} startDate={start} days={days}/>
         <div style={{position: 'relative', display: 'flex', flexWrap: 'wrap', flexGrow: 1}}>
-          <div
-            className='currentTimeIndicator' style={{
-            display: 'block',
-            right: '0px',
-            left: '71px',
-            top: '126px',
-            position: 'absolute',
-            zIndex: 1
-          }}/>
+          <TimeIndicator offset={timeLabelWidth}/>
 
           <div style={{flexWrap: 'wrap', flexDirection: 'column', flexGrow: 1, flexBasis: '' + cellWidth + '%'}}>
             {timeSlotLabels}
@@ -153,7 +213,12 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
 
           {mainChildren.map(c => {
             return (
-              <div key={mainChildren.indexOf(c)} style={{flexDirection: 'column', flexGrow: 1, flexBasis: '' + cellWidth + '%', position: 'relative'}}>
+              <div key={mainChildren.indexOf(c)} style={{
+                flexDirection: 'column',
+                flexGrow: 1,
+                flexBasis: '' + cellWidth + '%',
+                position: 'relative'
+              }}>
                 {c}
               </div>
             );
