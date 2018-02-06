@@ -207,7 +207,7 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
         <div style={{position: 'relative', display: 'flex', flexWrap: 'wrap', flexGrow: 1}}>
           <TimeIndicator offset={timeLabelWidth}/>
 
-          <div style={{flexWrap: 'wrap', flexDirection: 'column', flexGrow: 1, flexBasis: '' + cellWidth + '%'}}>
+          <div style={{flexWrap: 'wrap', flexDirection: 'column', flexGrow: 0, flexBasis: '' + timeLabelWidth + 'px'}}>
             {timeSlotLabels}
           </div>
 

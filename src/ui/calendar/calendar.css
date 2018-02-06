@@ -38,6 +38,15 @@
     border-top: 1px solid #f7f7f7;
 }
 
+.emptySlot:hover {
+    background-color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    /*border-color: white;*/
+}
+
 .currentTimeIndicator {
     height: 1px;
     background-color: #74ad31;
