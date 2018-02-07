@@ -137,11 +137,12 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
     return (
       <Tooltip title={timeDisplay + '\n' + title}>
         <Draggable
+          position={{x: 0, y: 0}}
           onStart={this.onStart}
           onDrag={this.onDrag}
           onStop={this.onStop}
           onMouseDown={(e: MouseEvent) => console.log('mousedown')}
-          >
+        >
           <div
             className='weekEvent'
             style={{
