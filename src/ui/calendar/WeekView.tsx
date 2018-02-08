@@ -4,7 +4,7 @@ import CalendarEvent from './CalendarEvent';
 import moment from 'moment';
 import './calendar.css';
 import Tooltip from 'antd/lib/tooltip';
-import Draggable, { DraggableData } from 'react-draggable';
+import { ConnectDragSource, DragSourceSpec, DragSource, DndComponentClass, DragSourceMonitor, DragSourceConnector } from 'react-dnd';
 
 export interface WeekViewProps {
   events: CalendarEvent[];
@@ -106,21 +106,11 @@ class EmptySlot extends React.Component<EmptySlotProps, object> {
 
 interface WeekEventProps {
   event: CalendarEvent;
+  isDragging?: boolean;
+  connectDragSource?: ConnectDragSource;
 }
 
 class WeekEvent extends React.Component<WeekEventProps, object> {
-  onStart = (e: MouseEvent, data: DraggableData) => {
-    console.log('dragStart', data);
-    //
-  };
-  onDrag = (e: MouseEvent, data: DraggableData) => {
-    console.log('dragging', data);
-    //
-  };
-  onStop = (e: MouseEvent, data: DraggableData) => {
-    console.log('dragStop', data);
-    //
-  };
 
   render() {
     let start = this.props.event.start;
@@ -134,40 +124,53 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
 
     let title = this.props.event.title;
     let timeDisplay = start.format('HH:mm') + ' - ' + end.format('HH:mm');
-    return (
-      <Tooltip title={timeDisplay + '\n' + title}>
-        <Draggable
-          position={{x: 0, y: 0}}
-          onStart={this.onStart}
-          onDrag={this.onDrag}
-          onStop={this.onStop}
-          onMouseDown={(e: MouseEvent) => console.log('mousedown')}
-        >
-          <div
-            className='weekEvent'
-            style={{
-              display: 'flex',
-              top: '' + top + '%',
-              height: '' + height + '%',
-              left: '0%',
-              width: '100%',
-              position: 'absolute',
-              flexFlow: 'column wrap',
-              alignItems: 'flex-start',
-              overflow: 'hidden',
-            }}>
-            <div style={{flexGrow: 1}} className='weekEventDate'>
-              {timeDisplay}
+    if (!this.props.connectDragSource) {
+      return <h1>Error</h1>;
+    } else {
+      return this.props.connectDragSource((
+        <div>
+          <Tooltip title={timeDisplay + '\n' + title}>
+            <div
+              className='weekEvent'
+              style={{
+                display: 'flex',
+                top: '' + top + '%',
+                height: '' + height + '%',
+                left: '0%',
+                width: '100%',
+                position: 'absolute',
+                flexFlow: 'column wrap',
+                alignItems: 'flex-start',
+                overflow: 'hidden',
+              }}>
+              <div style={{flexGrow: 1}} className='weekEventDate'>
+                {timeDisplay}
+              </div>
+              <div style={{flexGrow: 1}} className='weekEventText'>
+                {title}
+              </div>
             </div>
-            <div style={{flexGrow: 1}} className='weekEventText'>
-              {title}
-            </div>
-          </div>
-        </Draggable>
-      </Tooltip>
-    );
+          </Tooltip>
+        </div>
+      ));
+    }
   }
 }
+
+let nodeSourceSpec: DragSourceSpec<WeekEventProps> = {
+  beginDrag: (props: WeekEventProps) => {
+    console.log('begin drag');
+    return ({});
+  },
+};
+let nodeSourceCollector = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  };
+};
+
+const WeekEventDraggable: DndComponentClass<WeekEventProps> = DragSource('event', nodeSourceSpec, nodeSourceCollector)(WeekEvent);
 
 interface TimeIndicatorProps {
   offset: number;
@@ -206,23 +209,24 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     days = Math.abs(days === 0 ? 1 : days);
 
     let timeSlotLabels = [];
-    let emptySlots = [];
-
-    for (let i = 0; i < 24; i++) {
-      timeSlotLabels.push(<TimeSlotLabel width={timeLabelWidth} key={i} height={100 / 24} hour={i}/>);
-      emptySlots.push(<EmptySlot key={i} height={100 / 24} hour={i}/>);
+    for (let j = 0; j < 24; j++) {
+      timeSlotLabels.push(<TimeSlotLabel width={timeLabelWidth} key={j} height={100 / 24} hour={j}/>);
     }
     const cellWidth = 100 / (days + 1);
 
     let mainChildren: React.ReactElement<object>[][] = [];
     for (let i = 0; i < days; i++) {
+      let emptySlots = [];
+      for (let j = 0; j < 24; j++) {
+        emptySlots.push(<EmptySlot key={'' + i + '-' + j} height={100 / 24} hour={j}/>);
+      }
       let dayStart = start.clone().add(i, 'days');
       let dayEnd = start.clone().add(i, 'days').hour(23).minute(59).second(59).millisecond(999);
-      let renderDays = this.renderDays(dayStart, dayEnd, this.props.events);
+      let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events);
 
       let items: React.ReactElement<object>[] = [];
       emptySlots.forEach(e => items.push(e));
-      renderDays.forEach(e => items.push(e));
+      eventsRendered.forEach(e => items.push(e));
       mainChildren.push(items);
     }
 
@@ -254,13 +258,13 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     );
   }
 
-  private renderDays(dayStart: moment.Moment, dayEnd: moment.Moment, events: CalendarEvent[]): React.ReactElement<object>[] {
+  private renderDaysEvents(dayStart: moment.Moment, dayEnd: moment.Moment, events: CalendarEvent[]): React.ReactElement<object>[] {
     let todaysEvents = events.filter(e => {
       return e.end.isBefore(dayEnd) && e.end.isAfter(dayStart);
     });
     return todaysEvents.map(e => {
       return (
-        <WeekEvent key={e.title} event={e}/>
+        <WeekEventDraggable key={e.title} event={e}/>
       );
     });
   }

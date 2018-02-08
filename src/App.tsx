@@ -7,6 +7,8 @@ import WebStorage from './store/WebStorage';
 import LocalCryptoStorage from './store/LocalCryptoStorage';
 import Idnadrev from './Idnadrev';
 import { BrowserLogin } from './ui/login/BrowserLogin';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const localCryptoStorage = new LocalCryptoStorage(null);
 const webStorage = new WebStorage(localCryptoStorage);
@@ -14,7 +16,7 @@ const globalStore = new GlobalStore(webStorage);
 const uiStore = new UiStore();
 
 @observer
-class App extends React.Component {
+class App extends React.Component<{},{}> {
   updateDimensions = () => {
     if (window) {
       uiStore.updateWidth(window.innerWidth, window.innerHeight);
@@ -43,4 +45,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default DragDropContext(HTML5Backend)(App);
