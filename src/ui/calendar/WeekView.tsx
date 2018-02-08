@@ -4,7 +4,19 @@ import CalendarEvent from './CalendarEvent';
 import moment from 'moment';
 import './calendar.css';
 import Tooltip from 'antd/lib/tooltip';
-import { ConnectDragSource, DragSourceSpec, DragSource, DndComponentClass, DragSourceMonitor, DragSourceConnector } from 'react-dnd';
+import {
+  DropTarget,
+  ConnectDragSource,
+  DragSourceSpec,
+  DragSource,
+  DndComponentClass,
+  DragSourceMonitor,
+  DragSourceConnector
+} from 'react-dnd';
+import DropTargetConnector = __ReactDnd.DropTargetConnector;
+import DropTargetMonitor = __ReactDnd.DropTargetMonitor;
+import DropTargetSpec = __ReactDnd.DropTargetSpec;
+import ConnectDropTarget = __ReactDnd.ConnectDropTarget;
 
 export interface WeekViewProps {
   events: CalendarEvent[];
@@ -81,28 +93,52 @@ class TimeSlotLabel extends React.Component<TimeSlotLabelProps, object> {
 interface EmptySlotProps {
   hour: number;
   height: number;
+  dayStart: moment.Moment;
+  connectDropTarget?: ConnectDropTarget;
+  isOver?: boolean;
 }
 
 class EmptySlot extends React.Component<EmptySlotProps, object> {
   render() {
     const key = 'emptySlot-' + this.props.hour;
     const style = {flex: '1 0 0'};
-    return (
-      <div
-        key={key} style={{
-        display: 'flex',
-        flexWrap: 'nowrap',
-        flexFlow: 'column nowrap',
-        flexGrow: 1,
-        minHeight: 40,
-        flexBasis: '' + this.props.height + '%'
-      }}>
-        <div style={style} className='emptySlot'/>
-        <div style={style} className='emptySlot'/>
-      </div>
-    );
+    const className = this.props.isOver ? 'emptySlotOver' : 'emptySlot';
+    console.log(this.props.isOver)
+    if (this.props.connectDropTarget) {
+      return this.props.connectDropTarget(
+        <div
+          key={key} style={{
+          display: 'flex',
+          flexWrap: 'nowrap',
+          flexFlow: 'column nowrap',
+          flexGrow: 1,
+          minHeight: 40,
+          flexBasis: '' + this.props.height + '%'
+        }}>
+          <div style={style} className={className}/>
+          <div style={style} className={className}/>
+        </div>
+      );
+    } else {
+      return <h1>Error</h1>;
+    }
   }
 }
+
+let emptySlotSpec: DropTargetSpec<EmptySlotProps> = {
+  drop: (props: EmptySlotProps) => {
+    console.log('dropped');
+    return ({});
+  },
+};
+let emptySlotCollector = (connect: DropTargetConnector, monitor: DropTargetMonitor) => {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  };
+};
+
+const EmptySlotDraggable: DndComponentClass<EmptySlotProps> = DropTarget('event', emptySlotSpec, emptySlotCollector)(EmptySlot);
 
 interface WeekEventProps {
   event: CalendarEvent;
@@ -157,20 +193,20 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
   }
 }
 
-let nodeSourceSpec: DragSourceSpec<WeekEventProps> = {
+let weekEventSpec: DragSourceSpec<WeekEventProps> = {
   beginDrag: (props: WeekEventProps) => {
     console.log('begin drag');
     return ({});
   },
 };
-let nodeSourceCollector = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
+let weekEventCollector = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
   return {
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging()
   };
 };
 
-const WeekEventDraggable: DndComponentClass<WeekEventProps> = DragSource('event', nodeSourceSpec, nodeSourceCollector)(WeekEvent);
+const WeekEventDraggable: DndComponentClass<WeekEventProps> = DragSource('event', weekEventSpec, weekEventCollector)(WeekEvent);
 
 interface TimeIndicatorProps {
   offset: number;
@@ -216,11 +252,12 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
 
     let mainChildren: React.ReactElement<object>[][] = [];
     for (let i = 0; i < days; i++) {
+      let dayStart = start.clone().add(i, 'days');
       let emptySlots = [];
       for (let j = 0; j < 24; j++) {
-        emptySlots.push(<EmptySlot key={'' + i + '-' + j} height={100 / 24} hour={j}/>);
+        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 24} dayStart={dayStart.clone()}
+                                            hour={j}/>);
       }
-      let dayStart = start.clone().add(i, 'days');
       let dayEnd = start.clone().add(i, 'days').hour(23).minute(59).second(59).millisecond(999);
       let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events);
 

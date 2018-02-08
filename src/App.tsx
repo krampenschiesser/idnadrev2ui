@@ -16,7 +16,7 @@ const globalStore = new GlobalStore(webStorage);
 const uiStore = new UiStore();
 
 @observer
-class App extends React.Component<{},{}> {
+class App extends React.Component<{}, {}> {
   updateDimensions = () => {
     if (window) {
       uiStore.updateWidth(window.innerWidth, window.innerHeight);

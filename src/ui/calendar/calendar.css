@@ -38,6 +38,11 @@
     border-top: 1px solid #f7f7f7;
 }
 
+.emptySlotOver {
+    border-top: 1px solid #f7f7f7;
+    background-color: #0a64a0;
+}
+
 .emptySlot:hover {
     background-color: white;
     border-radius: 5px;
