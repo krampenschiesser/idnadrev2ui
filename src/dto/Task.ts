@@ -166,7 +166,84 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     }
   }
 
-  isInDateRange(firstOfWeek: moment.Moment, lastOfWeek: moment.Moment) {
+  isInDateRange(firstOfWeek: moment.Moment, lastOfWeek: moment.Moment): boolean {
+    let schedule = this.details.schedule;
+    if (schedule) {
+      let fixedScheduling = schedule.fixedScheduling;
+      let proposedDate = schedule.proposedDate;
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      if (fixedScheduling) {
+        let start = moment(fixedScheduling.scheduledDateTime);
+        return start.isBetween(firstOfWeek, lastOfWeek) && !!this.details.estimatedTime;
+      } else if (proposedDate) {
+        let start = moment(proposedDate.proposedDateTime);
+        return start.isBetween(firstOfWeek, lastOfWeek);
+      } else if (proposedWeekDayYear) {
+        let start = moment().year(proposedWeekDayYear.proposedYear).week(proposedWeekDayYear.proposedWeek).hour(0).minute(0).second(0).millisecond(0);
+        if (proposedWeekDayYear.proposedWeekDay) {
+          start.weekday(proposedWeekDayYear.proposedWeekDay);
+        } else {
+          start.weekday(0);
+        }
+        return start.isBetween(firstOfWeek, lastOfWeek);
+      }
+    }
+    return false;
+  }
 
+  getStartEnd(): [moment.Moment, moment.Moment] {
+    let schedule = this.details.schedule;
+    if (schedule) {
+      let fixedScheduling = schedule.fixedScheduling;
+      let proposedDate = schedule.proposedDate;
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      let estimatedTime = this.details.estimatedTime;
+      if (fixedScheduling) {
+        let start = moment(fixedScheduling.scheduledDateTime);
+        let end = start.clone().add(estimatedTime, 'seconds');
+        return [start, end];
+      } else if (proposedDate) {
+        let start = moment(proposedDate.proposedDateTime);
+        let end = start.add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
+        return [start, end];
+      } else if (proposedWeekDayYear) {
+        let start = moment().year(proposedWeekDayYear.proposedYear).week(proposedWeekDayYear.proposedWeek).hour(0).minute(0).second(0).millisecond(0);
+        let end;
+        if (proposedWeekDayYear.proposedWeekDay) {
+          start.weekday(proposedWeekDayYear.proposedWeekDay);
+          end = start.add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
+        } else {
+          start.weekday(0);
+          end = start.add(7, 'days');
+        }
+        return [start, end];
+      }
+    }
+    return [moment(), moment()];
+  }
+
+  isWholeDay(): boolean {
+    let schedule = this.details.schedule;
+    if (schedule) {
+      let proposedDate = schedule.proposedDate;
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      if (proposedDate) {
+        return proposedDate.proposedDateOnly;
+      } else if (proposedWeekDayYear) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isWholeWeek(): boolean {
+    let schedule = this.details.schedule;
+    if (schedule) {
+      let proposedWeekDayYear = schedule.proposedWeekDayYear;
+      if (proposedWeekDayYear) {
+        return true;
+      }
+    }
+    return false;
   }
 }

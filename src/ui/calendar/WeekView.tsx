@@ -211,11 +211,13 @@ let weekEventSpec: DragSourceSpec<WeekEventProps> = {
     let dropResult: any = monitor.getDropResult();
     if (dropResult && 'hour' in dropResult) {
       let slot: DropSlotResult = dropResult;
-      let hour = slot.hour;
-      let minute = slot.minute;
-      let date = slot.date;
 
-      props.event.reschedule(date, hour, minute);
+      let event = {
+        hour: slot.hour,
+        minute: slot.minute,
+        date: slot.date,
+      };
+      props.event.reschedule(event);
     }
   }
 };
@@ -275,7 +277,8 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
       let dayStart = start.clone().add(i, 'days');
       let emptySlots = [];
       for (let j = 0; j < 48; j++) {
-        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 48} dayStart={dayStart.clone()} hour={Math.trunc(j / 2)} minute={j % 2 === 1 ? 30 : 0}/>);
+        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 48} dayStart={dayStart.clone()}
+                                            hour={Math.trunc(j / 2)} minute={j % 2 === 1 ? 30 : 0}/>);
       }
       let dayEnd = start.clone().add(i, 'days').hour(23).minute(59).second(59).millisecond(999);
       let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events);

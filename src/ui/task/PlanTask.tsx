@@ -7,7 +7,7 @@ import Task from '../../dto/Task';
 import { TaskFilter } from '../../store/TaskFilter';
 import WeekView from '../calendar/WeekView';
 import * as moment from 'moment';
-import CalendarEvent from '../calendar/CalendarEvent';
+import CalendarEvent, { RescheduleDate, RescheduleDateTime } from '../calendar/CalendarEvent';
 
 export interface PlanTaskProps {
   store: GlobalStore;
@@ -52,13 +52,16 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
     let events: CalendarEvent[] = [];
 
     this.tasks.filter((t) => t.isInDateRange(firstOfWeek, lastOfWeek)).map(t => {
-
+      let [start, end] = t.getStartEnd();
       return {
-        start: date,
-        end: end,
-        title: 'Event' + (i + 1),
-        reschedule: (date2, hour, minute) => {
+        start: start.clone(),
+        end: end.clone(),
+        title: t.name,
+        wholeDay: t.isWholeDay(),
+        wholeWeek: t.isWholeWeek(),
+        reschedule: (dateTime?: RescheduleDateTime, rescheduleDate?: RescheduleDate) => {
 
+          //
         }
       };
     }).forEach(e => events.push(e));
