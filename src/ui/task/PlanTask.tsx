@@ -46,27 +46,26 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
   };
 
   render() {
-    let now = moment();
-    let week = moment().add(7, 'days');
+    let firstOfWeek = moment().day(0).hour(0).minute(0).second(0).millisecond(0);
+    let lastOfWeek = moment().day(7).hour(23).minute(59).second(59).millisecond(999);
 
     let events: CalendarEvent[] = [];
 
-    for (let i = 0; i < 7; i++) {
-      let date = now.clone().add(i, 'days');
-      date.hour(Math.floor(Math.random() * 23));
+    this.tasks.filter((t) => t.isInDateRange(firstOfWeek, lastOfWeek)).map(t => {
 
-      let duration: number = 15 + Math.floor(Math.random() * 90);
-      let end = date.clone().add(duration, 'm');
-
-      events.push({
+      return {
         start: date,
         end: end,
         title: 'Event' + (i + 1),
-      });
-    }
+        reschedule: (date2, hour, minute) => {
+
+        }
+      };
+    }).forEach(e => events.push(e));
+
     return (
       <div>
-        <WeekView events={events} startDate={now} endDate={week}/>
+        <WeekView events={events} startDate={firstOfWeek} endDate={lastOfWeek}/>
       </div>
     );
   }

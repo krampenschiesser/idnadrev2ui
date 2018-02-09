@@ -166,4 +166,7 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     }
   }
 
+  isInDateRange(firstOfWeek: moment.Moment, lastOfWeek: moment.Moment) {
+
+  }
 }

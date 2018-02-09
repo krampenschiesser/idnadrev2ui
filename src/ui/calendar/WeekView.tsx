@@ -92,6 +92,7 @@ class TimeSlotLabel extends React.Component<TimeSlotLabelProps, object> {
 
 interface EmptySlotProps {
   hour: number;
+  minute: number;
   height: number;
   dayStart: moment.Moment;
   connectDropTarget?: ConnectDropTarget;
@@ -101,23 +102,20 @@ interface EmptySlotProps {
 class EmptySlot extends React.Component<EmptySlotProps, object> {
   render() {
     const key = 'emptySlot-' + this.props.hour;
-    const style = {flex: '1 0 0'};
     const className = this.props.isOver ? 'emptySlotOver' : 'emptySlot';
-    console.log(this.props.isOver)
     if (this.props.connectDropTarget) {
       return this.props.connectDropTarget(
         <div
-          key={key} style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          flexFlow: 'column nowrap',
-          flexGrow: 1,
-          minHeight: 40,
-          flexBasis: '' + this.props.height + '%'
-        }}>
-          <div style={style} className={className}/>
-          <div style={style} className={className}/>
-        </div>
+          className={className}
+          key={key}
+          style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            flexFlow: 'column nowrap',
+            flexGrow: 1,
+            minHeight: 20,
+            flexBasis: '' + this.props.height + '%'
+          }}/>
       );
     } else {
       return <h1>Error</h1>;
@@ -125,10 +123,20 @@ class EmptySlot extends React.Component<EmptySlotProps, object> {
   }
 }
 
+interface DropSlotResult {
+  date: moment.Moment;
+  hour: number;
+  minute: number;
+}
+
 let emptySlotSpec: DropTargetSpec<EmptySlotProps> = {
-  drop: (props: EmptySlotProps) => {
-    console.log('dropped');
-    return ({});
+  drop: (props: EmptySlotProps, monitor: DropTargetMonitor, component: React.Component<EmptySlotProps>): DropSlotResult => {
+    console.log('dropped', monitor.getItem(), monitor.getDropResult(), component.props);
+    return ({
+      date: props.dayStart.clone(),
+      hour: props.hour,
+      minute: props.minute,
+    });
   },
 };
 let emptySlotCollector = (connect: DropTargetConnector, monitor: DropTargetMonitor) => {
@@ -198,6 +206,18 @@ let weekEventSpec: DragSourceSpec<WeekEventProps> = {
     console.log('begin drag');
     return ({});
   },
+  endDrag: (props: WeekEventProps, monitor: DragSourceMonitor) => {
+    // tslint:disable-next-line
+    let dropResult: any = monitor.getDropResult();
+    if (dropResult && 'hour' in dropResult) {
+      let slot: DropSlotResult = dropResult;
+      let hour = slot.hour;
+      let minute = slot.minute;
+      let date = slot.date;
+
+      props.event.reschedule(date, hour, minute);
+    }
+  }
 };
 let weekEventCollector = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
   return {
@@ -254,9 +274,8 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     for (let i = 0; i < days; i++) {
       let dayStart = start.clone().add(i, 'days');
       let emptySlots = [];
-      for (let j = 0; j < 24; j++) {
-        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 24} dayStart={dayStart.clone()}
-                                            hour={j}/>);
+      for (let j = 0; j < 48; j++) {
+        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 48} dayStart={dayStart.clone()} hour={Math.trunc(j / 2)} minute={j % 2 === 1 ? 30 : 0}/>);
       }
       let dayEnd = start.clone().add(i, 'days').hour(23).minute(59).second(59).millisecond(999);
       let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events);

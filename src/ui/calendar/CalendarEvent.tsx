@@ -10,4 +10,6 @@ export default interface CalendarEvent {
   onClick?: (event: CalendarEvent) => void;
   onNewStart?: (event: CalendarEvent, newStart: moment.Moment) => void;
   onResize?: (event: CalendarEvent, newStart: moment.Moment, newEnd: moment.Moment) => void;
+
+  reschedule: (date: moment.Moment, hour: number, minute: number) => void;
 }
