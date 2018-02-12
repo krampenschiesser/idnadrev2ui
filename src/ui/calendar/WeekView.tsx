@@ -38,7 +38,7 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
     let now = start.clone();
 
     const cellWidth = 100 / (days + 1);
-    const cellStyle = {display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%'};
+    const cellStyle = {display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%', minWidth: 75};
     const cellStyleTimeLabel = {
       display: 'flex',
       flexGrow: 0,
@@ -48,7 +48,7 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
 
     let dayColumns = [];
     for (let i = 0; i < days; i++) {
-      let item = <div style={cellStyle} className='weekHeaderDate' key={now.format()}>{now.format('ddd, L')}</div>;
+      let item = <div style={cellStyle} className='weekHeaderDate' key={now.format()}>{now.format('ddd, D')}</div>;
       dayColumns.push(item);
       now.add(1, 'days');
     }
@@ -114,7 +114,8 @@ class EmptySlot extends React.Component<EmptySlotProps, object> {
             flexFlow: 'column nowrap',
             flexGrow: 1,
             minHeight: 20,
-            flexBasis: '' + this.props.height + '%'
+            flexBasis: '' + this.props.height + '%',
+            minWidth: 75
           }}/>
       );
     } else {
@@ -152,10 +153,10 @@ interface WeekEventProps {
   event: CalendarEvent;
   isDragging?: boolean;
   connectDragSource?: ConnectDragSource;
+  cellWidth: number;
 }
 
 class WeekEvent extends React.Component<WeekEventProps, object> {
-
   render() {
     let start = this.props.event.start;
     let end = this.props.event.end;
@@ -169,34 +170,58 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
     let title = this.props.event.title;
     let timeDisplay = start.format('HH:mm') + ' - ' + end.format('HH:mm');
     if (!this.props.connectDragSource) {
-      return <h1>Error</h1>;
+      return <h1>Error weekevent</h1>;
     } else {
-      return this.props.connectDragSource((
-        <div>
-          <Tooltip title={timeDisplay + '\n' + title}>
-            <div
-              className='weekEvent'
-              style={{
-                display: 'flex',
-                top: '' + top + '%',
-                height: '' + height + '%',
-                left: '0%',
-                width: '100%',
-                position: 'absolute',
-                flexFlow: 'column wrap',
-                alignItems: 'flex-start',
-                overflow: 'hidden',
-              }}>
-              <div style={{flexGrow: 1}} className='weekEventDate'>
-                {timeDisplay}
+      if (this.props.event.wholeDay) {
+        return this.props.connectDragSource((
+          <div>
+            <Tooltip title={timeDisplay + '\n' + title}>
+              <div
+                className='weekEvent'
+                style={{
+                  width: '100%',
+                  flexBasis: '' + this.props.cellWidth + '%',
+                  flexGrow: 1,
+                }}>
+                <div style={{flexGrow: 1}} className='weekEventDate'>
+                  {timeDisplay}
+                </div>
+                <div style={{flexGrow: 1}} className='weekEventText'>
+                  {title}
+                </div>
               </div>
-              <div style={{flexGrow: 1}} className='weekEventText'>
-                {title}
+            </Tooltip>
+          </div>
+        ));
+      } else {
+        return this.props.connectDragSource((
+          <div>
+            <Tooltip title={timeDisplay + '\n' + title}>
+              <div
+                className='weekEvent'
+                style={{
+                  display: 'flex',
+                  top: '' + top + '%',
+                  height: '' + height + '%',
+                  left: '0%',
+                  width: '100%',
+                  position: 'absolute',
+                  flexFlow: 'column wrap',
+                  alignItems: 'flex-start',
+                  overflow: 'hidden',
+                  minWidth: 75
+                }}>
+                <div style={{flexGrow: 1}} className='weekEventDate'>
+                  {timeDisplay}
+                </div>
+                <div style={{flexGrow: 1}} className='weekEventText'>
+                  {title}
+                </div>
               </div>
-            </div>
-          </Tooltip>
-        </div>
-      ));
+            </Tooltip>
+          </div>
+        ));
+      }
     }
   }
 }
@@ -255,33 +280,166 @@ class TimeIndicator extends React.Component<TimeIndicatorProps, object> {
   }
 }
 
-@observer
-export default class WeekView extends React.Component<WeekViewProps, object> {
+interface DayLongEventsProps {
+  events: CalendarEvent[];
+  startDate: moment.Moment;
+  endDate: moment.Moment;
+  timeLabelWidth?: number;
+  days: number;
+}
 
+class DayLongEvents extends React.Component<DayLongEventsProps, object> {
+
+  static getDaySpan(event: CalendarEvent): number {
+    return event.end.dayOfYear() - event.start.dayOfYear();
+  }
+
+  render() {
+    // const start = this.props.startDate;
+    // const end = this.props.endDate;
+    const days = this.props.days;
+
+    const cellWidth = 100 / (days);
+
+    let singleDayEvents = this.props.events.filter(t => t.wholeDay).filter(t => t.start.dayOfYear() === t.end.dayOfYear());
+    let multiDayEvents = this.props.events.filter(t => t.wholeDay).filter(t => t.start.dayOfYear() !== t.end.dayOfYear());
+
+    multiDayEvents.sort((cur, other) => {
+      let daysCur = DayLongEvents.getDaySpan(cur);
+      let daysOther = DayLongEvents.getDaySpan(other);
+      return daysOther - daysCur; //reverse
+    });
+
+    let eventRows: CalendarEvent[][] = [];
+    while (multiDayEvents.length > 0) {
+      let event = multiDayEvents.shift();
+      if (event) {
+        let found: CalendarEvent[] = [];
+        found.push(event);
+
+        this.fillNonIntersecting(found, multiDayEvents);
+        this.fillNonIntersecting(found, singleDayEvents);
+
+        eventRows.push(found);
+      }
+    }
+    while (singleDayEvents.length > 0) {
+      let event = singleDayEvents.shift();
+      if (event) {
+        let found: CalendarEvent[] = [];
+        found.push(event);
+        this.fillNonIntersecting(found, singleDayEvents);
+        eventRows.push(found);
+      }
+    }
+
+    let rows = [];
+    for (let events of eventRows) {
+      let start = this.props.startDate.clone();
+
+      let children = [];
+      for (let day = 0; day < days;) {
+        start.add(1, 'day');
+        let end = start.clone().hour(23).minute(59).second(59).millisecond(999);
+
+        let event = events.find(e => e.start.isBetween(start, end) || e.end.isBetween(start, end));
+        if (event) {
+          let daySpan = DayLongEvents.getDaySpan(event);
+          day += daySpan;
+          children.push(<WeekEventDraggable key={'' + rows.length + '-' + day} cellWidth={cellWidth} event={event}/>);
+        } else {
+          day++;
+          children.push(<div key={'' + rows.length + '-' + day} style={{flexBasis: '' + cellWidth + '%', flexGrow: 1, width: '100%'}}/>);
+        }
+      }
+      rows.push((
+        <div key={rows.length} style={{display: 'flex', flexDirection: 'row', flexGrow: 1, width: '100%'}}>
+          {children}
+        </div>
+      ));
+    }
+
+    return (
+      <div style={{display: 'flex', flexGrow: 1, flexDirection: 'row'}}>
+        <div
+          key='emptySlot' style={{
+          width: this.props.timeLabelWidth,
+        }}/>
+        <div style={{display: 'flex', flexGrow: 1, flexDirection: 'row'}}>
+          {rows}
+        </div>
+      </div>
+    );
+  }
+
+  private fillNonIntersecting(toFill: CalendarEvent[], toSearch: CalendarEvent[]) {
+    for (let next = this.findNextNonIntersecting(toFill, toSearch); next[0] !== undefined; next = this.findNextNonIntersecting(toFill, toSearch)) {
+      let ev: CalendarEvent | undefined = next[0];
+      let index: number = next[1];
+      if (ev) {
+        toFill.push(ev);
+        toSearch.splice(index, 1);
+      }
+    }
+  }
+
+  private findNextNonIntersecting(current: CalendarEvent[], candidates: CalendarEvent[]): [CalendarEvent | undefined, number] {
+    let index = candidates.findIndex(e => {
+      if (e === undefined) {
+        return false;
+      }
+
+      for (let cur of current) {
+        let intersects = this.intersects(cur, e);
+        if (intersects) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (index > 0) {
+      return [candidates[index], index];
+    } else {
+      return [undefined, index];
+    }
+  }
+
+  private intersects(event: CalendarEvent, other: CalendarEvent): boolean {
+    return other.start.isBetween(event.start, event.end);
+  }
+}
+
+@observer
+export default class WeekView extends React.Component
+  <WeekViewProps, object> {
   render() {
     const timeLabelWidth = this.props.timeLabelWidth ? this.props.timeLabelWidth : 40;
     const start = this.props.startDate.hour(0).minute(0).second(0).millisecond(0);
     const end = this.props.endDate.hour(23).minute(59).second(59).millisecond(999);
 
-    let days = start.diff(end, 'days');
-    days = Math.abs(days === 0 ? 1 : days);
+    let days = end.diff(start, 'days');
+    days = Math.abs(days) + 1;
 
     let timeSlotLabels = [];
     for (let j = 0; j < 24; j++) {
       timeSlotLabels.push(<TimeSlotLabel width={timeLabelWidth} key={j} height={100 / 24} hour={j}/>);
     }
-    const cellWidth = 100 / (days + 1);
+    const cellWidth = 100 / (days);
 
     let mainChildren: React.ReactElement<object>[][] = [];
     for (let i = 0; i < days; i++) {
       let dayStart = start.clone().add(i, 'days');
       let emptySlots = [];
       for (let j = 0; j < 48; j++) {
-        emptySlots.push(<EmptySlotDraggable key={'' + i + '-' + j} height={100 / 48} dayStart={dayStart.clone()}
-                                            hour={Math.trunc(j / 2)} minute={j % 2 === 1 ? 30 : 0}/>);
+        emptySlots.push((
+          <EmptySlotDraggable
+            key={'' + i + '-' + j} height={100 / 48} dayStart={dayStart.clone()}
+            hour={Math.trunc(j / 2)} minute={j % 2 === 1 ? 30 : 0}/>
+        ));
       }
       let dayEnd = start.clone().add(i, 'days').hour(23).minute(59).second(59).millisecond(999);
-      let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events);
+      let eventsRendered = this.renderDaysEvents(dayStart, dayEnd, this.props.events, cellWidth);
 
       let items: React.ReactElement<object>[] = [];
       emptySlots.forEach(e => items.push(e));
@@ -290,9 +448,10 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     }
 
     return (
-      <div style={{flexWrap: 'wrap', display: 'flex'}} className='weekView'>
+      <div style={{flexWrap: 'wrap', display: 'flex', flexDirection: 'column'}} className='weekView'>
         <WeekHeader timeLabelWidth={timeLabelWidth} startDate={start} days={days}/>
-        <div style={{position: 'relative', display: 'flex', flexWrap: 'wrap', flexGrow: 1}}>
+        <DayLongEvents timeLabelWidth={timeLabelWidth} events={this.props.events} startDate={start} endDate={end} days={days}/>
+        <div style={{position: 'relative', display: 'flex', flexGrow: 1}}>
           <TimeIndicator offset={timeLabelWidth}/>
 
           <div style={{flexWrap: 'wrap', flexDirection: 'column', flexGrow: 0, flexBasis: '' + timeLabelWidth + 'px'}}>
@@ -303,7 +462,7 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
             return (
               <div
                 key={mainChildren.indexOf(c)} style={{
-                flexDirection: 'column',
+                flexDirection: 'row',
                 flexGrow: 1,
                 flexBasis: '' + cellWidth + '%',
                 position: 'relative'
@@ -317,13 +476,13 @@ export default class WeekView extends React.Component<WeekViewProps, object> {
     );
   }
 
-  private renderDaysEvents(dayStart: moment.Moment, dayEnd: moment.Moment, events: CalendarEvent[]): React.ReactElement<object>[] {
-    let todaysEvents = events.filter(e => {
+  private renderDaysEvents(dayStart: moment.Moment, dayEnd: moment.Moment, events: CalendarEvent[], cellWidth: number): React.ReactElement<object>[] {
+    let todaysEvents = events.filter(e => !e.wholeDay).filter(e => {
       return e.end.isBefore(dayEnd) && e.end.isAfter(dayStart);
     });
     return todaysEvents.map(e => {
       return (
-        <WeekEventDraggable key={e.title} event={e}/>
+        <WeekEventDraggable key={e.title} event={e} cellWidth={cellWidth}/>
       );
     });
   }

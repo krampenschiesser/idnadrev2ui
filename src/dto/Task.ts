@@ -14,7 +14,7 @@ import IdnadrevFile from './IdnadrevFile';
 import { FileType } from './FileType';
 import { FileId } from './FileId';
 import { Tag } from './Tag';
-import moment = require('moment');
+import moment from 'moment';
 
 export enum TaskState {
   None = 'None',

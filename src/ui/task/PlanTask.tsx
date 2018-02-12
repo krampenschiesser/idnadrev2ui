@@ -8,6 +8,9 @@ import { TaskFilter } from '../../store/TaskFilter';
 import WeekView from '../calendar/WeekView';
 import * as moment from 'moment';
 import CalendarEvent, { RescheduleDate, RescheduleDateTime } from '../calendar/CalendarEvent';
+import { DatePicker } from 'antd';
+
+const {RangePicker} = DatePicker;
 
 export interface PlanTaskProps {
   store: GlobalStore;
@@ -19,13 +22,14 @@ export interface PlanTaskProps {
 export default class PlanTask extends React.Component<PlanTaskProps, object> {
   @observable tasks: Task[] = [];
   @observable previewTask: Task | null = null;
-  @observable date: Date = new Date();
+
+  @observable startDate: moment.Moment = moment().day(0).hour(0).minute(0).second(0).millisecond(0);
+  @observable endDate: moment.Moment = moment().day(6).hour(23).minute(59).second(59).millisecond(999);
 
   filter: TaskFilter = {finished: false};
 
   componentWillMount() {
     this.props.uiStore.header = 'Plan Tasks';
-    this.date = new Date();
   }
 
   componentDidMount() {
@@ -45,13 +49,20 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
     });
   };
 
-  render() {
-    let firstOfWeek = moment().day(0).hour(0).minute(0).second(0).millisecond(0);
-    let lastOfWeek = moment().day(7).hour(23).minute(59).second(59).millisecond(999);
+  changeDateRange = (range: [moment.Moment, moment.Moment]) => {
+    if (range && range[0]) {
+      this.startDate = range[0];
+      this.endDate = range[1];
+    } else {
+      this.startDate = moment().day(0).hour(0).minute(0).second(0).millisecond(0);
+      this.endDate = moment().day(6).hour(23).minute(59).second(59).millisecond(999);
+    }
+  };
 
+  render() {
     let events: CalendarEvent[] = [];
 
-    this.tasks.filter((t) => t.isInDateRange(firstOfWeek, lastOfWeek)).map(t => {
+    this.tasks.filter((t) => t.isInDateRange(this.startDate, this.endDate)).map(t => {
       let [start, end] = t.getStartEnd();
       return {
         start: start.clone(),
@@ -68,7 +79,8 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
 
     return (
       <div>
-        <WeekView events={events} startDate={firstOfWeek} endDate={lastOfWeek}/>
+        <RangePicker defaultValue={[this.startDate, this.endDate]} onChange={this.changeDateRange}/>
+        <WeekView events={events} startDate={this.startDate} endDate={this.endDate}/>
       </div>
     );
   }

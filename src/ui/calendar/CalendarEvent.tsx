@@ -14,7 +14,6 @@ export default interface CalendarEvent {
   start: moment.Moment;
   end: moment.Moment;
   wholeDay?: boolean;
-  wholeWeek?: boolean;
   title: string;
   details?: React.Component;
   onClick?: (event: CalendarEvent) => void;
@@ -22,4 +21,5 @@ export default interface CalendarEvent {
   onResize?: (event: CalendarEvent, newStart: moment.Moment, newEnd: moment.Moment) => void;
 
   reschedule: (dateTime?: RescheduleDateTime, rescheduleDate?: RescheduleDate) => void;
+
 }
