@@ -38,26 +38,38 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
     let now = start.clone();
 
     const cellWidth = 100 / (days + 1);
-    const cellStyle = {display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%', minWidth: 75};
-    const cellStyleTimeLabel = {
-      display: 'flex',
-      flexGrow: 0,
-      flexBasis: this.props.timeLabelWidth + 'px',
-      width: this.props.timeLabelWidth + 'px',
-    };
+    // const cellStyle = {display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%', minWidth: 75, flexDirection: 'column'};
 
     let dayColumns = [];
     for (let i = 0; i < days; i++) {
-      let item = <div style={cellStyle} className='weekHeaderDate' key={now.format()}>{now.format('ddd, D')}</div>;
+      let item = (
+        <div style={{display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%', minWidth: 75, flexDirection: 'column'}} className='weekHeaderDate' key={now.format()}>
+          <span className={'weekDayTitle' + this.getTitleExtension(now)} style={{width: '100%'}}>{now.format('ddd')}</span>
+          <span className={'weekDayTitleDate' + this.getTitleExtension(now)} style={{width: '100%'}}>{now.format('D')}</span>
+        </div>
+      );
       dayColumns.push(item);
       now.add(1, 'days');
     }
     return (
       <div style={{display: 'flex', width: '100%'}} className='weekHeader'>
-        <div style={cellStyleTimeLabel} className='weekHeaderGap'/>
+        <div style={{display: 'flex', flexGrow: 0, flexBasis: this.props.timeLabelWidth + 'px', width: this.props.timeLabelWidth + 'px', flexDirection: 'column'}} className='weekHeaderGap'>
+          <span className='weekNumber'>{moment().week()}</span>
+          <span style={{fontSize: 'smaller'}}>GMT-{moment().utcOffset() / 60}</span>
+        </div>
         {dayColumns}
       </div>
     );
+  }
+
+  private getTitleExtension(now: moment.Moment): string {
+    if (now.isAfter(moment().hours(23).minute(59).second(59).millisecond(999))) {
+      return 'Future';
+    } else if (now.isBefore(moment().hours(0).minute(0).second(0).millisecond(0))) {
+      return 'Past';
+    } else {
+      return 'Now';
+    }
   }
 }
 
@@ -174,7 +186,12 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
     } else {
       if (this.props.event.wholeDay) {
         return this.props.connectDragSource((
-          <div>
+          <div
+            className='wholeDayEventSlot' style={{
+            width: '100%',
+            flexBasis: '' + this.props.cellWidth + '%',
+            flexGrow: 1,
+          }}>
             <Tooltip title={timeDisplay + '\n' + title}>
               <div
                 className='weekEvent'
@@ -291,7 +308,7 @@ interface DayLongEventsProps {
 class DayLongEvents extends React.Component<DayLongEventsProps, object> {
 
   static getDaySpan(event: CalendarEvent): number {
-    return event.end.dayOfYear() - event.start.dayOfYear();
+    return event.end.dayOfYear() - event.start.dayOfYear() + 1;
   }
 
   render() {
@@ -335,21 +352,22 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
 
     let rows = [];
     for (let events of eventRows) {
-      let start = this.props.startDate.clone();
 
       let children = [];
       for (let day = 0; day < days;) {
-        start.add(1, 'day');
+        console.log('adding day', day, days);
+        let start = this.props.startDate.clone().add(day, 'day');
         let end = start.clone().hour(23).minute(59).second(59).millisecond(999);
 
         let event = events.find(e => e.start.isBetween(start, end) || e.end.isBetween(start, end));
         if (event) {
           let daySpan = DayLongEvents.getDaySpan(event);
+          start.add(daySpan, 'day');
           day += daySpan;
           children.push(<WeekEventDraggable key={'' + rows.length + '-' + day} cellWidth={cellWidth} event={event}/>);
         } else {
           day++;
-          children.push(<div key={'' + rows.length + '-' + day} style={{flexBasis: '' + cellWidth + '%', flexGrow: 1, width: '100%'}}/>);
+          children.push(<div className='wholeDayEventSlot' key={'' + rows.length + '-' + day} style={{flexBasis: '' + cellWidth + '%', flexGrow: 1, width: '100%'}}/>);
         }
       }
       rows.push((
@@ -362,6 +380,7 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
     return (
       <div style={{display: 'flex', flexGrow: 1, flexDirection: 'row'}}>
         <div
+          className='wholeDayEventSlot'
           key='emptySlot' style={{
           width: this.props.timeLabelWidth,
         }}/>
@@ -414,7 +433,7 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
 export default class WeekView extends React.Component
   <WeekViewProps, object> {
   render() {
-    const timeLabelWidth = this.props.timeLabelWidth ? this.props.timeLabelWidth : 40;
+    const timeLabelWidth = this.props.timeLabelWidth ? this.props.timeLabelWidth : 50;
     const start = this.props.startDate.hour(0).minute(0).second(0).millisecond(0);
     const end = this.props.endDate.hour(23).minute(59).second(59).millisecond(999);
 

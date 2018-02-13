@@ -10,16 +10,52 @@
 
 }
 
+.weekDayTitleFuture {
+
+    margin-left: 20px;
+}
+
+.weekDayTitleNow {
+    color: #3174ad;
+
+    margin-left: 20px;
+}
+
+.weekDayTitlePast {
+    color: #a7a7a7;
+    margin-left: 20px;
+}
+
+.weekDayTitleDateFuture {
+    font-size: 48px;
+    margin-left: 15px;
+}
+
+.weekDayTitleDatePast {
+    color: #a7a7a7;
+    font-size: 48px;
+    margin-left: 15px;
+}
+
+.weekDayTitleDateNow {
+    color: #3174ad;
+    font-size: 48px;
+    margin-left: 15px;
+
+}
+
 .weekView {
     display: flex;
 }
 
 .weekHeaderGap {
+    border-right: 1px solid #c7c7c7;
 
 }
 
 .weekHeaderDate {
-
+    text-align: left;
+    border-right: 1px solid #c7c7c7;
 }
 
 .weekEvent {
@@ -27,15 +63,24 @@
     border-radius: 5px;
     padding: 2px 5px;
 }
+
 .weekEventDate {
     color: white;
 }
+
 .weekEventText {
     color: white;
 }
 
 .emptySlot {
     border-top: 1px solid #f7f7f7;
+    /*border-left: 1px solid black;*/
+    border-right: 1px solid #c7c7c7;
+}
+
+.wholeDayEventSlot {
+    border-right: 1px solid #c7c7c7;
+    border-bottom: 1px solid #c7c7c7;
 }
 
 .emptySlotOver {
@@ -67,4 +112,11 @@
     border-radius: 50%;
     width: 8px;
     height: 8px;
+}
+
+.weekNumber {
+    font-weight: bold;
+    font-size: large;
+    /*margin-top: 35px;*/
+    margin-left: 10px;
 }
