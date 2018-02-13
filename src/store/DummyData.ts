@@ -1,6 +1,6 @@
 import Thought from '../dto/Thought';
 import { Tag } from '../dto/Tag';
-import Task, { FixedScheduling, ProposedDateTime, Scheduling, WorkUnit } from '../dto/Task';
+import Task, { FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, WorkUnit } from '../dto/Task';
 import moment from 'moment';
 
 export function generateThoughts(): Thought[] {
@@ -47,7 +47,28 @@ export function generateTasks(): Task[] {
   scheduling.proposedDate = new ProposedDateTime();
   scheduling.proposedDate.proposedDateTime = moment().add(2, 'day').toDate();
   proposed.details.schedule = scheduling;
-  return [t1, t2, t3, t4, t5, t6, scheduled, proposed];
+
+  let retval = [t1, t2, t3, t4, t5, t6, scheduled, proposed];
+  for (let i = 0; i < 10; i++) {
+    let task = new Task('proposed-' + i);
+    let sched = new Scheduling();
+    if (i % 2 === 0) {
+      sched.proposedDate = new ProposedDateTime();
+      sched.proposedDate.proposedDateTime = moment().add(i + 1, 'day').toDate();
+      sched.proposedDate.proposedDateOnly = true;
+    } else {
+      sched.proposedWeekDayYear = new ProposedWeekDayYear();
+      sched.proposedWeekDayYear.proposedYear = moment().year();
+      sched.proposedWeekDayYear.proposedWeek = moment().week();
+      if (i / 2 > 3) {
+        sched.proposedWeekDayYear.proposedWeekDay = moment().week();
+      }
+    }
+    task.details.schedule = sched;
+
+    retval.push(task);
+  }
+  return retval;
 }
 
 export function generateManyTasks(): Task[] {

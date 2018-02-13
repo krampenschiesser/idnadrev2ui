@@ -43,19 +43,36 @@ class WeekHeader extends React.Component<WeekHeaderProps, object> {
     let dayColumns = [];
     for (let i = 0; i < days; i++) {
       let item = (
-        <div style={{display: 'flex', flexGrow: 1, flexBasis: '' + cellWidth + '%', width: '100%', minWidth: 75, flexDirection: 'column'}} className='weekHeaderDate' key={now.format()}>
-          <span className={'weekDayTitle' + this.getTitleExtension(now)} style={{width: '100%'}}>{now.format('ddd')}</span>
-          <span className={'weekDayTitleDate' + this.getTitleExtension(now)} style={{width: '100%'}}>{now.format('D')}</span>
+        <div style={{
+          display: 'flex',
+          flexGrow: 1,
+          flexBasis: '' + cellWidth + '%',
+          width: '100%',
+          minWidth: 75,
+          flexDirection: 'column'
+        }} className='weekHeaderDate' key={now.format()}>
+          <span className={'weekDayTitle' + this.getTitleExtension(now)}
+                style={{width: '100%'}}>{now.format('ddd')}</span>
+          <span className={'weekDayTitleDate' + this.getTitleExtension(now)}
+                style={{width: '100%'}}>{now.format('D')}</span>
         </div>
       );
       dayColumns.push(item);
       now.add(1, 'days');
     }
+    let utcPositive = moment().utcOffset() > 0;
+    let utcString = 'GMT' + (utcPositive ? '+' : '') + moment().utcOffset() / 60;
     return (
       <div style={{display: 'flex', width: '100%'}} className='weekHeader'>
-        <div style={{display: 'flex', flexGrow: 0, flexBasis: this.props.timeLabelWidth + 'px', width: this.props.timeLabelWidth + 'px', flexDirection: 'column'}} className='weekHeaderGap'>
+        <div style={{
+          display: 'flex',
+          flexGrow: 0,
+          flexBasis: this.props.timeLabelWidth + 'px',
+          width: this.props.timeLabelWidth + 'px',
+          flexDirection: 'column'
+        }} className='weekHeaderGap'>
           <span className='weekNumber'>{moment().week()}</span>
-          <span style={{fontSize: 'smaller'}}>GMT-{moment().utcOffset() / 60}</span>
+          <span style={{fontSize: 'smaller'}}>{utcString}</span>
         </div>
         {dayColumns}
       </div>
@@ -315,6 +332,7 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
     // const start = this.props.startDate;
     // const end = this.props.endDate;
     const days = this.props.days;
+    console.log(this.props.events);
 
     const cellWidth = 100 / (days);
 
@@ -355,7 +373,6 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
 
       let children = [];
       for (let day = 0; day < days;) {
-        console.log('adding day', day, days);
         let start = this.props.startDate.clone().add(day, 'day');
         let end = start.clone().hour(23).minute(59).second(59).millisecond(999);
 
@@ -367,7 +384,10 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
           children.push(<WeekEventDraggable key={'' + rows.length + '-' + day} cellWidth={cellWidth} event={event}/>);
         } else {
           day++;
-          children.push(<div className='wholeDayEventSlot' key={'' + rows.length + '-' + day} style={{flexBasis: '' + cellWidth + '%', flexGrow: 1, width: '100%'}}/>);
+          children.push((
+            <div className='wholeDayEventSlot' key={'' + rows.length + '-' + day}
+                             style={{flexBasis: '' + cellWidth + '%', flexGrow: 1, width: '100%'}}/>
+          ));
         }
       }
       rows.push((
@@ -384,7 +404,7 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
           key='emptySlot' style={{
           width: this.props.timeLabelWidth,
         }}/>
-        <div style={{display: 'flex', flexGrow: 1, flexDirection: 'row'}}>
+        <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', height: 60}}>
           {rows}
         </div>
       </div>
@@ -417,7 +437,7 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
       return true;
     });
 
-    if (index > 0) {
+    if (index >= 0) {
       return [candidates[index], index];
     } else {
       return [undefined, index];
@@ -425,7 +445,8 @@ class DayLongEvents extends React.Component<DayLongEventsProps, object> {
   }
 
   private intersects(event: CalendarEvent, other: CalendarEvent): boolean {
-    return other.start.isBetween(event.start, event.end);
+    let intersects = other.start.isBetween(event.start, event.end);
+    return intersects;
   }
 }
 
@@ -469,7 +490,8 @@ export default class WeekView extends React.Component
     return (
       <div style={{flexWrap: 'wrap', display: 'flex', flexDirection: 'column'}} className='weekView'>
         <WeekHeader timeLabelWidth={timeLabelWidth} startDate={start} days={days}/>
-        <DayLongEvents timeLabelWidth={timeLabelWidth} events={this.props.events} startDate={start} endDate={end} days={days}/>
+        <DayLongEvents timeLabelWidth={timeLabelWidth} events={this.props.events} startDate={start} endDate={end}
+                       days={days}/>
         <div style={{position: 'relative', display: 'flex', flexGrow: 1}}>
           <TimeIndicator offset={timeLabelWidth}/>
 
