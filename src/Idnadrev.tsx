@@ -19,6 +19,8 @@ import LocaleProvider from 'antd/lib/locale-provider';
 import en_US from 'antd/lib/locale-provider/en_US';
 import moment from 'moment';
 import PlanTask from './ui/task/PlanTask';
+import ViewDocument from './ui/document/ViewDocument';
+import { AddDocument } from './ui/document/AddDocument';
 
 moment.locale('en');
 
@@ -61,8 +63,8 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
                 <Route path='/thought/add' component={AddThought}/>
                 <Route path='/thought/process' component={ProcessThoughts}/>
 
-                <Route exact path='/doc'/>
-                <Route path='/doc/edit'/>
+                <Route exact path='/doc' component={ViewDocument}/>
+                <Route path='/doc/add' component={AddDocument}/>
 
                 <Route exact path='/task' component={ViewTask}/>
                 <Route path='/task/edit' component={AddTask}/>

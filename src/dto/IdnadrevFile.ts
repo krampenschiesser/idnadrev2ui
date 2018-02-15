@@ -45,4 +45,8 @@ export default abstract class IdnadrevFile<Details, Content> {
   addTag(tag: Tag) {
     this.tags.push(tag);
   }
+
+  isTextFile() {
+    return typeof this.content === 'string';
+  }
 }
