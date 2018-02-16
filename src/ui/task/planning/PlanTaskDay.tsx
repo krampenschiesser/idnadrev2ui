@@ -81,9 +81,9 @@ export default class PlanTaskDayView extends React.Component<PlanTaskDayViewProp
   getTasksStartingBetween(start: moment.Moment, end: moment.Moment): Task[] {
     return this.props.tasks.filter(t => {
       if (t.getProposedDate() !== undefined) {
-        return moment(t.getProposedDate()).isBetween(start, end);
+        return moment(t.getProposedDate()).isBetween(start, end, undefined, '[]');
       } else if (t.getScheduledDate() !== undefined) {
-        return moment(t.getScheduledDate()).isBetween(start, end);
+        return moment(t.getScheduledDate()).isBetween(start, end, undefined, '[]');
       } else {
         return false;
       }

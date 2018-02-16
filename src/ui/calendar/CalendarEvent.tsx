@@ -14,6 +14,7 @@ export default interface CalendarEvent {
   start: moment.Moment;
   end: moment.Moment;
   wholeDay?: boolean;
+  wholeWeek?: boolean;
   title: string;
   details?: React.Component;
   onClick?: (event: CalendarEvent) => void;

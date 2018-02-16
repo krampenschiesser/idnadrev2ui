@@ -174,18 +174,25 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
       let proposedWeekDayYear = schedule.proposedWeekDayYear;
       if (fixedScheduling) {
         let start = moment(fixedScheduling.scheduledDateTime);
-        return start.isBetween(firstOfWeek, lastOfWeek) && !!this.details.estimatedTime;
+        return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]') && !!this.details.estimatedTime;
       } else if (proposedDate) {
         let start = moment(proposedDate.proposedDateTime);
-        return start.isBetween(firstOfWeek, lastOfWeek);
+        return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]');
       } else if (proposedWeekDayYear) {
         let start = moment().year(proposedWeekDayYear.proposedYear).week(proposedWeekDayYear.proposedWeek).hour(0).minute(0).second(0).millisecond(0);
         if (proposedWeekDayYear.proposedWeekDay) {
           start.weekday(proposedWeekDayYear.proposedWeekDay);
+          return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]');
         } else {
+          let days = lastOfWeek.dayOfYear() - firstOfWeek.dayOfYear();
           start.weekday(0);
+          for (let d = 0; d < days; d++) {
+            start.add(1, 'day');
+            if (start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]')) {
+              return true;
+            }
+          }
         }
-        return start.isBetween(firstOfWeek, lastOfWeek);
       }
     }
     return false;
@@ -211,10 +218,11 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
         let end;
         if (proposedWeekDayYear.proposedWeekDay) {
           start.weekday(proposedWeekDayYear.proposedWeekDay);
-          end = start.add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
+          end = start.clone().add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
         } else {
           start.weekday(0);
-          end = start.add(7, 'days');
+          end = start.clone().add(6, 'days');
+          end.hour(23).minute(59).second(59).millisecond(999);
         }
         return [start, end];
       }

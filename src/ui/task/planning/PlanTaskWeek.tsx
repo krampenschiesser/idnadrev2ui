@@ -57,10 +57,10 @@ export default class PlanTask extends React.Component<PlanTaskProps, object> {
     let todaysTasks = this.tasks.filter(t => {
       if (t.getProposedDate() !== undefined) {
         console.log('Got proposed', start.toDate(), end.toDate(), t.getProposedDate());
-        return moment(t.getProposedDate()).isBetween(start, end);
+        return moment(t.getProposedDate()).isBetween(start, end, undefined, '[]');
       } else if (t.getScheduledDate() !== undefined) {
         console.log('Got scheduled', start.toDate(), end.toDate(), t.getScheduledDate());
-        return moment(t.getScheduledDate()).isBetween(start, end);
+        return moment(t.getScheduledDate()).isBetween(start, end, undefined, '[]');
       } else {
         return false;
       }

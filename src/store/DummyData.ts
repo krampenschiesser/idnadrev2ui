@@ -60,9 +60,9 @@ export function generateTasks(): Task[] {
       sched.proposedWeekDayYear = new ProposedWeekDayYear();
       sched.proposedWeekDayYear.proposedYear = moment().year();
       sched.proposedWeekDayYear.proposedWeek = moment().week();
-      if (i / 2 > 3) {
-        sched.proposedWeekDayYear.proposedWeekDay = moment().week();
-      }
+      // if (i / 2 > 3) {
+      //   sched.proposedWeekDayYear.proposedWeekDay = moment().week();
+      // }
     }
     task.details.schedule = sched;
 
