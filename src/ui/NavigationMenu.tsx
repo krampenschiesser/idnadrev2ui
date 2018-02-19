@@ -38,7 +38,8 @@ export class NavigationMenu extends React.Component<NavigationMenuProps, object>
 
     let docLink = <Link to='/doc'><Icon type='book'/>Document</Link>;
     let docViewLink = <Link to='/doc'><Icon type='desktop'/>View</Link>;
-    let docAddLink = <Link to='/doc/add'><Icon type='plus-circle-o'/>Add</Link>;
+    let docAddDocLink = <Link to='/doc/add'><Icon type='plus-circle-o'/>Add Doc</Link>;
+    let docAddFileLink = <Link to='/file/add'><Icon type='plus-circle-o'/>Add File</Link>;
 
     let repoLink = <Link to='/repo'><Icon type='database'/>Repository</Link>;
     let repoViewLink = <Link to='/repo'><Icon type='desktop'/>View</Link>;
@@ -77,8 +78,11 @@ export class NavigationMenu extends React.Component<NavigationMenuProps, object>
           <Menu.Item key='doc-view'>
             {docViewLink}
           </Menu.Item>
-          <Menu.Item key='doc-add'>
-            {docAddLink}
+          <Menu.Item key='doc-add-doc'>
+            {docAddDocLink}
+          </Menu.Item>
+          <Menu.Item key='doc-add-file'>
+            {docAddFileLink}
           </Menu.Item>
         </SubMenu>
 

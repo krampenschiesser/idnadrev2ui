@@ -65,6 +65,7 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
 
                 <Route exact path='/doc' component={ViewDocument}/>
                 <Route path='/doc/add' component={AddDocument}/>
+                <Route path='/file/add' component={AddFile}/>
 
                 <Route exact path='/task' component={ViewTask}/>
                 <Route path='/task/edit' component={AddTask}/>
