@@ -7,6 +7,8 @@ import TagViewer from '../tag/TagViewer';
 import { MarkdownViewer } from '../editor/MarkdownViewer';
 import Card from 'antd/lib/card';
 import IdnadrevFile from '../../dto/IdnadrevFile';
+import BinaryFile from '../../dto/BinaryFile';
+import BinaryFilePreview from '../file/BinaryFilePreview';
 
 export interface DocumentPreviewProps {
   file?: IdnadrevFile<{}, {}>;
@@ -37,13 +39,15 @@ export default class DocumentPreview extends React.Component<DocumentPreviewProp
         </div>
       );
 
-      let content: string = 'No content available';
+      let content = <p>No content available</p>;
       if (typeof file.content === 'string') {
-          content = file.content;
+        content = <MarkdownViewer text={file.content}/>;
+      } else if (file instanceof BinaryFile) {
+        content = <BinaryFilePreview file={file}/>;
       }
       return (
         <Card title={title}>
-          <MarkdownViewer text={content}/>
+          {content}
         </Card>
       );
     } else {

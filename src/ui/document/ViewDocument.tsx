@@ -11,6 +11,7 @@ import { dateCell } from '../table/DateCell';
 import HoverCell from '../table/HoverCell';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import DocumentPreview from './DocumentPreview';
+import FileFilter from '../../store/FileFilter';
 
 export interface ViewDocumentProps {
   store: GlobalStore;
@@ -22,6 +23,8 @@ export interface ViewDocumentProps {
 export default class ViewDocument extends React.Component<ViewDocumentProps, object> {
   @observable files: IdnadrevFile<object, object>[];
   @observable previewFile: IdnadrevFile<object, object> | undefined = undefined;
+
+  filter: FileFilter = {};
 
   componentWillMount() {
     this.props.uiStore.header = 'View Documents';

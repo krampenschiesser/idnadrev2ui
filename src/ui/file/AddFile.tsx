@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Form } from 'antd';
+import { Form, Upload, Icon } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { inject, observer } from 'mobx-react';
 import NameFormItem from '../form/NameFormItem';
 import TagFormItem from '../form/TagFormItem';
 import { GlobalStore } from '../../store/GlobalStore';
 import { observable } from 'mobx';
-import MarkdownFormItem from '../form/MarkdownFormItem';
 import FormItem from 'antd/lib/form/FormItem';
 import Button from 'antd/lib/button/button';
 import UiStore from '../../store/UiStore';
@@ -15,8 +14,11 @@ import RepositoryFormItem from '../form/RepositoryFormItem';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import DocumentPreview from '../document/DocumentPreview';
-import IdnadrevFile from '../../dto/IdnadrevFile';
 import BinaryFile from '../../dto/BinaryFile';
+import { UploadFile } from 'antd/lib/upload/interface';
+import { lookup } from 'mime-types';
+
+const Dragger = Upload.Dragger;
 
 export interface AddFileProps extends FormComponentProps {
   file?: BinaryFile;
@@ -33,21 +35,45 @@ class AddFileForm extends React.Component<AddFileProps, object> {
     if (this.props.file) {
       this.file = this.props.file;
     } else {
-      this.file = new BinaryFile('');
+        this.file = new BinaryFile('');
     }
     this.props.uiStore.header = 'Add File';
   }
 
+  beforeUpload = (file: UploadFile, fileList: UploadFile[]): boolean => {
+    console.log(file);
+    console.log(file.name);
+    let mimeType = lookup(file.name);
+    console.log('mimetype: ', mimeType);
+    console.log(file.originFileObj);
+    let reader = new FileReader();
+    reader.onload = (e) => {
+      console.log('loaded successfully');
+      console.log(reader.result);
+    };
+    reader.onprogress = (ev) => {
+      console.log(ev.total / ev.loaded);
+    };
+    // tslint:disable-next-line
+    let a: any = file;
+    reader.readAsArrayBuffer(a);
+    this.file.content = new Uint8Array(reader.result);
+    this.file.details.mimeType = mimeType ? mimeType : undefined;
+    this.file.details.originalFileName = file.filename;
+    console.log(reader.result);
+    return false;
+  };
+
   render() {
-    let editor = undefined;
-    if (this.file.isTextFile()) {
-      // tslint:disable-next-line
-      let a: any = this.file;
-      let cast: IdnadrevFile<{}, string> = a;
-      editor = <MarkdownFormItem form={this.props.form} item={cast}/>;
-    } else {
-      editor = <div/>;
-    }
+    let editor = (
+      <Dragger beforeUpload={this.beforeUpload}>
+        <p className='ant-upload-drag-icon'>
+          <Icon type='inbox'/>
+          <span className='ant-upload-text'>Click or drag file to this area to upload</span>
+          <span className='ant-upload-hint'>Support for a single or bulk upload.</span>
+        </p>
+      </Dragger>
+    );
     return (
       <Row>
         <Col span={12}>

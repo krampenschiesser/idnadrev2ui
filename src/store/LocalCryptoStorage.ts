@@ -70,7 +70,7 @@ export default class LocalCryptoStorage {
     this.loggedIn = true;
   }
 
-  encrypt(data: string): [EncryptedData, Nonce] {
+  encryptFromUtf8(data: string): [EncryptedData, Nonce] {
     let key = this.getKey;
     let message = nacl.encode_utf8(data);
     let nonce = nacl.crypto_secretbox_random_nonce();
@@ -79,11 +79,24 @@ export default class LocalCryptoStorage {
     return [encrypted, nonce];
   }
 
-  decrypt(data: EncryptedData, nonce: Nonce): string {
+  encrypt(data: Uint8Array): [EncryptedData, Nonce] {
+    let key = this.getKey;
+    let nonce = nacl.crypto_secretbox_random_nonce();
+    let encrypted = nacl.crypto_secretbox(data, nonce, key);
+
+    return [encrypted, nonce];
+  }
+
+  decryptToUtf8(data: EncryptedData, nonce: Nonce): string {
     let decoded = nacl.crypto_secretbox_open(data, nonce, this.getKey);
     let result = nacl.decode_utf8(decoded);
 
     return result;
+  }
+
+  decrypt(data: EncryptedData, nonce: Nonce): Uint8Array {
+    let decoded = nacl.crypto_secretbox_open(data, nonce, this.getKey);
+    return decoded;
   }
 
   exists(): boolean {
@@ -145,7 +158,7 @@ function toHex8(array: Uint8Array): string {
   return hexStr.toUpperCase();
 }
 
-function fromHex(hex: string): Uint8Array {
+export function fromHex(hex: string): Uint8Array {
 
   let array = [];
   for (let i = 0, len = hex.length; i < len; i += 2) {

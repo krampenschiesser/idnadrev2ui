@@ -47,8 +47,10 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
   }
 
   componentDidMount() {
-    this.props.store.getAllFiles(this.props.fileType, this.props.nameFilter)//
-      .then(files => this.files = files)//
+    this.props.store.getAllFiles({
+      types: this.props.fileType ? [this.props.fileType] : undefined,
+      name: this.nameFilter
+    }).then(files => this.files = files)//
       .catch(e => console.error('Could not load files, %o', e));
   }
 

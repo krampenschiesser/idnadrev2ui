@@ -24,3 +24,6 @@ package-lock.json
 
 src/*.js
 src/**/*.js
+
+src/dummydata/*.jpg
+src/dummydata/*.png
