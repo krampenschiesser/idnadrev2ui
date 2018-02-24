@@ -12,6 +12,7 @@ import HoverCell from '../table/HoverCell';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import DocumentPreview from './DocumentPreview';
 import FileFilter from '../../store/FileFilter';
+import { DocumentFilterView } from './DocumentFilter';
 
 export interface ViewDocumentProps {
   store: GlobalStore;
@@ -31,14 +32,18 @@ export default class ViewDocument extends React.Component<ViewDocumentProps, obj
   }
 
   componentDidMount() {
-    this.props.store.getAllFiles().then((t: IdnadrevFile<{}, {}>[]) => {
+    this.reload();
+
+  }
+
+  reload = () => {
+    this.props.store.getAllFiles(this.filter).then((t: IdnadrevFile<{}, {}>[]) => {
       this.files = t;
     }).catch(e => {
       console.error('Could not load files', e);
       console.error(e);
     });
-
-  }
+  };
 
   showMarkdownPreview = (file: IdnadrevFile<{}, {}>) => {
     this.previewFile = file;
@@ -55,20 +60,27 @@ export default class ViewDocument extends React.Component<ViewDocumentProps, obj
     };
 
     return (
-      <Row>
-        <Col span={12}>
-          <Table rowKey='id' dataSource={files}>
-            <Column dataIndex='created' title='Created' render={dateCell}/>
-            <Column dataIndex='name' title='Name' render={markdownHover}/>
-            <Column dataIndex='repositoryId' title='Repository'/>
-          </Table>
-        </Col>
-        <Col span={12}>
-          <div style={{marginLeft: 20}}>
-            <DocumentPreview file={this.previewFile} store={this.props.store}/>
-          </div>
-        </Col>
-      </Row>
+      <div>
+        <Row>
+          <Col>
+            <DocumentFilterView store={this.props.store} filter={this.filter} reload={this.reload}/>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <Table rowKey='id' dataSource={files}>
+              <Column dataIndex='created' title='Created' render={dateCell}/>
+              <Column dataIndex='name' title='Name' render={markdownHover}/>
+              <Column dataIndex='repositoryId' title='Repository'/>
+            </Table>
+          </Col>
+          <Col span={12}>
+            <div style={{marginLeft: 20}}>
+              <DocumentPreview file={this.previewFile} store={this.props.store}/>
+            </div>
+          </Col>
+        </Row>
+      </div>
     );
   }
 }

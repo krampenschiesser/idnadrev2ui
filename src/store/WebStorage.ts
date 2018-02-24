@@ -381,6 +381,9 @@ export default class WebStorage extends Dexie {
           let requestedTagName = requestedTag.name.toLowerCase();
           return t.tags.some(tag => tag.name.toLowerCase() === requestedTagName);
         }).forEach(found => valid = valid && found);
+        if (tags.length === 0) {
+          valid = false;
+        }
       }
       return valid;
     }));
@@ -478,17 +481,27 @@ export default class WebStorage extends Dexie {
       if (file === undefined) {
         return false;
       } else {
-        let valid = fileFilter.name ? file.name.toLowerCase().indexOf(lowerCase) > 0 : true;
+        console.log(file.name)
+        let valid = fileFilter.name ? file.name.toLowerCase().indexOf(lowerCase) >= 0 : true;
         if (valid && fileFilter.tags) {
-          file.tags.map(requestedTag => {
+          fileFilter.tags.map(requestedTag => {
             let requestedTagName = requestedTag.name.toLowerCase();
             return file.tags.some(tag => tag.name.toLowerCase() === requestedTagName);
-          }).forEach(found => valid = valid && found);
+          }).forEach(found => {
+            valid = valid && found;
+            console.log('found', found, valid)
+          });
+          if (file.tags.length === 0) {
+            valid = false;
+          }
         }
+        // console.log('tags', valid);
         let content = file.content;
         if (valid && fileFilter.content && typeof content === 'string') {
           let stringContent: string = content as string;
-          valid = stringContent.toLocaleLowerCase().indexOf(stringContent) > 0;
+          valid = stringContent.toLocaleLowerCase().indexOf(fileFilter.content) >= 0;
+        } else if (fileFilter.content) {
+          valid = false;
         }
         return valid;
       }
