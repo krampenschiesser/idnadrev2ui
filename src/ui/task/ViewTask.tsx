@@ -15,6 +15,12 @@ import { TaskFilter } from '../../store/TaskFilter';
 import { TaskFilterView } from './TaskFilter';
 import { dateCell } from '../table/DateCell';
 
+class TaskTable extends Table<Task> {
+}
+
+class TaskColumn extends Column<Task> {
+}
+
 export interface ViewTaskProps {
   store: GlobalStore;
   uiStore: UiStore;
@@ -97,12 +103,12 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
         </Row>
         <Row>
           <Col span={12}>
-            <Table expandedRowKeys={fileIds} rowKey='id' dataSource={data}>
-              <Column dataIndex='name' title='Name'/>
-              <Column dataIndex='context' title='Context' render={markdownHover}/>
-              <Column dataIndex='repository' title='Repository'/>
-              <Column dataIndex='updated' title='Updated' render={dateCell}/>
-            </Table>
+            <TaskTable expandedRowKeys={fileIds} rowKey='id' dataSource={data}>
+              <TaskColumn dataIndex='name' title='Name'/>
+              <TaskColumn dataIndex='context' title='Context' render={markdownHover}/>
+              <TaskColumn dataIndex='repository' title='Repository'/>
+              <TaskColumn dataIndex='updated' title='Updated' render={dateCell}/>
+            </TaskTable>
           </Col>
           <Col span={12}>
             <div style={{marginLeft: 20}}>

@@ -5,13 +5,17 @@ import { observable } from 'mobx';
 import Thought from '../../dto/Thought';
 import UiStore from '../../store/UiStore';
 import Table from 'antd/lib/table/Table';
-import Column from 'antd/lib/table/Column';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import ThoughtPreview from './ThoughtPreview';
 import { dateCell } from '../table/DateCell';
 import HoverCell from '../table/HoverCell';
 import { DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask } from './ThoughtActions';
+
+const {Column} = Table;
+
+class ThoughtTable extends Table<Thought> {}
+class ThoughtColumn extends Column<Thought> {}
 
 export interface ViewThoughtProps {
   store: GlobalStore;
@@ -55,10 +59,10 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
     return (
       <Row>
         <Col span={12}>
-          <Table rowKey='id' dataSource={thoughts}>
-            <Column dataIndex='created' title='Created' render={dateCell}/>
-            <Column dataIndex='name' title='Name' render={markdownHover}/>
-            <Column dataIndex='repositoryId' title='Repository'/>
+          <ThoughtTable rowKey='id' dataSource={thoughts}>
+            <ThoughtColumn dataIndex='created' title='Created' render={dateCell}/>
+            <ThoughtColumn dataIndex='name' title='Name' render={markdownHover}/>
+            <ThoughtColumn dataIndex='repository' title='Repository'/>
             <Column key='action' title='Action' render={(text, record: Thought) => (
               <div>
                 <ThoughtToTask store={this.props.store} asIcon thought={record}/>
@@ -67,7 +71,7 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
                 <DeleteThought store={this.props.store} asIcon thought={record}/>
               </div>
             )}/>
-          </Table>
+          </ThoughtTable>
         </Col>
         <Col span={12}>
           <div style={{marginLeft: 20}}>

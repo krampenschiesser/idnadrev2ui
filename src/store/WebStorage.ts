@@ -481,7 +481,6 @@ export default class WebStorage extends Dexie {
       if (file === undefined) {
         return false;
       } else {
-        console.log(file.name)
         let valid = fileFilter.name ? file.name.toLowerCase().indexOf(lowerCase) >= 0 : true;
         if (valid && fileFilter.tags) {
           fileFilter.tags.map(requestedTag => {
@@ -489,13 +488,11 @@ export default class WebStorage extends Dexie {
             return file.tags.some(tag => tag.name.toLowerCase() === requestedTagName);
           }).forEach(found => {
             valid = valid && found;
-            console.log('found', found, valid)
           });
           if (file.tags.length === 0) {
             valid = false;
           }
         }
-        // console.log('tags', valid);
         let content = file.content;
         if (valid && fileFilter.content && typeof content === 'string') {
           let stringContent: string = content as string;
@@ -539,7 +536,7 @@ export default class WebStorage extends Dexie {
   }
 
   private matchesType(fileFilter: FileFilter, type: FileType): boolean {
-    return !fileFilter.types || fileFilter.types.indexOf(type) > 0;
+    return !fileFilter.types || fileFilter.types.indexOf(type) >= 0;
   }
 
   getRepositories(): Promise<Repository[]> {

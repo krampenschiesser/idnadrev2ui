@@ -6,6 +6,20 @@ import { dateCell } from '../table/DateCell';
 import Table from 'antd/lib/table/Table';
 import Column from 'antd/lib/table/Column';
 
+interface DisplayWorkUnit {
+  start: Date;
+  end?: Date;
+  duration?: number;
+  id: string;
+  type: string;
+}
+
+class WorkUnitTable extends Table<DisplayWorkUnit> {
+}
+
+class WorkUnitColumn extends Column<DisplayWorkUnit> {
+}
+
 export interface WorkUnitHistoryTableProps {
   task?: Task;
   store: GlobalStore;
@@ -16,7 +30,7 @@ export interface WorkUnitHistoryTableProps {
 export default class WorkUnitHistoryTable extends React.Component<WorkUnitHistoryTableProps, object> {
   render() {
     let workUnits = this.props.task ? this.props.task.details.workUnits : [];
-    let data = workUnits.map(w => {
+    let data: DisplayWorkUnit[] = workUnits.map(w => {
       let durationInMinutes = w.getDurationInMinutes();
       let type = 'WorkUnit';
       let id = type + w.start.toString();
@@ -31,12 +45,12 @@ export default class WorkUnitHistoryTable extends React.Component<WorkUnitHistor
     data.sort((a, b) => a.start.getTime() - b.start.getTime());
 
     return (
-      <Table rowKey='id' dataSource={data}>
-        <Column dataIndex='type' title='Type'/>
-        <Column dataIndex='start' title='Start' render={dateCell}/>
-        <Column dataIndex='end' title='End' render={dateCell}/>
-        <Column dataIndex='duration' title='Duration'/>
-      </Table>
+      <WorkUnitTable rowKey='id' dataSource={data}>
+        <WorkUnitColumn dataIndex='type' title='Type'/>
+        <WorkUnitColumn dataIndex='start' title='Start' render={dateCell}/>
+        <WorkUnitColumn dataIndex='end' title='End' render={dateCell}/>
+        <WorkUnitColumn dataIndex='duration' title='Duration'/>
+      </WorkUnitTable>
     );
   }
 }

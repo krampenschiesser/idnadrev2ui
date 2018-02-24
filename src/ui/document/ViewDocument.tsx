@@ -19,6 +19,11 @@ export interface ViewDocumentProps {
   uiStore: UiStore;
 }
 
+class DocumentTable extends Table<IdnadrevFile<{}, {}>> {
+}
+class DocumentColumn extends Column<IdnadrevFile<{}, {}>> {
+}
+
 @inject('store', 'uiStore')
 @observer
 export default class ViewDocument extends React.Component<ViewDocumentProps, object> {
@@ -38,6 +43,7 @@ export default class ViewDocument extends React.Component<ViewDocumentProps, obj
 
   reload = () => {
     this.props.store.getAllFiles(this.filter).then((t: IdnadrevFile<{}, {}>[]) => {
+      this.files = [];
       this.files = t;
     }).catch(e => {
       console.error('Could not load files', e);
@@ -50,9 +56,9 @@ export default class ViewDocument extends React.Component<ViewDocumentProps, obj
   };
 
   render() {
-    let files = this.files;
-    if (files === undefined) {
-      files = [];
+    let files = [];
+    if (this.files) {
+      files.push(...this.files);
     }
 
     let markdownHover = (name: string, record: IdnadrevFile<{}, {}>, index: number) => {
@@ -68,11 +74,11 @@ export default class ViewDocument extends React.Component<ViewDocumentProps, obj
         </Row>
         <Row>
           <Col span={12}>
-            <Table rowKey='id' dataSource={files}>
-              <Column dataIndex='created' title='Created' render={dateCell}/>
-              <Column dataIndex='name' title='Name' render={markdownHover}/>
-              <Column dataIndex='repositoryId' title='Repository'/>
-            </Table>
+            <DocumentTable rowKey='id' dataSource={files}>
+              <DocumentColumn dataIndex='created' title='Created' render={dateCell}/>
+              <DocumentColumn dataIndex='name' title='Name' render={markdownHover}/>
+              <DocumentColumn dataIndex='repository' title='Repository'/>
+            </DocumentTable>
           </Col>
           <Col span={12}>
             <div style={{marginLeft: 20}}>

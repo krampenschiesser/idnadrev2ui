@@ -10,18 +10,22 @@ import TagContainer from '../tag/TagContainer';
 import { observable, observe } from 'mobx';
 import { Tag } from '../../dto/Tag';
 import FileFilter from '../../store/FileFilter';
+import Select from 'antd/lib/select';
+import { FileType } from '../../dto/FileType';
 
-export interface DocumentFilterProps extends FormComponentProps {
+const Option = Select.Option;
+
+export interface FileFilterProps extends FormComponentProps {
   filter: FileFilter;
-  reload: Function;
+  reload: () => void;
   store: GlobalStore;
 }
 
-class StringFilter extends React.Component<DocumentFilterProps, object> {
+class StringFilter extends React.Component<FileFilterProps, object> {
   private label: string;
   private callback: (param: string | undefined) => void;
 
-  constructor(props: DocumentFilterProps, callback: (param: string | undefined) => void, label: string) {
+  constructor(props: FileFilterProps, callback: (param: string | undefined) => void, label: string) {
     super(props);
     this.label = label;
     this.callback = callback;
@@ -54,7 +58,7 @@ class StringFilter extends React.Component<DocumentFilterProps, object> {
 }
 
 class NameFilter extends StringFilter {
-  constructor(props: DocumentFilterProps) {
+  constructor(props: FileFilterProps) {
     super(props, (str) => {
       this.props.filter.name = str;
     }, 'Name');
@@ -62,14 +66,14 @@ class NameFilter extends StringFilter {
 }
 
 class ContentFilter extends StringFilter {
-  constructor(props: DocumentFilterProps) {
+  constructor(props: FileFilterProps) {
     super(props, (str) => {
       this.props.filter.content = str;
     }, 'Content');
   }
 }
 
-class TagFilter extends React.Component<DocumentFilterProps, object> {
+class TagFilter extends React.Component<FileFilterProps, object> {
   @observable tags: Tag[] = [];
 
   observer = observe(this.tags, (change => {
@@ -94,8 +98,71 @@ class TagFilter extends React.Component<DocumentFilterProps, object> {
   }
 }
 
+class RepositoryFilter extends React.Component<FileFilterProps, object> {
+  onChange = (value: string) => {
+    if (value) {
+      if (value === '') {
+        this.props.filter.repository = undefined;
+      } else {
+        this.props.filter.repository = value;
+      }
+    } else {
+      this.props.filter.repository = undefined;
+    }
+    this.props.reload();
+  };
+
+  render() {
+    let repositoryIds = Array.from(this.props.store.getOpenRepositories().map(r => r.id));
+    repositoryIds.sort();
+
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <FormItem label='Repository' colon={true}>
+        {getFieldDecorator('repository', {})(
+          <Select style={{width: 120}} onChange={this.onChange}>
+            <Option key='all' value={undefined}>All</Option>
+            {repositoryIds.map(c => <Option key={c} value={c}>{c}</Option>)}
+          </Select>
+        )}
+      </FormItem>
+    );
+  }
+}
+
+class FileTypeFilter extends React.Component<FileFilterProps, object> {
+  onChange = (value: FileType[]) => {
+    if (value) {
+      if (value.length === 0) {
+        this.props.filter.types = undefined;
+      } else {
+        console.log('value is', value)
+        this.props.filter.types = value;
+      }
+    } else {
+      this.props.filter.repository = undefined;
+    }
+    this.props.reload();
+  };
+
+  render() {
+    let types = [FileType.Document, FileType.Task, FileType.Thought, FileType.Binary];
+
+    const {getFieldDecorator} = this.props.form;
+    return (
+      <FormItem label='Type' colon={true}>
+        {getFieldDecorator('fileType', {})(
+          <Select mode='multiple' style={{width: 120}} onChange={this.onChange}>
+            {types.map(c => <Option key={c} value={c}>{c}</Option>)}
+          </Select>
+        )}
+      </FormItem>
+    );
+  }
+}
+
 @observer
-class DocumentFilterViewForm extends React.Component<DocumentFilterProps, object> {
+class DocumentFilterViewForm extends React.Component<FileFilterProps, object> {
   lastEdit: number;
 
   reload = () => {
@@ -114,11 +181,17 @@ class DocumentFilterViewForm extends React.Component<DocumentFilterProps, object
 
   render() {
     const {reload, ...newProps} = this.props;
+    let bla = <RepositoryFilter {...newProps} reload={this.reload}/>;
+    let blubb = <FileTypeFilter {...newProps} reload={this.reload}/>;
+    console.log(bla, blubb);
+
     return (
       <Form layout='inline'>
         <NameFilter {...newProps} reload={this.reload}/>
         <ContentFilter {...newProps} reload={this.reload}/>
         <TagFilter {...newProps} reload={this.reload}/>
+        <RepositoryFilter {...newProps} reload={this.reload}/>
+        <FileTypeFilter {...newProps} reload={this.reload}/>
       </Form>
     );
   }

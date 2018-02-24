@@ -16,6 +16,10 @@ import { tagsCell } from '../table/TagsCell';
 import ClickCell from '../table/ClickCell';
 import { PaginationProps } from 'antd/lib/pagination/Pagination';
 
+class FileTable extends Table<IdnadrevFile<{}, {}>> {
+}
+class FileColumn extends Column<IdnadrevFile<{}, {}>> {
+}
 export interface IdnadrevFileSelectionTableProps {
   fileType?: FileType;
   nameFilter?: string;
@@ -98,11 +102,11 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
         </Row>
         <Row>
           <Col>
-            <Table pagination={pagination} rowSelection={rowSelection} dataSource={data} rowKey='id'>
-              <Column dataIndex='name' title='Name' render={rowClick}/>
-              <Column dataIndex='updated' title='Updated' render={dateCell}/>
-              <Column dataIndex='tags' title='Tags' render={tagsCell}/>
-            </Table>
+            <FileTable pagination={pagination} rowSelection={rowSelection} dataSource={data} rowKey='id'>
+              <FileColumn dataIndex='name' title='Name' render={rowClick}/>
+              <FileColumn dataIndex='updated' title='Updated' render={dateCell}/>
+              <FileColumn dataIndex='tags' title='Tags' render={tagsCell}/>
+            </FileTable>
           </Col>
         </Row>
       </div>
