@@ -166,7 +166,6 @@ function toBinaryFile(persisted: PersistedBinaryFile | undefined, localCrypto: L
   return file;
 }
 
-
 function toRepository(persisted: PersistedRepository): Repository {
   if (persisted === undefined) {
     return persisted;

@@ -72,8 +72,7 @@
       true,
       "check-catch",
       "check-else",
-      "check-open-brace",
-      "check-whitespace"
+      "check-open-brace"
     ],
     "quotemark": [
       true,
@@ -100,7 +99,7 @@
       "property-declaration"
     ],
     "typedef-whitespace": [
-      true,
+      false,
       {
         "call-signature": "nospace",
         "index-signature": "nospace",
@@ -117,7 +116,7 @@
       "allow-pascal-case"
     ],
     "whitespace": [
-      true,
+      false,
       "check-branch",
       "check-decl",
       "check-module",

@@ -20,7 +20,7 @@
     "codemirror": "^5.33.0",
     "css-loader": "0.28.4",
     "detect-node": "^2.0.3",
-    "dexie": "^2.0.1",
+    "dexie": "^2.0.4",
     "dotenv": "4.0.0",
     "extract-text-webpack-plugin": "3.0.0",
     "file-loader": "0.11.2",

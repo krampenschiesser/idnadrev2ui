@@ -27,7 +27,7 @@ export class GlobalStore {
     }).catch(e => console.error('Could not load tags %o', e));
     this.webStorage.getAllContexts().then(contexts => {
       contexts.forEach(ctx => this.contexts.set(ctx, ctx));
-    }).catch(e => console.error('Could not load tags %o', e));
+    }).catch(e => console.error('Could not load contexts %o', e));
   }
 
   getTagsStartingWith(input: string): string[] {
