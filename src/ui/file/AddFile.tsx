@@ -14,9 +14,8 @@ import { FormConstants } from '../form/FormConstants';
 import RepositoryFormItem from '../form/RepositoryFormItem';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
-import DocumentPreview from './DocumentPreview';
+import DocumentPreview from '../document/DocumentPreview';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import Document from '../../dto/Document';
 import BinaryFile from '../../dto/BinaryFile';
 
 export interface AddFileProps extends FormComponentProps {
@@ -34,7 +33,7 @@ class AddFileForm extends React.Component<AddFileProps, object> {
     if (this.props.file) {
       this.file = this.props.file;
     } else {
-      this.file = new Document('');
+      this.file = new BinaryFile('');
     }
     this.props.uiStore.header = 'Add File';
   }
@@ -72,4 +71,4 @@ class AddFileForm extends React.Component<AddFileProps, object> {
   }
 }
 
-export const AddFile= Form.create()(AddFileForm);
+export const AddFile = Form.create()(AddFileForm);

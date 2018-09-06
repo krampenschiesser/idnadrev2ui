@@ -2,6 +2,11 @@ import Thought from '../dto/Thought';
 import { Tag } from '../dto/Tag';
 import Task, { FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, WorkUnit } from '../dto/Task';
 import moment from 'moment';
+import Repository from '../dto/Repository';
+
+export function generateRepositories(): Repository[] {
+  new Repository()
+}
 
 export function generateThoughts(): Thought[] {
   let t1 = new Thought('test', [new Tag('tag1'), new Tag('tag2')]).withContent('hello world');

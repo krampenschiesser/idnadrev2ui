@@ -18,6 +18,7 @@ export class GlobalStore {
 
   @observable tags: Map<string, Tag> = new Map<string, Tag>();
   @observable contexts: Map<string, TaskContext> = new Map<string, TaskContext>();
+  @observable repositories: Repository[] = [];
 
   constructor(webStorage: WebStorage) {
     this.webStorage = webStorage;
@@ -48,8 +49,8 @@ export class GlobalStore {
 
   getOpenRepositories(): Repository[] {
     return [
-      new Repository('Local', 'test', true),
-      new Repository('Other', 'test2', true),
+      new Repository('Local', 'test'),
+      new Repository('Other', 'test2'),
     ];
   }
 
@@ -67,5 +68,18 @@ export class GlobalStore {
 
   getTask(parent: FileId): Promise<Task | undefined> {
     return this.webStorage.loadTaskById(parent);
+  }
+
+  getRepositories(): Promise<Repository[]> {
+    if (this.repositories.length === 0) {
+      return this.webStorage.getRepositories().then(repos => {
+        this.repositories = repos;
+        return repos;
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        resolve(this.repositories);
+      });
+    }
   }
 }

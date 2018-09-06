@@ -6,15 +6,13 @@ export default class Repository {
   id: RepositoryId;
   @observable name: string;
   @observable token: RepositoryToken | null;
-  @observable local: boolean;
 
-  constructor(name: string, id: RepositoryId, local: boolean = false) {
+  constructor(name: string, id: RepositoryId) {
     this.name = name;
     this.id = id;
-    this.local = local;
   }
 
   isOpen(): boolean {
-    return this.local || this.token === null;
+    return this.token === null;
   }
 }

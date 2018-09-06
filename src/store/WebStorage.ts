@@ -9,6 +9,7 @@ import { TaskFilter } from './TaskFilter';
 import { FileId } from '../dto/FileId';
 import { Tag } from '../dto/Tag';
 import { FileType } from '../dto/FileType';
+import Repository from '../dto/Repository';
 
 interface PersistedTaskDetails {
   finished: number;
@@ -38,6 +39,13 @@ interface PersistedTask {
   nonce: Nonce;
   id: string;
   details: PersistedTaskDetails;
+}
+
+interface PersistedRepository {
+  id: string;
+  name: string;
+  data: EncryptedData;
+  nonce: Nonce;
 }
 
 // tslint:disable-next-line
@@ -124,10 +132,20 @@ function toDocument(persisted: PersistedDocument | undefined, localCrypto: Local
   return doc;
 }
 
+
+function toRepository(persisted: PersistedRepository): Repository {
+  if (persisted === undefined) {
+    return persisted;
+  }
+  let repository = new Repository(persisted.name, persisted.id);
+  return repository;
+}
+
 export default class WebStorage extends Dexie {
   tasks: Dexie.Table<PersistedTask, string>;
   docs: Dexie.Table<PersistedDocument, string>;
   thoughts: Dexie.Table<PersistedThought, string>;
+  repositories: Dexie.Table<PersistedRepository, string>;
   localCrypto: LocalCryptoStorage;
 
   constructor(crypto: LocalCryptoStorage) {
@@ -137,6 +155,7 @@ export default class WebStorage extends Dexie {
       tasks: 'id, details.finished, details.delegation, details.context, details.state',
       docs: 'id',
       thoughts: 'id, details.showAgainAfter',
+      repositories: 'id, name'
     });
     this.on('populate', () => {
       generateThoughts().forEach(t => this.store(t));
@@ -432,5 +451,9 @@ export default class WebStorage extends Dexie {
     });
 
     return final;
+  }
+
+  getRepositories(): Promise<Repository[]> {
+    return this.repositories.toArray().then(persisted => persisted.map( t => toRepository(t)));
   }
 }
