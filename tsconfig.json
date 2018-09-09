@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
+    "lib": ["es2017", "es6", "dom"],
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["es2017", "dom"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",

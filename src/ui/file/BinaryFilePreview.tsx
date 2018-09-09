@@ -14,7 +14,15 @@ export default class BinaryFilePreview extends React.Component<BinaryFilePreview
     if (file) {
       let mimeType = file.details.mimeType;
       if (mimeType && mimeType.indexOf('image') >= 0) {
-        let blob = new Blob([file.content.buffer], {type: mimeType});
+        let content: Uint8Array = file.content;
+        //fixme conversion because of typescript bug
+
+
+        let buffer = new ArrayBuffer(content.length);
+        content.map((value,i)=> buffer[i] = value);
+        // let buffer: ArrayBuffer = content.buffer;
+        let blobParts: BlobPart[] = [buffer];
+        let blob = new Blob(blobParts, {type: mimeType});
         let url = window.URL.createObjectURL(blob);
         return (
           <img src={url}/>

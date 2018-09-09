@@ -439,7 +439,7 @@ export default class WebStorage extends Dexie {
     let tags3 = this.docs.toArray().then(tasks => tasks.map(t => toDocument(t, this.localCrypto)).map(tagMapper));
     let tags4 = this.binaryFiles.toArray().then(tasks => tasks.map(t => toBinaryFileWithoutContent(t, this.localCrypto)).map(tagMapper));
 
-    let tagsPromise = Promise.all([tags1, tags2, tags3, tags4]).then((o: [Tag[][], Tag[][], Tag[][]]) => {
+    let tagsPromise = Promise.all([tags1, tags2, tags3, tags4]).then((o: [Tag[][], Tag[][], Tag[][], Tag[][]]) => {
       let tags: Set<Tag> = new Set();
       o.forEach(arr1 => {
         arr1.forEach(arr2 => {

@@ -4,10 +4,22 @@ import { GlobalStore } from '../../store/GlobalStore';
 import UiStore from '../../store/UiStore';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
+import { Card, Icon } from 'antd';
 
 export interface ViewRepositoriesProps {
   store: GlobalStore;
   uiStore: UiStore;
+}
+
+
+class SingleRepository extends React.Component<{name: string}, object> {
+  render() {
+    return (
+      <Card title={this.props.name} >
+        <Icon type="lock" theme="outlined" />
+      </Card>
+    );
+  }
 }
 
 @inject('store', 'uiStore')
@@ -35,6 +47,6 @@ export default class ViewRepositories extends React.Component<ViewRepositoriesPr
   };
 
   render() {
-    return <p>bla</p>;
+    return <SingleRepository name="testRepo"/>;
   }
 }

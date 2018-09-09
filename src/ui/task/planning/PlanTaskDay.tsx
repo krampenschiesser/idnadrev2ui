@@ -6,9 +6,9 @@ import UiStore from '../../../store/UiStore';
 import Task from '../../../dto/Task';
 import { TaskFilter } from '../../../store/TaskFilter';
 import * as moment from 'moment';
-import BigCalendar from 'react-big-calendar';
-
-BigCalendar.momentLocalizer(moment);
+// import BigCalendar from 'react-big-calendar';
+//
+// BigCalendar.momentLocalizer(moment);
 
 export interface PlanTaskDayViewProps {
   tasks: Task[];

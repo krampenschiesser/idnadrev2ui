@@ -35,7 +35,7 @@ class AddFileForm extends React.Component<AddFileProps, object> {
     if (this.props.file) {
       this.file = this.props.file;
     } else {
-        this.file = new BinaryFile('');
+      this.file = new BinaryFile('');
     }
     this.props.uiStore.header = 'Add File';
   }
@@ -54,13 +54,14 @@ class AddFileForm extends React.Component<AddFileProps, object> {
     reader.onprogress = (ev) => {
       console.log(ev.total / ev.loaded);
     };
-    // tslint:disable-next-line
-    let a: any = file;
-    reader.readAsArrayBuffer(a);
-    this.file.content = new Uint8Array(reader.result);
-    this.file.details.mimeType = mimeType ? mimeType : undefined;
-    this.file.details.originalFileName = file.filename;
-    console.log(reader.result);
+    if (reader.result instanceof ArrayBuffer && file.originFileObj) {
+      reader.readAsArrayBuffer(file.originFileObj);
+      this.file.content = new Uint8Array(reader.result);
+      this.file.details.mimeType = mimeType ? mimeType : undefined;
+      this.file.details.originalFileName = file.fileName;
+      console.log(reader.result);
+      return true;
+    }
     return false;
   };
 

@@ -4,7 +4,6 @@ let scrypt = require('scryptsy');
 
 // tslint:disable-next-line
 let nacl_factory = require('js-nacl');
-var chacha = require('chacha');
 
 // tslint:disable-next-line
 var nacl: any = null;

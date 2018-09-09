@@ -13,9 +13,8 @@ import { TaskState } from '../../dto/Task';
 import TagContainer from '../tag/TagContainer';
 import { observable, observe } from 'mobx';
 import { Tag } from '../../dto/Tag';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
+import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox/Checkbox';
 import InputNumber from 'antd/lib/input-number';
-import { ChangeEvent } from 'react';
 import { IdnadrevFileSelection } from '../selection/IdnadrevFileSelection';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import { FileType } from '../../dto/FileType';
@@ -180,7 +179,7 @@ class BooleanFilter extends React.Component<TaskFilterProps, object> {
   }
 
 // tslint:disable-next-line
-  onChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onChange = (event: CheckboxChangeEvent) => {
     let value = event.target.checked;
     console.log(value);
     this.callback(value);

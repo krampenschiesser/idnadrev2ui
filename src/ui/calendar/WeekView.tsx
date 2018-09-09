@@ -11,12 +11,13 @@ import {
   DragSource,
   DndComponentClass,
   DragSourceMonitor,
-  DragSourceConnector
+  DragSourceConnector, ConnectDropTarget, DropTargetSpec, DropTargetMonitor, DropTargetConnector
 } from 'react-dnd';
-import DropTargetConnector = __ReactDnd.DropTargetConnector;
-import DropTargetMonitor = __ReactDnd.DropTargetMonitor;
-import DropTargetSpec = __ReactDnd.DropTargetSpec;
-import ConnectDropTarget = __ReactDnd.ConnectDropTarget;
+
+// import DropTargetConnector = __ReactDnd.DropTargetConnector;
+// import DropTargetMonitor = __ReactDnd.DropTargetMonitor;
+// import DropTargetSpec = __ReactDnd.DropTargetSpec;
+// import ConnectDropTarget = __ReactDnd.ConnectDropTarget;
 
 export interface WeekViewProps {
   events: CalendarEvent[];
@@ -271,7 +272,7 @@ class WeekEvent extends React.Component<WeekEventProps, object> {
   }
 }
 
-let weekEventSpec: DragSourceSpec<WeekEventProps> = {
+let weekEventSpec: DragSourceSpec<WeekEventProps,{}> = {
   beginDrag: (props: WeekEventProps) => {
     console.log('begin drag');
     return ({});
