@@ -6,25 +6,26 @@ import {Tag} from '../dto/Tag';
 import Task, {FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, WorkUnit} from '../dto/Task';
 import Thought from '../dto/Thought';
 import {fromHex} from './LocalCryptoStorage';
+import { RepositoryId } from '../dto/RepositoryId';
 
 export function generateRepositories(): Repository[] {
-    return [new Repository('test', '4711')];
+    return [new Repository('test', '4711'),new Repository('test2', '4712')];
 }
 
-export function generateThoughts(): Thought[] {
-    let t1 = new Thought('test', [new Tag('tag1'), new Tag('tag2')]).withContent('hello world');
-    let t2 = new Thought('Sauerland', [new Tag('tag1')]).withContent('hello Sauerland');
-    let t3 = new Thought('Beer', [new Tag('tag1'), new Tag('tag3')]).withContent('I want beer');
+export function generateThoughts(repo: RepositoryId): Thought[] {
+    let t1 = new Thought('test', [new Tag('tag1'), new Tag('tag2')]).withContent('hello world').withRepository(repo);
+    let t2 = new Thought('Sauerland', [new Tag('tag1')]).withContent('hello Sauerland').withRepository(repo);
+    let t3 = new Thought('Beer', [new Tag('tag1'), new Tag('tag3')]).withContent('I want beer').withRepository(repo);
     return [t1, t2, t3];
 }
 
-export function generateTasks(): Task[] {
-    let t1 = new Task('Take safety break', [new Tag('tag1'), new Tag('tag2')]).withContent('Oh **yeah**');
-    let t2 = new Task('Make barbequeue', [new Tag('grilling')]).withContent('I am hungry!!!');
-    let t3 = new Task('Go to store', [new Tag('grilling')]).withContent('slow **traffic**');
-    let t4 = new Task('Buy steak', [new Tag('beef')]).withContent('# I am hungry!!!');
-    let t5 = new Task('Buy beer', [new Tag('drinks')]).withContent('I am thirsty!!!');
-    let t6 = new Task('Finished', [new Tag('finished')]).withContent('A finished task...');
+export function generateTasks(repo: RepositoryId): Task[] {
+    let t1 = new Task('Take safety break', [new Tag('tag1'), new Tag('tag2')]).withContent('Oh **yeah**').withRepository(repo);
+    let t2 = new Task('Make barbequeue', [new Tag('grilling')]).withContent('I am hungry!!!').withRepository(repo);
+    let t3 = new Task('Go to store', [new Tag('grilling')]).withContent('slow **traffic**').withRepository(repo);
+    let t4 = new Task('Buy steak', [new Tag('beef')]).withContent('# I am hungry!!!').withRepository(repo);
+    let t5 = new Task('Buy beer', [new Tag('drinks')]).withContent('I am thirsty!!!').withRepository(repo);
+    let t6 = new Task('Finished', [new Tag('finished')]).withContent('A finished task...').withRepository(repo);
 
     t6.details.finished = new Date();
 
@@ -40,7 +41,7 @@ export function generateTasks(): Task[] {
     let end = moment().hours(-10).minutes(+10).toDate();
     t4.details.workUnits.push(new WorkUnit().setStart(start).setEnd(end));
 
-    let scheduled = new Task('scheduled');
+    let scheduled = new Task('scheduled').withRepository(repo);
     let fixedScheduling = new FixedScheduling();
     scheduled.details.estimatedTime = 45 * 60;
     fixedScheduling.scheduledDateTime = moment().toDate();
@@ -49,7 +50,7 @@ export function generateTasks(): Task[] {
     schedule.fixedScheduling = fixedScheduling;
     scheduled.details.schedule = schedule;
 
-    let proposed = new Task('proposed');
+    let proposed = new Task('proposed').withRepository(repo);
     proposed.details.estimatedTime = 60 * 60;
     let scheduling = new Scheduling();
     scheduling.proposedDate = new ProposedDateTime();
@@ -58,7 +59,7 @@ export function generateTasks(): Task[] {
 
     let retval = [t1, t2, t3, t4, t5, t6, scheduled, proposed];
     for (let i = 0; i < 10; i++) {
-        let task = new Task('proposed-' + i);
+        let task = new Task('proposed-' + i).withRepository(repo);
         let sched = new Scheduling();
         if (i % 2 === 0) {
             sched.proposedDate = new ProposedDateTime();
@@ -79,16 +80,16 @@ export function generateTasks(): Task[] {
     return retval;
 }
 
-export function generateDocuments(): IdnadrevFile<{}, {}>[] {
+export function generateDocuments(repo: RepositoryId): IdnadrevFile<{}, {}>[] {
     let retval = [];
 
-    let jpg = new BinaryFile('some jpg');
+    let jpg = new BinaryFile('some jpg').withRepository(repo);
     jpg.details.originalFileName = 'image.jpg';
     jpg.details.mimeType = 'image/jpeg';
     jpg.content = imageJpg();
     retval.push(jpg);
 
-    let png = new BinaryFile('some png');
+    let png = new BinaryFile('some png').withRepository(repo);
     png.details.originalFileName = 'image.png';
     png.details.mimeType = 'image/png';
     png.content = imagePng();
@@ -97,10 +98,10 @@ export function generateDocuments(): IdnadrevFile<{}, {}>[] {
     return retval;
 }
 
-export function generateManyTasks(): Task[] {
+export function generateManyTasks(repo: RepositoryId): Task[] {
     let retval = [];
     for (let i = 0; i < 20000; i++) {
-        let t = new Task('Task ' + i).withContent('# Task' + i);
+        let t = new Task('Task ' + i).withContent('# Task' + i).withRepository(repo);
         retval.push(t);
     }
     return retval;

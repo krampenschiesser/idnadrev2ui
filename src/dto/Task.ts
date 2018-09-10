@@ -129,8 +129,8 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     this.details.parent = id;
   }
 
-  get isDelegated() {
-    return this.details.delegation.current;
+  get isDelegated(): boolean {
+    return this.details.delegation.current != undefined;
   }
 
   get isFinished() {

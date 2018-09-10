@@ -49,4 +49,9 @@ export default abstract class IdnadrevFile<Details, Content> {
   isTextFile() {
     return typeof this.content === 'string';
   }
+
+  withRepository(repository: RepositoryId): this {
+    this.repository = repository;
+    return this;
+  }
 }

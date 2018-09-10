@@ -4,7 +4,7 @@ import Thought from '../dto/Thought';
 import Document from '../dto/Document';
 import LocalCryptoStorage, { EncryptedData, Nonce } from './LocalCryptoStorage';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import { generateDocuments, generateTasks, generateThoughts } from './DummyData';
+import { generateDocuments, generateRepositories, generateTasks, generateThoughts } from './DummyData';
 import { TaskFilter } from './TaskFilter';
 import { FileId } from '../dto/FileId';
 import { Tag } from '../dto/Tag';
@@ -12,45 +12,35 @@ import { FileType } from '../dto/FileType';
 import BinaryFile from '../dto/BinaryFile';
 import FileFilter from './FileFilter';
 import Repository from '../dto/Repository';
-
-interface PersistedTaskDetails {
-  finished: number;
-  delegation: number;
-  context?: TaskContext;
-  state: TaskState;
-}
+import { RepositoryId } from '../dto/RepositoryId';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
   nonce: Nonce;
-  id: string;
-
-}
-
-interface PersistedThoughtDetails {
+  id: FileId;
+  repositoryId: RepositoryId
 }
 
 interface PersistedThought extends PersistedIdnadrevFile {
-  details: PersistedThoughtDetails;
-}
+};
+
+interface PersistedTask extends PersistedIdnadrevFile {
+};
 
 interface PersistedDocument extends PersistedIdnadrevFile {
-}
+};
 
 interface PersistedBinaryFile {
-  id: string;
+  id: FileId;
+  repositoryId: RepositoryId
   dataJson: EncryptedData;
   nonceJson: Nonce;
   dataContent: EncryptedData;
   nonceContent: Nonce;
 }
 
-interface PersistedTask extends PersistedIdnadrevFile {
-  details: PersistedTaskDetails;
-}
-
 interface PersistedRepository {
-  id: string;
+  id: FileId;
   name: string;
   data: EncryptedData;
   nonce: Nonce;
@@ -186,16 +176,18 @@ export default class WebStorage extends Dexie {
     super('IdnadrevDb');
     this.localCrypto = crypto;
     this.version(1).stores({
-      tasks: 'id, details.finished, details.delegation, details.context, details.state',
-      docs: 'id',
-      thoughts: 'id, details.showAgainAfter',
-      binaryFiles: 'id',
+      tasks: 'id, repositoryId',
+      docs: 'id, repositoryId',
+      thoughts: 'id, repositoryId',
+      binaryFiles: 'id, repositoryId',
       repositories: 'id, name'
     });
     this.on('populate', () => {
-      generateThoughts().forEach(t => this.store(t));
-      generateTasks().forEach(t => this.store(t));
-      generateDocuments().forEach(t => this.store(t));
+      let repos = generateRepositories();
+      repos.forEach(r => this.store(r));
+      generateThoughts(repos[0].id).forEach(t => this.store(t));
+      generateTasks(repos[0].id).forEach(t => this.store(t));
+      generateDocuments(repos[0].id).forEach(t => this.store(t));
       // generateManyTasks().forEach(t => this.store(t));
     });
   }
@@ -215,6 +207,7 @@ export default class WebStorage extends Dexie {
         nonceJson: nonceJson,
         nonceContent: nonceContent,
         id: obj.id,
+        repositoryId: obj.repository
       };
       return this.binaryFiles.put(data);
     }
@@ -227,7 +220,7 @@ export default class WebStorage extends Dexie {
         data: encrypted,
         nonce: nonce,
         id: obj.id,
-        details: {}
+        repositoryId: obj.repository,
       };
       return this.thoughts.put(data);
     } else if (obj instanceof Document) {
@@ -235,6 +228,7 @@ export default class WebStorage extends Dexie {
         data: encrypted,
         nonce: nonce,
         id: obj.id,
+        repositoryId: obj.repository,
       };
       return this.docs.put(data);
     } else if (obj instanceof Task) {
@@ -245,14 +239,17 @@ export default class WebStorage extends Dexie {
         data: encrypted,
         nonce: nonce,
         id: obj.id,
-        details: {
-          finished: obj.isFinished ? 1 : 0,
-          delegation: obj.isDelegated ? 1 : 0,
-          context: obj.context,
-          state: obj.state
-        }
+        repositoryId: obj.repository,
       };
       return this.tasks.put(data);
+    } else if (obj instanceof Repository) {
+      let data: PersistedRepository = {
+        data: encrypted,
+        nonce: nonce,
+        id: obj.id,
+        name: obj.name,
+      };
+      return this.repositories.put(data);
     }
     return Promise.reject('No compatible type ' + typeof obj);
   }
@@ -284,32 +281,29 @@ export default class WebStorage extends Dexie {
   }
 
   getTasks(filter?: TaskFilter): Promise<Task[]> {
-    let finished: boolean = filter && filter.finished !== undefined ? filter.finished : false;
-    let delegated: boolean | null = filter && filter.delegated !== undefined ? filter.delegated : null;
-    let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
-    let state: TaskState | null = filter && filter.state !== undefined ? filter.state : null;
-
-    let promise = this.tasks.where('details.finished').equals(finished ? 1 : 0).and(t => {
-      let valid = true;
-      if (delegated !== null) {
-        valid = t.details.delegation === (delegated ? 1 : 0);
-      }
-      if (valid && context !== null) {
-        if (t.details.context) {
-          valid = t.details.context.toLowerCase() === context.toLowerCase();
-        } else {
-          valid = false;
-        }
-      }
-      if (valid && state !== null) {
-        if (t.details.state) {
-          valid = t.details.state === state;
-        } else {
-          valid = false;
-        }
-      }
-      return valid;
-    }).toArray();
+    //
+    // let promise = this.tasks.where('details.finished').equals(finished ? 1 : 0).and(t => {
+    //   let valid = true;
+    //   if (delegated !== null) {
+    //     valid = t.details.delegation === (delegated ? 1 : 0);
+    //   }
+    //   if (valid && context !== null) {
+    //     if (t.details.context) {
+    //       valid = t.details.context.toLowerCase() === context.toLowerCase();
+    //     } else {
+    //       valid = false;
+    //     }
+    //   }
+    //   if (valid && state !== null) {
+    //     if (t.details.state) {
+    //       valid = t.details.state === state;
+    //     } else {
+    //       valid = false;
+    //     }
+    //   }
+    //   return valid;
+    // }).toArray();
+    let promise = this.tasks.toArray();
 
     let mappedTasks: Promise<Task[]> = promise.then(tasks => tasks.map(t => toTask(t, this.localCrypto)).filter(t => t !== undefined));
 
@@ -320,12 +314,29 @@ export default class WebStorage extends Dexie {
     let proposed: boolean | null = filter && filter.proposed !== undefined ? filter.proposed : null;
     let remainingTimeLessThen: number | null = filter && filter.remainingTimeLessThen !== undefined ? filter.remainingTimeLessThen : null;
     let tags: Tag[] | null = filter && filter.tags !== undefined ? filter.tags : null;
+    let finished: boolean = filter && filter.finished !== undefined ? filter.finished : false;
+    let delegated: boolean | null = filter && filter.delegated !== undefined ? filter.delegated : null;
+    let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
+    let state: TaskState | null = filter && filter.state !== undefined ? filter.state : null;
 
     let resultingTasks = mappedTasks.then(tasks => tasks.filter(t => {
       let valid = true;
       if (valid && name !== null) {
         valid = t.name.toLowerCase().indexOf(name) > 0;
       }
+      if (valid && finished !== null) {
+        valid = t.isFinished === finished;
+      }
+      if (valid && delegated !== null) {
+        valid = t.isDelegated === delegated;
+      }
+      if (valid && context !== null) {
+        valid = t.context === context;
+      }
+      if (valid && state !== null) {
+        valid = t.state === state;
+      }
+
       if (valid && delegatedTo !== null) {
         if (t.details.delegation.current && t.details.delegation.current.to) {
           valid = t.details.delegation.current.to.toLowerCase().indexOf(delegatedTo) > 0;
@@ -539,6 +550,6 @@ export default class WebStorage extends Dexie {
   }
 
   getRepositories(): Promise<Repository[]> {
-    return this.repositories.toArray().then(persisted => persisted.map( t => toRepository(t)));
+    return this.repositories.toArray().then(persisted => persisted.map(t => toRepository(t)));
   }
 }
