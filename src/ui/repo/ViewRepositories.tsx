@@ -29,8 +29,8 @@ class SingleRepository extends React.Component<SingleRepositoryProps, object> {
           </Col>
           <Col md={12} lg={8}>
             {this.props.repository.isLocked() ?
-              <Button onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button> :
-              <Button onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button>
+              <Button href={"/repo/login/"+this.props.repository.id} onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button> :
+              <Button href={"/repo/login/"+this.props.repository.id} onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button>
             }
           </Col>
         </Row>

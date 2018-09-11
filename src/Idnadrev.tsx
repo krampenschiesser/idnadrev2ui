@@ -23,6 +23,7 @@ import ViewDocument from './ui/document/ViewDocument';
 import { AddDocument } from './ui/document/AddDocument';
 import { AddFile } from './ui/file/AddFile';
 import ViewRepositories from './ui/repo/ViewRepositories';
+import RepositoryLogin from './ui/repo/RepositoryLogin';
 
 moment.locale('en');
 
@@ -75,7 +76,7 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
                 <Route path='/task/plan' component={PlanTask}/>
 
                 <Route exact path='/repo' component={ViewRepositories}/>
-                <Route path='/repo/login'/>
+                <Route path='/repo/login/:repoId' component={RepositoryLogin} />
                 <Route path='/repo/create'/>
               </NavigationContainer>
             </LocaleProvider>

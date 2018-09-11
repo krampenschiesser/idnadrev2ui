@@ -28,6 +28,7 @@ export class GlobalStore {
     this.webStorage.getAllContexts().then(contexts => {
       contexts.forEach(ctx => this.contexts.set(ctx, ctx));
     }).catch(e => console.error('Could not load contexts %o', e));
+    this.getRepositories();
   }
 
   getTagsStartingWith(input: string): string[] {
@@ -45,13 +46,6 @@ export class GlobalStore {
     } else {
       return newVar;
     }
-  }
-
-  getOpenRepositories(): Repository[] {
-    return [
-      new Repository('Local', 'test'),
-      new Repository('Other', 'test2'),
-    ];
   }
 
   getOpenThoughts(): Promise<Thought[]> {
@@ -81,5 +75,25 @@ export class GlobalStore {
         resolve(this.repositories);
       });
     }
+  }
+
+  getOpenRepositories(): Repository[] {
+    return [
+      new Repository('Local', 'test'),
+      new Repository('Other', 'test2'),
+    ];
+  }
+
+  getRepository(repoId: RepositoryId): Repository | undefined {
+    let index = this.repositories.findIndex(r => r.id === repoId);
+    if (index >= 0) {
+      return this.repositories[index];
+    } else {
+      return undefined;
+    }
+  }
+
+  loginRepository(repo: Repository, pw: string) : boolean {
+    return this.webStorage.localCrypto.open(pw);
   }
 }
