@@ -9,6 +9,8 @@ import { Button, Form, Icon, Input, message, Spin } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
+import { hash } from '../../store/CryptoWorker';
+import { toHex32 } from '../../store/LocalCryptoStorage';
 
 
 const FormItem = Form.Item;
@@ -84,11 +86,22 @@ export default class RepositoryLogin extends React.Component<RepositoryLoginProp
   handleSubmit = async (repo: Repository, pw: string) => {
     this.progress = true;
 
-    let success = this.props.store.loginRepository(repo, pw);
-    if (!success) {
-      this.error = 'Failed to login';
-    }
-    this.progress=false;
+    let array = new Uint32Array(32);
+    crypto.getRandomValues(array);
+
+    let saltString = toHex32(array);
+    hash(pw, saltString).then(hash =>{
+      console.log('done')
+      this.progress = false;
+    }).catch(r=>{
+      console.log(r);
+      this.progress = false;
+    });
+    // let success = this.props.store.loginRepository(repo, pw);
+    // if (!success) {
+    //   this.error = 'Failed to login';
+    // }
+    // this.progress = false;
   };
 
   render() {

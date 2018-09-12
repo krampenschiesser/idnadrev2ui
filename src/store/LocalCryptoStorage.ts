@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 
+
 let scrypt = require('scryptsy');
 
 // tslint:disable-next-line
@@ -142,11 +143,11 @@ export default class LocalCryptoStorage {
   }
 }
 
-function toHex32(array: Uint32Array): string {
+export function toHex32(array: Uint32Array): string {
   return toHex8(Uint8Array.from(array));
 }
 
-function toHex8(array: Uint8Array): string {
+export function toHex8(array: Uint8Array): string {
   let hexStr = '';
   for (let i = 0; i < array.length; i++) {
     // tslint:disable-next-line
