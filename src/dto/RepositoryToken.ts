@@ -1,1 +1,1 @@
-export type RepositoryToken = string;
+export type RepositoryToken = Uint8Array;

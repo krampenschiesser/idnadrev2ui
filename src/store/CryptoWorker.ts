@@ -1,23 +1,26 @@
-import PromiseWorker from 'promise-worker';
 import CryptoWorker from './CryptoWorkerImpl';
 
 export interface EncryptDataMsg {
+  id: number;
   plaintext: Uint8Array;
   nonce: Uint8Array;
 }
 
 export interface EncryptDataResponse {
+  id: number;
   ciphertext: Uint8Array;
   tag: Uint8Array;
   nonce: Uint8Array;
 }
 
 export interface HashPwMsg {
+  id: number;
   plaintext: string;
   salt: string;
 }
 
 export interface HashPwResponse {
+  id: number;
   hashed: Uint8Array;
   salt: string;
 }
@@ -32,25 +35,32 @@ class WebWorker {
   }
 }
 
-var
+var responses: Map<number, [(param: any) => void, (param: any) => void]> = new Map();
+var msgCounter = 0;
 const worker1: any = new WebWorker(CryptoWorker);
 worker1.onmessage = (ev: any) => {
   console.log('from worker', ev);
+  let promise = responses.get(ev.data.id);
+  if (promise) {
+    console.log("found promise")
+    let resolve = promise[0];
+    resolve(ev.data);
+    console.log("resolved promise")
+  }
 };
 
-const worker = new PromiseWorker(worker1);
-
 export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
+  let id = msgCounter;
+  msgCounter++;
   let msg: HashPwMsg = {
+    id: id,
     plaintext: plaintext,
     salt: salt
   };
-  return worker.postMessage(msg).then(resp => {
-    console.log('Received from worker');
-    console.log(resp);
-    return resp;
-  }).then((resp: HashPwResponse) => {
-    console.log(resp);
-    return resp.hashed;
+  let promise = new Promise<Uint8Array>((resolve, reject) => {
+    console.log("here")
+    responses.set(id, [resolve, reject]);
   });
+  worker1.postMessage(msg);
+  return promise;
 }

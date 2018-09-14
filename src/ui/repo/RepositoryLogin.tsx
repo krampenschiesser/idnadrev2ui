@@ -9,8 +9,8 @@ import { Button, Form, Icon, Input, message, Spin } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
-import { hash } from '../../store/CryptoWorker';
 import { toHex32 } from '../../store/LocalCryptoStorage';
+import { hash } from '../../store/CryptoHelper';
 
 
 const FormItem = Form.Item;

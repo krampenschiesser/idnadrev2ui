@@ -183,12 +183,17 @@ export default class WebStorage extends Dexie {
       repositories: 'id, name'
     });
     this.on('populate', () => {
-      let repos = generateRepositories();
-      repos.forEach(r => this.store(r));
-      generateThoughts(repos[0].id).forEach(t => this.store(t));
-      generateTasks(repos[0].id).forEach(t => this.store(t));
-      generateDocuments(repos[0].id).forEach(t => this.store(t));
-      // generateManyTasks().forEach(t => this.store(t));
+      try {
+        let repos = generateRepositories();
+        repos.forEach(r => this.store(r));
+        generateThoughts(repos[0].id).forEach(t => this.store(t));
+        generateTasks(repos[0].id).forEach(t => this.store(t));
+        generateDocuments(repos[0].id).forEach(t => this.store(t));
+        // generateManyTasks().forEach(t => this.store(t));
+      } catch (e) {
+        console.log('Could not create repositories', e);
+        throw e;
+      }
     });
   }
 
@@ -212,7 +217,13 @@ export default class WebStorage extends Dexie {
       return this.binaryFiles.put(data);
     }
 
-    let json = JSON.stringify(obj);
+    let json = JSON.stringify(obj, (key, value) => {
+      if (obj instanceof Repository && key === 'token') {
+        return undefined;
+      } else {
+        return value;
+      }
+    });
     let [encrypted, nonce] = this.localCrypto.encryptFromUtf8(json);
 
     if (obj instanceof Thought) {
