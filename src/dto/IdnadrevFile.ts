@@ -54,4 +54,5 @@ export default abstract class IdnadrevFile<Details, Content> {
     this.repository = repository;
     return this;
   }
+
 }

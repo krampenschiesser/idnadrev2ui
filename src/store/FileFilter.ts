@@ -9,4 +9,5 @@ export default interface FileFilter {
   tags?: Tag[];
   types?: FileType[];
   repository?: RepositoryId;
+
 }

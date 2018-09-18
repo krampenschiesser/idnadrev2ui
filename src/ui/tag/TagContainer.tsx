@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { AutoComplete, Tag } from 'antd';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { observable } from 'mobx';
 import { Tag as FileTag } from '../../dto/Tag';
 

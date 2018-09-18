@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import TagViewer from '../tag/TagViewer';
 import { MarkdownViewer } from '../editor/MarkdownViewer';
 import Card from 'antd/lib/card';

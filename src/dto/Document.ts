@@ -8,4 +8,5 @@ export default class Document extends IdnadrevFile<string, string> {
     this.tags = tags;
     this.content = content;
   }
+
 }

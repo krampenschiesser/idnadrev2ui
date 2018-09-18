@@ -8,7 +8,7 @@ import Task, {
   TaskState
 } from '../../dto/Task';
 import Select from 'antd/lib/select';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { FormConstants } from '../form/FormConstants';
 import AutoComplete from 'antd/lib/auto-complete';
 import { FileId } from '../../dto/FileId';
@@ -123,7 +123,7 @@ export class TaskParentFormItem extends React.Component<TaskFormItemProps, objec
   componentDidMount() {
     this.parent = this.props.task.parent;
     if (this.props.task.parent) {
-      this.props.store.getTask(this.props.task.parent).then(p => {
+      this.props.store.getTask(this.props.task.parent,this.props.task.repository).then(p => {
         if (p) {
           this.parent = p.id;
         }

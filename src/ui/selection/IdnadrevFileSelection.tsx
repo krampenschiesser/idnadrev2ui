@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import { FileType } from '../../dto/FileType';
 import { Input, Button } from 'antd';

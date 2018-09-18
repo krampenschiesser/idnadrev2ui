@@ -10,7 +10,7 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import { FileId } from '../dto/FileId';
 import FileFilter from './FileFilter';
 
-export class GlobalStore {
+export default class GlobalStore {
   colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
   assignedColors: Map<string, string> = new Map();
   @observable lastSelectedRepository: RepositoryId | null = null;
@@ -22,13 +22,13 @@ export class GlobalStore {
 
   constructor(webStorage: WebStorage) {
     this.webStorage = webStorage;
-    this.webStorage.getInitialTags().then(tags => {
-      tags.forEach(tag => this.tags.set(tag.name, tag));
-    }).catch(e => console.error('Could not load tags %o', e));
-    this.webStorage.getAllContexts().then(contexts => {
-      contexts.forEach(ctx => this.contexts.set(ctx, ctx));
-    }).catch(e => console.error('Could not load contexts %o', e));
-    this.getRepositories();
+    // this.webStorage.getInitialTags().then(tags => {
+    //   tags.forEach(tag => this.tags.set(tag.name, tag));
+    // }).catch(e => console.error('Could not load tags %o', e));
+    // this.webStorage.getAllContexts().then(contexts => {
+    //   contexts.forEach(ctx => this.contexts.set(ctx, ctx));
+    // }).catch(e => console.error('Could not load contexts %o', e));
+    this.loadRepositories();
   }
 
   getTagsStartingWith(input: string): string[] {
@@ -48,23 +48,47 @@ export class GlobalStore {
     }
   }
 
-  getOpenThoughts(): Promise<Thought[]> {
-    return this.webStorage.loadOpenThoughts();
+  async getOpenThoughts(): Promise<Thought[]> {
+    let repos = this.getOpenRepositories();
+    let thoughts: Thought[] = [];
+    for (const repo of repos) {
+      let cur = await this.webStorage.loadOpenThoughts(repo);
+      cur.forEach(t => thoughts.push(t));
+    }
+    return thoughts;
   }
 
-  getTasks(filter?: TaskFilter): Promise<Task[]> {
-    return this.webStorage.getTasks(filter);
+  async getTasks(filter?: TaskFilter): Promise<Task[]> {
+    let repos = this.getOpenRepositories();
+    let tasks: Task[] = [];
+    for (const repo of repos) {
+      let cur = await this.webStorage.getTasks(repo, filter);
+      cur.forEach(t => tasks.push(t));
+    }
+    return tasks;
   }
 
-  getAllFiles(fileFilter?: FileFilter): Promise<IdnadrevFile<{}, {}>[]> {
-    return this.webStorage.getAllFiles(fileFilter);
+  async getAllFiles(fileFilter?: FileFilter): Promise<IdnadrevFile<{}, {}>[]> {
+    let repos = this.getOpenRepositories();
+    let files: IdnadrevFile<{}, {}>[] = [];
+    for (const repo of repos) {
+      let cur = await this.webStorage.getAllFiles(repo, fileFilter);
+      cur.forEach(t => files.push(t));
+    }
+    return files;
   }
 
-  getTask(parent: FileId): Promise<Task | undefined> {
-    return this.webStorage.loadTaskById(parent);
+  async getTask(parent: FileId, repoId: RepositoryId): Promise<Task | undefined> {
+    let filtered = this.getOpenRepositories().filter(r => r.id === repoId);
+    if (filtered.length === 0) {
+      return undefined;
+    } else {
+      let repo = filtered[0];
+      return this.webStorage.loadTaskById(parent, repo);
+    }
   }
 
-  getRepositories(): Promise<Repository[]> {
+  loadRepositories(): Promise<Repository[]> {
     if (this.repositories.length === 0) {
       return this.webStorage.getRepositories().then(repos => {
         this.repositories = repos;
@@ -78,10 +102,7 @@ export class GlobalStore {
   }
 
   getOpenRepositories(): Repository[] {
-    return [
-      new Repository('Local', 'test'),
-      new Repository('Other', 'test2'),
-    ];
+    return this.repositories.filter(r => r.token !== undefined);
   }
 
   getRepository(repoId: RepositoryId): Repository | undefined {
@@ -93,7 +114,4 @@ export class GlobalStore {
     }
   }
 
-  loginRepository(repo: Repository, pw: string) : boolean {
-    return this.webStorage.localCrypto.open(pw);
-  }
 }

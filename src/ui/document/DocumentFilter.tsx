@@ -4,7 +4,7 @@ import Form from 'antd/lib/form/Form';
 import FormItem from 'antd/lib/form/FormItem';
 import Input from 'antd/lib/input/Input';
 import { FormComponentProps } from 'antd/lib/form';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 
 import TagContainer from '../tag/TagContainer';
 import { observable, observe } from 'mobx';

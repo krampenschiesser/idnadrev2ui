@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import FormItem from 'antd/lib/form/FormItem';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import TagContainer from '../tag/TagContainer';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { FormComponentProps } from 'antd/lib/form';
 import { FormConstants } from './FormConstants';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import Task from '../../dto/Task';
 import { dateCell } from '../table/DateCell';
 import Table from 'antd/lib/table/Table';

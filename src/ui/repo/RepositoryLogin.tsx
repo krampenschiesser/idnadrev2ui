@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import UiStore from '../../store/UiStore';
 import './Repository.css';
 import { RouteComponentProps } from 'react-router';
@@ -9,9 +9,6 @@ import { Button, Form, Icon, Input, message, Spin } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
-import { toHex32 } from '../../store/LocalCryptoStorage';
-import { hash } from '../../store/CryptoHelper';
-
 
 const FormItem = Form.Item;
 
@@ -86,22 +83,14 @@ export default class RepositoryLogin extends React.Component<RepositoryLoginProp
   handleSubmit = async (repo: Repository, pw: string) => {
     this.progress = true;
 
-    let array = new Uint32Array(32);
-    crypto.getRandomValues(array);
-
-    let saltString = toHex32(array);
-    hash(pw, saltString).then(hash =>{
+    repo.open(pw).then(() =>{
       console.log('done')
       this.progress = false;
     }).catch(r=>{
       console.log(r);
+      this.error = 'Could not login';
       this.progress = false;
     });
-    // let success = this.props.store.loginRepository(repo, pw);
-    // if (!success) {
-    //   this.error = 'Failed to login';
-    // }
-    // this.progress = false;
   };
 
   render() {

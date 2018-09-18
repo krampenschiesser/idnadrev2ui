@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Tag, Icon, AutoComplete } from 'antd';
 import { observable } from 'mobx';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { observer } from 'mobx-react';
 
 export interface AddTagProps {

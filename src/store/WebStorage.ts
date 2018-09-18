@@ -2,9 +2,8 @@ import Dexie from 'dexie';
 import Task, { TaskContext, TaskState } from '../dto/Task';
 import Thought from '../dto/Thought';
 import Document from '../dto/Document';
-import LocalCryptoStorage, { EncryptedData, Nonce } from './LocalCryptoStorage';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import { generateDocuments, generateRepositories, generateTasks, generateThoughts } from './DummyData';
+import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
 import { TaskFilter } from './TaskFilter';
 import { FileId } from '../dto/FileId';
 import { Tag } from '../dto/Tag';
@@ -13,36 +12,26 @@ import BinaryFile from '../dto/BinaryFile';
 import FileFilter from './FileFilter';
 import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
+import { EncryptedData, Nonce } from './CryptoHelper';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
   nonce: Nonce;
   id: FileId;
   repositoryId: RepositoryId
+  type: FileType;
 }
 
-interface PersistedThought extends PersistedIdnadrevFile {
-};
-
-interface PersistedTask extends PersistedIdnadrevFile {
-};
-
-interface PersistedDocument extends PersistedIdnadrevFile {
-};
-
-interface PersistedBinaryFile {
-  id: FileId;
-  repositoryId: RepositoryId
-  dataJson: EncryptedData;
-  nonceJson: Nonce;
-  dataContent: EncryptedData;
-  nonceContent: Nonce;
+interface PersistedBinaryFile extends PersistedIdnadrevFile {
+  dataBinary: EncryptedData;
+  nonceBinary: Nonce;
 }
 
 interface PersistedRepository {
   id: FileId;
   name: string;
   data: EncryptedData;
+  salt: Uint32Array;
   nonce: Nonce;
 }
 
@@ -59,11 +48,11 @@ function fileDates(file: IdnadrevFile<any, any>) {
   }
 }
 
-export function toThought(persisted: PersistedThought | undefined, localCrypto: LocalCryptoStorage): Thought | undefined {
+export async function toThought(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Thought | undefined> {
   if (persisted === undefined) {
     return persisted;
   }
-  let decrypt = localCrypto.decryptToUtf8(persisted.data, persisted.nonce);
+  let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
   let parse = JSON.parse(decrypt);
   let thought = new Thought(parse.name, parse.tags, parse.content);
   Object.assign(thought, parse);
@@ -71,11 +60,11 @@ export function toThought(persisted: PersistedThought | undefined, localCrypto: 
   return thought;
 }
 
-export function toTask(persisted: PersistedTask | undefined, localCrypto: LocalCryptoStorage): Task | undefined {
+export async function toTask(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Task | undefined> {
   if (persisted === undefined) {
     return persisted;
   }
-  let decrypt = localCrypto.decryptToUtf8(persisted.data, persisted.nonce);
+  let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
   let parse = JSON.parse(decrypt);
   let task = new Task(parse.name, parse.tags, parse.content);
   Object.assign(task, parse);
@@ -118,11 +107,11 @@ export function toTask(persisted: PersistedTask | undefined, localCrypto: LocalC
   return task;
 }
 
-function toDocument(persisted: PersistedDocument | undefined, localCrypto: LocalCryptoStorage): Document | undefined {
+async function toDocument(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Document | undefined> {
   if (persisted === undefined) {
     return persisted;
   }
-  let decrypt = localCrypto.decryptToUtf8(persisted.data, persisted.nonce);
+  let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
   let parse = JSON.parse(decrypt);
   let doc = new Document(parse.name, parse.tags, parse.content);
   Object.assign(doc, parse);
@@ -130,24 +119,24 @@ function toDocument(persisted: PersistedDocument | undefined, localCrypto: Local
   return doc;
 }
 
-function toBinaryFileWithoutContent(persisted: PersistedBinaryFile | undefined, localCrypto: LocalCryptoStorage): BinaryFile | undefined {
-  if (persisted === undefined) {
-    return persisted;
-  }
-  let decryptJson = localCrypto.decryptToUtf8(persisted.dataJson, persisted.nonceJson);
-  let parse = JSON.parse(decryptJson);
-  let file = new BinaryFile(parse.name, parse.tags);
-  Object.assign(file, parse);
-  fileDates(file);
-  return file;
-}
+// async function toBinaryFileWithoutContent(persisted: PersistedBinaryFile | undefined, repo: Repository): Promise<BinaryFile | undefined> {
+//   if (persisted === undefined) {
+//     return persisted;
+//   }
+//   let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
+//   let parse = JSON.parse(decryptJson);
+//   let file = new BinaryFile(parse.name, parse.tags);
+//   Object.assign(file, parse);
+//   fileDates(file);
+//   return file;
+// }
 
-function toBinaryFile(persisted: PersistedBinaryFile | undefined, localCrypto: LocalCryptoStorage): BinaryFile | undefined {
+async function toBinaryFile(persisted: PersistedBinaryFile | undefined, repo: Repository): Promise<BinaryFile | undefined> {
   if (persisted === undefined) {
     return persisted;
   }
-  let decryptJson = localCrypto.decryptToUtf8(persisted.dataJson, persisted.nonceJson);
-  let decryptContent = localCrypto.decrypt(persisted.dataContent, persisted.nonceContent);
+  let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
+  let decryptContent = await repo.decrypt(persisted.dataBinary, persisted.nonceBinary);
   let parse = JSON.parse(decryptJson);
   let file = new BinaryFile(parse.name, parse.tags);
   Object.assign(file, parse);
@@ -156,142 +145,151 @@ function toBinaryFile(persisted: PersistedBinaryFile | undefined, localCrypto: L
   return file;
 }
 
+async function toIdnadrevFile(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<IdnadrevFile<any, any> | undefined> {
+  if (persisted === undefined) {
+    return persisted;
+  }
+  let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
+  let parse = JSON.parse(decryptJson);
+  // let file = new IdnadrevFile(parse.name, parse.tags);
+  // Object.assign(file, parse);
+  fileDates(parse);
+  return parse;
+}
+
 function toRepository(persisted: PersistedRepository): Repository {
   if (persisted === undefined) {
     return persisted;
   }
-  let repository = new Repository(persisted.name, persisted.id);
+  console.log('persisted', persisted);
+  let repository = new Repository(persisted.name, '');
+  repository.id = persisted.id;
+  repository.nonce = persisted.nonce;
+  repository.data = persisted.data;
+  repository.salt = persisted.salt;
+  console.log('loaded', repository);
   return repository;
 }
 
 export default class WebStorage extends Dexie {
-  tasks: Dexie.Table<PersistedTask, string>;
-  docs: Dexie.Table<PersistedDocument, string>;
-  thoughts: Dexie.Table<PersistedThought, string>;
-  binaryFiles: Dexie.Table<PersistedBinaryFile, string>;
+  files: Dexie.Table<PersistedIdnadrevFile, string>;
   repositories: Dexie.Table<PersistedRepository, string>;
-  localCrypto: LocalCryptoStorage;
 
-  constructor(crypto: LocalCryptoStorage) {
+  constructor() {
     super('IdnadrevDb');
-    this.localCrypto = crypto;
     this.version(1).stores({
-      tasks: 'id, repositoryId',
-      docs: 'id, repositoryId',
-      thoughts: 'id, repositoryId',
-      binaryFiles: 'id, repositoryId',
+      files: 'id, repositoryId, type',
       repositories: 'id, name'
     });
     this.on('populate', () => {
       try {
         let repos = generateRepositories();
-        repos.forEach(r => this.store(r));
-        generateThoughts(repos[0].id).forEach(t => this.store(t));
-        generateTasks(repos[0].id).forEach(t => this.store(t));
-        generateDocuments(repos[0].id).forEach(t => this.store(t));
+        repos.forEach(r => this.storeRepository(r));
+        let repo = repos[0];
+        generateThoughts(repo.id).forEach(t => this.store(t, repo));
+        generateTasks(repo.id).forEach(t => this.store(t, repo));
+        generateBinaryFiles(repo.id).forEach(t => this.storeBinaryFile(t, repo));
         // generateManyTasks().forEach(t => this.store(t));
       } catch (e) {
-        console.log('Could not create repositories', e);
+        console.log('Could not create dummy data', e);
         throw e;
       }
     });
   }
 
-  store<T>(obj: T): Promise<string> {
+
+  storeRepository(obj: Repository): Promise<string> {
     console.log('storing %o', obj);
-    if (obj instanceof BinaryFile) {
-      let assign: BinaryFile = Object.assign({}, obj);
-      assign.content = Uint8Array.of();
+    let data: PersistedRepository = {
+      data: obj.data,
+      nonce: obj.nonce,
+      salt: obj.salt,
+      id: obj.id,
+      name: obj.name,
+    };
+    return this.repositories.put(data);
+  }
 
-      let [encryptedJson, nonceJson] = this.localCrypto.encryptFromUtf8(JSON.stringify(assign));
-      let [encryptedContent, nonceContent] = this.localCrypto.encrypt(obj.content);
+  async storeBinaryFile(obj: BinaryFile, repo: Repository) {
+    console.log('storing %o', obj);
+    let assign: BinaryFile = Object.assign({}, obj);
+    assign.content = Uint8Array.of();
 
-      let data: PersistedBinaryFile = {
-        dataJson: encryptedJson,
-        dataContent: encryptedContent,
-        nonceJson: nonceJson,
-        nonceContent: nonceContent,
-        id: obj.id,
-        repositoryId: obj.repository
-      };
-      return this.binaryFiles.put(data);
-    }
+    let [encryptedJson, nonceJson] = await repo.encrypt(JSON.stringify(assign));
+    let [encryptedContent, nonceContent] = await repo.encrypt(obj.content);
 
-    let json = JSON.stringify(obj, (key, value) => {
-      if (obj instanceof Repository && key === 'token') {
-        return undefined;
-      } else {
-        return value;
-      }
-    });
-    let [encrypted, nonce] = this.localCrypto.encryptFromUtf8(json);
+    let data: PersistedBinaryFile = {
+      dataBinary: encryptedContent,
+      data: encryptedJson,
+      nonceBinary: nonceContent,
+      nonce: nonceJson,
+      id: obj.id,
+      repositoryId: obj.repository,
+      type: obj.fileType
+    };
+    return this.files.put(data);
+  }
 
-    if (obj instanceof Thought) {
-      let data: PersistedThought = {
+  async store<T>(obj: T, repo: Repository): Promise<string> {
+    console.log('storing %o', obj);
+    let json = JSON.stringify(obj);
+    let [encrypted, nonce] = await repo.encrypt(json);
+    if (obj instanceof IdnadrevFile) {
+
+      let data: PersistedIdnadrevFile = {
         data: encrypted,
         nonce: nonce,
         id: obj.id,
         repositoryId: obj.repository,
+        type: obj.fileType,
       };
-      return this.thoughts.put(data);
-    } else if (obj instanceof Document) {
-      let data: PersistedDocument = {
-        data: encrypted,
-        nonce: nonce,
-        id: obj.id,
-        repositoryId: obj.repository,
-      };
-      return this.docs.put(data);
-    } else if (obj instanceof Task) {
-      if (obj.children) {
-        obj.children = undefined;
-      }
-      let data: PersistedTask = {
-        data: encrypted,
-        nonce: nonce,
-        id: obj.id,
-        repositoryId: obj.repository,
-      };
-      return this.tasks.put(data);
-    } else if (obj instanceof Repository) {
-      let data: PersistedRepository = {
-        data: encrypted,
-        nonce: nonce,
-        id: obj.id,
-        name: obj.name,
-      };
-      return this.repositories.put(data);
+      return this.files.put(data);
     }
     return Promise.reject('No compatible type ' + typeof obj);
   }
 
-  loadOpenThoughts(): Promise<Thought[]> {
-    return this.thoughts.toArray().then(thoughts => thoughts
-      .map(t => toThought(t, this.localCrypto))
-      .filter(t => t !== undefined && !t.isPostPoned())
-    );
+
+  async loadOpenThoughts(repo: Repository): Promise<Thought[]> {
+    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(Thought.TYPE).toArray();
+    let returnvalue = [];
+    for (let file of thoughts) {
+      let thought = await toThought(file, repo);
+      if (thought && !thought.isPostPoned()) {
+        returnvalue.push(thought);
+      }
+    }
+    return returnvalue;
   }
 
-  loadAllThoughts(): Promise<Thought[]> {
-    return this.thoughts.toArray().then(thoughts => thoughts
-      .map(t => toThought(t, this.localCrypto))
-      .filter(t => t !== undefined)
-    );
+  async loadAllThoughts(repo: Repository): Promise<Thought[]> {
+    let thoughts = await this.files.where('type').equals(Thought.TYPE).toArray();
+
+    let returnvalue = [];
+    for (let file of thoughts) {
+      let thought = await toThought(file, repo);
+      if (thought) {
+        returnvalue.push(thought);
+      }
+    }
+    return returnvalue;
   }
 
-  loadThoughtById(id: string): Promise<Thought | undefined> {
-    return this.thoughts.where('id').equals(id).first().then(persistedThought => toThought(persistedThought, this.localCrypto));
+  async loadThoughtById(id: string, repo: Repository): Promise<Thought | undefined> {
+    let thought = await this.files.where('id').equals(id).first();
+    return await toThought(thought, repo);
   }
 
-  loadDocumentById(id: string): Promise<Document | undefined> {
-    return this.docs.where('id').equals(id).first().then(persistedDoc => toDocument(persistedDoc, this.localCrypto));
+  async loadDocumentById(id: string, repo: Repository): Promise<Document | undefined> {
+    let doc = await this.files.where('id').equals(id).first();
+    return await toDocument(doc, repo);
   }
 
-  loadTaskById(id: string): Promise<Task | undefined> {
-    return this.tasks.where('id').equals(id).first().then(persistedTask => toTask(persistedTask, this.localCrypto));
+  async loadTaskById(id: string, repo: Repository): Promise<Task | undefined> {
+    let task = await this.files.where('id').equals(id).first();
+    return await toTask(task, repo);
   }
 
-  getTasks(filter?: TaskFilter): Promise<Task[]> {
+  async getTasks(repo: Repository, filter?: TaskFilter): Promise<Task[]> {
     //
     // let promise = this.tasks.where('details.finished').equals(finished ? 1 : 0).and(t => {
     //   let valid = true;
@@ -314,9 +312,16 @@ export default class WebStorage extends Dexie {
     //   }
     //   return valid;
     // }).toArray();
-    let promise = this.tasks.toArray();
+    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(Task.TYPE).toArray();
 
-    let mappedTasks: Promise<Task[]> = promise.then(tasks => tasks.map(t => toTask(t, this.localCrypto)).filter(t => t !== undefined));
+    let mappedTasks: Task[] = [];
+
+    for (let file of tasks) {
+      let task = await toTask(file, repo);
+      if (task) {
+        mappedTasks.push(task);
+      }
+    }
 
     let name: string | null = filter && filter.name !== undefined ? filter.name.toLowerCase() : null;
     let delegatedTo: string | null = filter && filter.delegatedTo !== undefined ? filter.delegatedTo.toLowerCase() : null;
@@ -330,7 +335,7 @@ export default class WebStorage extends Dexie {
     let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
     let state: TaskState | null = filter && filter.state !== undefined ? filter.state : null;
 
-    let resultingTasks = mappedTasks.then(tasks => tasks.filter(t => {
+    let resultingTasks = mappedTasks.filter(t => {
       let valid = true;
       if (valid && name !== null) {
         valid = t.name.toLowerCase().indexOf(name) > 0;
@@ -407,47 +412,39 @@ export default class WebStorage extends Dexie {
         }
       }
       return valid;
-    }));
-
-    let retval: Promise<(Task | undefined)[][]> = resultingTasks.then(tasks => {
-      let map = tasks.map(t => this.loadParent(t));
-
-      return Promise.all(map);
     });
-    return retval.then(r => {
-      let tasks: Task[] = [];
-      r.forEach(t => {
-        t.forEach(o => {
-          if (o !== undefined) {
-            tasks.push(o);
-          }
-        });
-      });
-      return tasks;
-    });
+
+    let all: Task[] = [];
+    for (let task of resultingTasks) {
+      all.push(task);
+      let parents = await this.loadParents(task, repo);
+      parents.forEach(p => all.push(p));
+    }
+    return all;
   }
 
-  loadParent(t: Task): Promise<(Task | undefined)[]> {
+  async loadParents(t: Task, repo: Repository): Promise<Task[]> {
     if (t.parent) {
-      let promise = this.tasks.get(t.parent).then(persistedTask => toTask(persistedTask, this.localCrypto));
-      let more: Promise<(Task | undefined)[]> = promise.then(parent => {
-        if (parent !== undefined) {
-          return this.loadParent(parent);
-        } else {
-          return Promise.resolve(undefined);
+      let all: Task[] = [];
+
+      let parent = await this.loadTaskById(t.parent, repo);
+      if (parent) {
+        all.push(parent);
+
+        let parents = await this.loadParents(parent, repo);
+        for (let other of parents) {
+          if (other) {
+            all.push(other);
+          }
         }
-      });
-      return more.then(tasks => {
-        let all = tasks.filter(task => task !== undefined);
-        all.push(t);
-        return all;
-      });
+      }
+      return all;
     } else {
-      return Promise.resolve([t]);
+      return [];
     }
   }
 
-  getInitialTags(): Promise<Set<Tag>> {//this is crap need different solution
+  async getInitialTags(repo: Repository): Promise<Set<Tag>> {//this is crap need different solution
     // tslint:disable-next-line
     let tagMapper = (t: IdnadrevFile<any, any> | undefined) => {
       if (t) {
@@ -456,26 +453,19 @@ export default class WebStorage extends Dexie {
         return [];
       }
     };
-    let tags1 = this.tasks.toArray().then(tasks => tasks.map(t => toTask(t, this.localCrypto)).map(tagMapper));
-    let tags2 = this.thoughts.toArray().then(tasks => tasks.map(t => toThought(t, this.localCrypto)).map(tagMapper));
-    let tags3 = this.docs.toArray().then(tasks => tasks.map(t => toDocument(t, this.localCrypto)).map(tagMapper));
-    let tags4 = this.binaryFiles.toArray().then(tasks => tasks.map(t => toBinaryFileWithoutContent(t, this.localCrypto)).map(tagMapper));
-
-    let tagsPromise = Promise.all([tags1, tags2, tags3, tags4]).then((o: [Tag[][], Tag[][], Tag[][], Tag[][]]) => {
-      let tags: Set<Tag> = new Set();
-      o.forEach(arr1 => {
-        arr1.forEach(arr2 => {
-          arr2.forEach(tag => {
-            tags.add(tag);
-          });
-        });
-      });
-      return tags;
+    let bare = await this.files.toArray();
+    let loaded = await Promise.all(bare.map(async t => await toIdnadrevFile(t, repo)));
+    let tags = loaded.map(tagMapper);
+    let set = new Set();
+    tags.forEach(t => {
+      if (t) {
+        set.add(t);
+      }
     });
-    return tagsPromise;
+    return set;
   }
 
-  getAllContexts(): Promise<Set<TaskContext>> {//this is crap need different solution
+  async getAllContexts(repo: Repository): Promise<Set<TaskContext>> {//this is crap need different solution
     let contextMapper = (t: Task | undefined) => {
       if (t && t.details.context) {
         return t.details.context;
@@ -483,21 +473,17 @@ export default class WebStorage extends Dexie {
         return '';
       }
     };
-    let contexts = this.tasks.toArray().then(tasks => tasks.map(t => toTask(t, this.localCrypto)).map(contextMapper));
-
-    return contexts.then(ctxs => {
-      let all = new Set<TaskContext>();
-      ctxs.filter(c => c !== '').forEach(t => all.add(t));
-      return all;
-    });
+    let tasks = await Promise.all((await this.files.where('type').equals(Task.TYPE).toArray()).map(async t => await toTask(t, repo)));
+    let set = new Set();
+    tasks.map(contextMapper).forEach(context => set.add(context));
+    return set;
   }
 
-  getAllFiles(fileFilter?: FileFilter): Promise<IdnadrevFile<{}, {}>[]> {
+  async getAllFiles(repo: Repository, fileFilter?: FileFilter): Promise<IdnadrevFile<any, any>[]> {
     fileFilter = !fileFilter ? {} : fileFilter;
-    let allPromises: Promise<(IdnadrevFile<{}, {}> | undefined)[]>[] = [];
 
     let lowerCase = fileFilter.name ? fileFilter.name.toLowerCase() : '';
-    let filter = (file: IdnadrevFile<{}, {}> | undefined) => {
+    let filter = (file: IdnadrevFile<any, any> | undefined) => {
       fileFilter = !fileFilter ? {} : fileFilter; //for typescript
       if (file === undefined) {
         return false;
@@ -524,40 +510,37 @@ export default class WebStorage extends Dexie {
         return valid;
       }
     };
-
-    if (this.matchesType(fileFilter, FileType.Task)) {
-      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.tasks.toArray().then(tasks => tasks.map(t => toTask(t, this.localCrypto)).filter(filter));
-      allPromises.push(promise);
+    let types = fileFilter.types;
+    if (!types) {
+      types = [FileType.Binary, FileType.Document, FileType.Image, FileType.Task, FileType.Thought];
     }
-    if (this.matchesType(fileFilter, FileType.Thought)) {
-      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.thoughts.toArray().then(tasks => tasks.map(t => toThought(t, this.localCrypto)).filter(filter));
-      allPromises.push(promise);
-    }
-    if (this.matchesType(fileFilter, FileType.Document)) {
-      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.docs.toArray().then(tasks => tasks.map(t => toDocument(t, this.localCrypto)).filter(filter));
-      allPromises.push(promise);
-    }
-    if (this.matchesType(fileFilter, FileType.Binary)) {
-      let promise: Promise<(IdnadrevFile<{}, {}> | undefined)[]> = this.binaryFiles.toArray().then(tasks => tasks.map(t => toBinaryFile(t, this.localCrypto)).filter(filter));
-      allPromises.push(promise);
-    }
-
-    let final = Promise.all(allPromises).then(files => {
-      let res: IdnadrevFile<{}, {}>[] = [];
-      files.forEach(f => f.forEach(o => {
-          if (o !== undefined) {
-            res.push(o);
-          }
+    let results = await Promise.all(types.map(async t => {
+      let filesForType = await this.files.where('type').equals(t).toArray();
+      let functor = async (f: PersistedIdnadrevFile) => {
+        if (t === FileType.Binary) {
+          let bla: any = f;
+          return toBinaryFile(bla, repo);
+        } else if (t === FileType.Document) {
+          return toDocument(f, repo);
+        } else if (t === FileType.Thought) {
+          return toThought(f, repo);
+        } else if (t === FileType.Task) {
+          return toTask(f, repo);
+        } else {
+          return undefined;
         }
-      ));
-      return res;
-    });
+      };
+      let files = await Promise.all(filesForType.map(functor));
+      return files.filter(filter);
+    }));
 
+    let final: IdnadrevFile<any, any>[] = [];
+    results.forEach(files => files.forEach(f => {
+      if (f) {
+        final.push(f);
+      }
+    }));
     return final;
-  }
-
-  private matchesType(fileFilter: FileFilter, type: FileType): boolean {
-    return !fileFilter.types || fileFilter.types.indexOf(type) >= 0;
   }
 
   getRepositories(): Promise<Repository[]> {

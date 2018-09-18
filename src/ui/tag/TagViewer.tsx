@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Tag } from 'antd';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 
 export class TagViewerProps {
   item: IdnadrevFile<{}, {}>;

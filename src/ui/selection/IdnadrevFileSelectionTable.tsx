@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import Table from 'antd/lib/table/Table';
 import { dateCell } from '../table/DateCell';

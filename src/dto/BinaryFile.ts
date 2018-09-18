@@ -14,4 +14,5 @@ export default class BinaryFile extends IdnadrevFile<BinaryFileDetails, Uint8Arr
     this.tags = tags;
     this.details = new BinaryFileDetails();
   }
+
 }

@@ -5,7 +5,7 @@ import FormItem from 'antd/lib/form/FormItem';
 import Input from 'antd/lib/input/Input';
 import { FormComponentProps } from 'antd/lib/form';
 import { TaskFilter } from '../../store/TaskFilter';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 
 const Option = Select.Option;
 import Select from 'antd/lib/select';

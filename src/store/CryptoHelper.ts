@@ -1,5 +1,3 @@
-import { EncryptedData, Nonce } from './LocalCryptoStorage';
-
 let scrypt = require('scryptsy');
 
 // tslint:disable-next-line
@@ -27,11 +25,11 @@ export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
 }
 
 //fixme externalize to worker in the future
-export function doubleHash(plaintext: string, salt: string): Promise<[Uint8Array,Uint8Array]> {
-  return new Promise<[Uint8Array,Uint8Array]>(((resolve, reject) => {
+export function doubleHash(plaintext: string, salt: string): Promise<[Uint8Array, Uint8Array]> {
+  return new Promise<[Uint8Array, Uint8Array]>(((resolve, reject) => {
     let key = scrypt(plaintext, salt, 16384, 8, 1, 32);
     let double = scrypt(key, salt, 16384, 8, 1, 32);
-    resolve([key,double]);
+    resolve([key, double]);
   }));
 }
 
@@ -47,23 +45,19 @@ export function doubleHashSync(plaintext: string, salt: string): Uint8Array {
 }
 
 //fixme externalize to worker in the future
-export function encryptFromUtf8(data: string, key: Key): Promise<[EncryptedData, Nonce]> {
+export function encrypt(data: Uint8Array | string, key: Key): Promise<[EncryptedData, Nonce]> {
   return new Promise<[EncryptedData, Nonce]>((resolve, reject) => {
-    let message = nacl.encode_utf8(data);
-    let nonce = nacl.crypto_secretbox_random_nonce();
-    let encrypted = nacl.crypto_secretbox(message, nonce, key);
-
-    resolve([encrypted, nonce]);
+    resolve(encryptSync(data,key));
   });
 }
 
-//fixme externalize to worker in the future
-export function encrypt(data: Uint8Array, key: Key): Promise<[EncryptedData, Nonce]> {
-  return new Promise<[EncryptedData, Nonce]>((resolve, reject) => {
-    let nonce = nacl.crypto_secretbox_random_nonce();
-    let encrypted = nacl.crypto_secretbox(data, nonce, key);
-    resolve([encrypted, nonce]);
-  });
+export function encryptSync(data: Uint8Array | string, key: Key): [EncryptedData, Nonce] {
+  if (typeof  data === 'string') {
+    data = nacl.encode_utf8(data);
+  }
+  let nonce = nacl.crypto_secretbox_random_nonce();
+  let encrypted = nacl.crypto_secretbox(data, nonce, key);
+  return [encrypted, nonce];
 }
 
 //fixme externalize to worker in the future

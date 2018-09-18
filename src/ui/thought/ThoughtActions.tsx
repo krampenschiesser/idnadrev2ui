@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 import Button from 'antd/lib/button/button';
 import Thought from '../../dto/Thought';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 
 export interface ThoughtActionProps {
   hoverColor?: string;

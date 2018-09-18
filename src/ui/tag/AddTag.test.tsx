@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { AddTag } from './AddTag';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { Icon, AutoComplete } from 'antd';
 
 import { configure } from 'enzyme';

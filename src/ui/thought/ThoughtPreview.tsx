@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Thought from '../../dto/Thought';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import TagViewer from '../tag/TagViewer';
 import { MarkdownViewer } from '../editor/MarkdownViewer';
 import Card from 'antd/lib/card';

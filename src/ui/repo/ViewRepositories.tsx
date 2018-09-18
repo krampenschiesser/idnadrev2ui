@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import UiStore from '../../store/UiStore';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
 import { Button, Col, Row } from 'antd';
 import './Repository.css';
-
+import { Link } from 'react-router-dom';
 
 export interface ViewRepositoriesProps {
   store: GlobalStore;
@@ -19,6 +19,10 @@ interface SingleRepositoryProps {
   onLock?: (repo: Repository) => void;
 }
 
+//
+//<Link to={"/repo/login/"+this.props.repository.id} ><Button onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button></Link> :
+//<Link to={"/repo/login/"+this.props.repository.id} ><Button onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button></Link>
+//
 class SingleRepository extends React.Component<SingleRepositoryProps, object> {
   render() {
     return (
@@ -29,8 +33,8 @@ class SingleRepository extends React.Component<SingleRepositoryProps, object> {
           </Col>
           <Col md={12} lg={8}>
             {this.props.repository.isLocked() ?
-              <Button href={"/repo/login/"+this.props.repository.id} onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button> :
-              <Button href={"/repo/login/"+this.props.repository.id} onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button>
+              <Link to={'/repo/login/' + this.props.repository.id}><Button onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button></Link> :
+              <Link to={'/repo/login/' + this.props.repository.id}><Button onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button></Link>
             }
           </Col>
         </Row>
@@ -54,7 +58,7 @@ export default class ViewRepositories extends React.Component<ViewRepositoriesPr
   }
 
   reload = () => {
-    this.props.store.getRepositories().then((t: Repository[]) => {
+    this.props.store.loadRepositories().then((t: Repository[]) => {
       this.repositories = [];
       this.repositories = t;
     }).catch(e => {

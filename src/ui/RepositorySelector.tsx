@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Select } from 'antd';
-import { GlobalStore } from '../store/GlobalStore';
+import GlobalStore from '../store/GlobalStore';
 import IdnadrevFile from '../dto/IdnadrevFile';
 import { RepositoryId } from '../dto/RepositoryId';
 

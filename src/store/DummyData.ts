@@ -1,12 +1,11 @@
 import moment from 'moment';
 import BinaryFile from '../dto/BinaryFile';
-import IdnadrevFile from '../dto/IdnadrevFile';
 import Repository from '../dto/Repository';
 import { Tag } from '../dto/Tag';
 import Task, { FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, WorkUnit } from '../dto/Task';
 import Thought from '../dto/Thought';
-import { fromHex } from './LocalCryptoStorage';
 import { RepositoryId } from '../dto/RepositoryId';
+import { fromHex } from './CryptoHelper';
 
 export function generateRepositories(): Repository[] {
     return [new Repository('test', 'test'), new Repository('test2', 'test2')];
@@ -80,7 +79,7 @@ export function generateTasks(repo: RepositoryId): Task[] {
   return retval;
 }
 
-export function generateDocuments(repo: RepositoryId): IdnadrevFile<{}, {}>[] {
+export function generateBinaryFiles(repo: RepositoryId): BinaryFile[] {
   let retval = [];
 
   let jpg = new BinaryFile('some jpg').withRepository(repo);

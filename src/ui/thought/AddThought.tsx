@@ -5,7 +5,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { inject, observer } from 'mobx-react';
 import NameFormItem from '../form/NameFormItem';
 import TagFormItem from '../form/TagFormItem';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { observable } from 'mobx';
 import Thought from '../../dto/Thought';
 import MarkdownFormItem from '../form/MarkdownFormItem';

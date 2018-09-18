@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { GlobalStore } from '../../../store/GlobalStore';
+import GlobalStore from '../../../store/GlobalStore';
 import { observable } from 'mobx';
 import UiStore from '../../../store/UiStore';
 import Task from '../../../dto/Task';

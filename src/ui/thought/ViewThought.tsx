@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
-import { GlobalStore } from '../../store/GlobalStore';
+import GlobalStore from '../../store/GlobalStore';
 import { observable } from 'mobx';
 import Thought from '../../dto/Thought';
 import UiStore from '../../store/UiStore';
