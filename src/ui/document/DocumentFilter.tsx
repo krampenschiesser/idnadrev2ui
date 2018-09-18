@@ -12,6 +12,7 @@ import { Tag } from '../../dto/Tag';
 import FileFilter from '../../store/FileFilter';
 import Select from 'antd/lib/select';
 import { FileType } from '../../dto/FileType';
+import Repository from '../../dto/Repository';
 
 const Option = Select.Option;
 
@@ -113,8 +114,8 @@ class RepositoryFilter extends React.Component<FileFilterProps, object> {
   };
 
   render() {
-    let repositoryIds = Array.from(this.props.store.getOpenRepositories().map(r => r.id));
-    repositoryIds.sort();
+    let repositories = Array.from(this.props.store.getOpenRepositories());
+    repositories.sort((r1: Repository, r2: Repository) => r1.name.localeCompare(r2.name));
 
     const {getFieldDecorator} = this.props.form;
     return (
@@ -122,7 +123,7 @@ class RepositoryFilter extends React.Component<FileFilterProps, object> {
         {getFieldDecorator('repository', {})(
           <Select style={{width: 120}} onChange={this.onChange}>
             <Option key='all' value={undefined}>All</Option>
-            {repositoryIds.map(c => <Option key={c} value={c}>{c}</Option>)}
+            {repositories.map(repo => <Option key={repo.id} value={repo.id}>{repo.name}</Option>)}
           </Select>
         )}
       </FormItem>
@@ -136,7 +137,7 @@ class FileTypeFilter extends React.Component<FileFilterProps, object> {
       if (value.length === 0) {
         this.props.filter.types = undefined;
       } else {
-        console.log('value is', value)
+        console.log('value is', value);
         this.props.filter.types = value;
       }
     } else {
@@ -166,7 +167,6 @@ class DocumentFilterViewForm extends React.Component<FileFilterProps, object> {
   lastEdit: number;
 
   reload = () => {
-    console.log(this.props.filter);
     const timeout = 80;
     this.lastEdit = new Date().getTime();
 

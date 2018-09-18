@@ -4,7 +4,7 @@ import GlobalStore from '../../store/GlobalStore';
 import UiStore from '../../store/UiStore';
 import Repository from '../../dto/Repository';
 import { observable } from 'mobx';
-import { Button, Col, Row } from 'antd';
+import { Col, Row } from 'antd';
 import './Repository.css';
 import { Link } from 'react-router-dom';
 
@@ -33,8 +33,8 @@ class SingleRepository extends React.Component<SingleRepositoryProps, object> {
           </Col>
           <Col md={12} lg={8}>
             {this.props.repository.isLocked() ?
-              <Link to={'/repo/login/' + this.props.repository.id}><Button onClick={() => this.props.onUnlock && this.props.onUnlock(this.props.repository)} icon="unlock">Unlock</Button></Link> :
-              <Link to={'/repo/login/' + this.props.repository.id}><Button onClick={() => this.props.onLock && this.props.onLock(this.props.repository)} icon="lock">Lock</Button></Link>
+              <Link to={'/repo/login/' + this.props.repository.id}>Unlock</Link> :
+              <Link to={'/repo/login/' + this.props.repository.id}>Lock</Link>
             }
           </Col>
         </Row>

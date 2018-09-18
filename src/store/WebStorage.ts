@@ -161,13 +161,11 @@ function toRepository(persisted: PersistedRepository): Repository {
   if (persisted === undefined) {
     return persisted;
   }
-  console.log('persisted', persisted);
   let repository = new Repository(persisted.name, '');
   repository.id = persisted.id;
   repository.nonce = persisted.nonce;
   repository.data = persisted.data;
   repository.salt = persisted.salt;
-  console.log('loaded', repository);
   return repository;
 }
 

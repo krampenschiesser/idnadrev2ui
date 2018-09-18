@@ -106,6 +106,10 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
           <div>
             <Route path='/repo/login/:repoId' component={RepositoryLogin}/>
             <Route exact path='/' component={ViewRepositories}/>
+            <Route path='/thought' component={ViewRepositories}/>
+            <Route path='/task' component={ViewRepositories}/>
+            <Route path='/doc' component={ViewRepositories}/>
+            <Route exact path='/repo' component={ViewRepositories}/>
           </div>
         );
       } else {

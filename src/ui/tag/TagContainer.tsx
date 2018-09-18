@@ -21,7 +21,6 @@ export default class TagContainer extends React.Component<TagContainerProps, obj
   constructor(props: TagContainerProps) {
     super(props);
     this.possibleTags = props.store.getTagsStartingWith('');
-    console.log(this.possibleTags);
 
     if (props.item instanceof IdnadrevFile) {
       this.fileTags = props.item.tags.map(tag => tag.name);
@@ -49,7 +48,6 @@ export default class TagContainer extends React.Component<TagContainerProps, obj
         this.props.item.push(new FileTag(tag));
       }
     }
-    console.log(this.fileTags);
   };
 
   removeTag = (tag: string) => {

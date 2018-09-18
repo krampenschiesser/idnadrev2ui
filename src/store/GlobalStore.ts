@@ -91,7 +91,14 @@ export default class GlobalStore {
   loadRepositories(): Promise<Repository[]> {
     if (this.repositories.length === 0) {
       return this.webStorage.getRepositories().then(repos => {
+        repos.forEach(r=>{
+          let item = window.sessionStorage.getItem(r.id);
+          if(item) {
+            r.openWithHash(item);
+          }
+        });
         this.repositories = repos;
+
         return repos;
       });
     } else {

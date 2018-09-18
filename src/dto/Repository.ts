@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 import { RepositoryId } from './RepositoryId';
 import { RepositoryToken } from './RepositoryToken';
-import { decrypt, decryptToUtf8, encrypt, EncryptedData, encryptSync, fillRandomValues, hashSync, Nonce, toHex32 } from '../store/CryptoHelper';
+import { decrypt, decryptToUtf8, encrypt, EncryptedData, encryptSync, fillRandomValues, fromHex, hashSync, Nonce, toHex32, toHex8 } from '../store/CryptoHelper';
 import uuid from 'uuid';
 
 export default class Repository {
@@ -32,7 +32,7 @@ export default class Repository {
     }
   }
 
-   changePw(old: string, current: string): Promise<boolean> {
+  changePw(old: string, current: string): Promise<boolean> {
     let saltString = toHex32(this.salt);
     let hashedPw = hashSync(old, saltString);
     return decrypt(this.data, this.nonce, hashedPw).then(async token => {
@@ -84,6 +84,14 @@ export default class Repository {
   open(pw: string): Promise<void> {
     let saltString = toHex32(this.salt);
     let hashedPw = hashSync(pw, saltString);
+    return decrypt(this.data, this.nonce, hashedPw).then(fulfilled => {
+      this.token = fulfilled;
+      sessionStorage.setItem(this.id, toHex8(hashedPw));
+    });
+  }
+
+  openWithHash(hash: string): Promise<void> {
+    let hashedPw = fromHex(hash);
     return decrypt(this.data, this.nonce, hashedPw).then(fulfilled => {
       this.token = fulfilled;
     });
