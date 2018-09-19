@@ -18,7 +18,6 @@ export class ThoughtDetails {
 }
 
 export default class Thought extends IdnadrevFile<ThoughtDetails, string> {
-  static TYPE = "thought";
   constructor(name: string, tags: Tag[] = [], content: string = '') {
     super(name, FileType.Thought);
     this.tags = tags;

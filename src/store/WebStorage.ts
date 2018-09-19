@@ -248,7 +248,7 @@ export default class WebStorage extends Dexie {
 
 
   async loadOpenThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(Thought.TYPE).toArray();
+    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Thought).toArray();
     let returnvalue = [];
     for (let file of thoughts) {
       let thought = await toThought(file, repo);
@@ -260,7 +260,7 @@ export default class WebStorage extends Dexie {
   }
 
   async loadAllThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts = await this.files.where('type').equals(Thought.TYPE).toArray();
+    let thoughts = await this.files.where('type').equals(FileType.Thought).toArray();
 
     let returnvalue = [];
     for (let file of thoughts) {
@@ -310,7 +310,7 @@ export default class WebStorage extends Dexie {
     //   }
     //   return valid;
     // }).toArray();
-    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(Task.TYPE).toArray();
+    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).toArray();
 
     let mappedTasks: Task[] = [];
 
@@ -471,7 +471,7 @@ export default class WebStorage extends Dexie {
         return '';
       }
     };
-    let tasks = await Promise.all((await this.files.where('type').equals(Task.TYPE).toArray()).map(async t => await toTask(t, repo)));
+    let tasks = await Promise.all((await this.files.where('type').equals(FileType.Task).toArray()).map(async t => await toTask(t, repo)));
     let set = new Set();
     tasks.map(contextMapper).forEach(context => set.add(context));
     return set;

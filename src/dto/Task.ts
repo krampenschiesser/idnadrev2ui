@@ -108,7 +108,6 @@ export type TaskContext = string;
 export type Seconds = number;
 
 export default class Task extends IdnadrevFile<TaskDetails, string> {
-  static TYPE = 'task';
   children?: Task[];
 
   constructor(name: string, tags: Tag[] = [], content: string = '') {
