@@ -6,8 +6,8 @@ import Index from './Index';
 
 export default class AllValueIndex<V> implements Index {
     field: string;
-    values: Map<V | null, Set<FileId>> = new Map<V | null, Set<FileId>>();
-    inverse: Map<FileId, V | null> = new Map<FileId, V | null>();
+    values: Map<V | undefined, Set<FileId>> = new Map<V | undefined, Set<FileId>>();
+    inverse: Map<FileId, V | undefined> = new Map<FileId, V | undefined>();
     type: FileType;
 
     constructor(repo: RepositoryId, field: string, type: FileType) {
@@ -15,52 +15,41 @@ export default class AllValueIndex<V> implements Index {
         this.type = type;
     }
 
-    onUpdate(file: IdnadrevFile<any, any>): void {
-        if (file.fileType === this.type) {
-            let existing = this.inverse.get(file.id);
-            let fieldValue = file[this.field];
-            if (fieldValue === undefined) {
-                fieldValue = null;
-            }
-
-            fieldValue = typeof fieldValue === 'string' ? fieldValue.toLocaleLowerCase() : fieldValue;
-            if (existing !== undefined && existing !== fieldValue) {
-                let set = this.values.get(existing);
-                if (set) {
-                    set.delete(file.id);
-                    if(set.size===0) {
-                        this.values.delete(existing);
-                    }
+    removeExisting(id: FileId, value: V) {
+        let existing = this.inverse.get(id);
+        if (existing !== undefined && existing !== value) {
+            let set = this.values.get(existing);
+            if (set) {
+                set.delete(id);
+                if(set.size===0) {
+                    this.values.delete(existing);
                 }
             }
-            let value = this.values.get(fieldValue);
-            if (!value) {
-                value = new Set<FileId>();
-                this.values.set(fieldValue, value);
+        }
+    }
+
+    onUpdate(file: IdnadrevFile<any, any>): void {
+        if (file.fileType === this.type) {
+            let fieldValue = file[this.field];
+
+            fieldValue = typeof fieldValue === 'string' ? fieldValue.toLocaleLowerCase() : fieldValue;
+            this.removeExisting(file.id,fieldValue);
+            let set = this.values.get(fieldValue);
+            if (!set) {
+                set = new Set<FileId>();
+                this.values.set(fieldValue, set);
             }
-            value.add(file.id);
+            set.add(file.id);
             this.inverse.set(file.id, fieldValue);
         }
     }
 
     onDelete(file: IdnadrevFile<any, any>): void {
         if (file.fileType === this.type) {
-            let existing = this.inverse.get(file.id);
             let fieldValue = file[this.field];
-            if(fieldValue===undefined) {
-                fieldValue=null;
-            }
 
             fieldValue = typeof fieldValue === 'string' ? fieldValue.toLocaleLowerCase() : fieldValue;
-            if (existing !==undefined && existing !== fieldValue) {
-                let set = this.values.get(existing);
-                if (set) {
-                    set.delete(file.id);
-                    if(set.size===0){
-                        this.values.delete(existing);
-                    }
-                }
-            }
+            this.removeExisting(file.id,fieldValue);
             let value = this.values.get(fieldValue);
             if (value) {
                 value.delete(file.id);
@@ -72,11 +61,11 @@ export default class AllValueIndex<V> implements Index {
         }
     }
 
-    getAllValues(): Set<V | null> {
-        return new Set<V | null>(Array.from(this.values.keys()));
+    getAllValues(): Set<V | undefined> {
+        return new Set<V | undefined>(Array.from(this.values.keys()));
     }
 
-    getIds(key: V | null): Set<FileId> {
+    getIds(key: V | undefined): Set<FileId> {
         let set = this.values.get(key);
         if (!set) {
             return new Set();

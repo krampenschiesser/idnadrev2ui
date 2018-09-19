@@ -39,7 +39,7 @@ test('NullValue', () => {
     index.onUpdate(task);
 
     let value = index.getAllValues().values().next().value;
-    expect(value).toEqual(null);
+    expect(value).toEqual(undefined);
 
     index.onDelete(task);
     let allValues = index.getAllValues();
