@@ -3,6 +3,7 @@ import { RepositoryId } from './RepositoryId';
 import { RepositoryToken } from './RepositoryToken';
 import { decrypt, decryptToUtf8, encrypt, EncryptedData, encryptSync, fillRandomValues, fromHex, hashSync, Nonce, toHex32, toHex8 } from '../store/CryptoHelper';
 import uuid from 'uuid';
+import Index from '../store/index/Index';
 
 export default class Repository {
   id: RepositoryId;
@@ -12,6 +13,7 @@ export default class Repository {
   nonce: Nonce;
   data: Uint8Array;
 
+  indexes: Index[];
 
   constructor(name: string, pw?: string) {
     this.name = name;

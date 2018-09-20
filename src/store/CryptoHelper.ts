@@ -77,6 +77,7 @@ export function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Ui
   });
 }
 
+
 export function fillRandomValues(array: Uint8Array | Uint32Array) {
   crypto.getRandomValues(array);
 }

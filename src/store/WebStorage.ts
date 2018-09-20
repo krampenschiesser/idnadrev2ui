@@ -13,6 +13,7 @@ import FileFilter from './FileFilter';
 import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
 import { EncryptedData, Nonce } from './CryptoHelper';
+import Index, { IndexType, IndexUpdateState } from './index/Index';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
@@ -33,6 +34,14 @@ interface PersistedRepository {
   data: EncryptedData;
   salt: Uint32Array;
   nonce: Nonce;
+}
+
+interface PersistedIndex {
+  id: FileId;
+  repositoryId: RepositoryId;
+  data: EncryptedData;
+  nonce: Nonce;
+  type: IndexType;
 }
 
 // tslint:disable-next-line
@@ -172,12 +181,14 @@ function toRepository(persisted: PersistedRepository): Repository {
 export default class WebStorage extends Dexie {
   files: Dexie.Table<PersistedIdnadrevFile, string>;
   repositories: Dexie.Table<PersistedRepository, string>;
+  indexes: Dexie.Table<PersistedIndex, string>;
 
   constructor() {
     super('IdnadrevDb');
     this.version(1).stores({
       files: 'id, repositoryId, type',
-      repositories: 'id, name'
+      repositories: 'id, name',
+      indexes: 'id, repositoryId'
     });
     this.on('populate', () => {
       try {
@@ -195,8 +206,19 @@ export default class WebStorage extends Dexie {
     });
   }
 
+  async storeIndex(index: Index, repo: Repository): Promise<string> {
+    let [encrypted, nonce] = await repo.encrypt(index.toJson());
+    let data: PersistedIndex = {
+      data: encrypted,
+      nonce: nonce,
+      id: index.id,
+      repositoryId: index.repo,
+      type: index.getType(),
+    };
+    return this.indexes.put(data);
+  }
 
-  storeRepository(obj: Repository): Promise<string> {
+  async storeRepository(obj: Repository): Promise<string> {
     console.log('storing %o', obj);
     let data: PersistedRepository = {
       data: obj.data,
@@ -205,6 +227,7 @@ export default class WebStorage extends Dexie {
       id: obj.id,
       name: obj.name,
     };
+    await Promise.all(obj.indexes.map(async i => await this.storeIndex(i, obj)));
     return this.repositories.put(data);
   }
 
@@ -225,25 +248,34 @@ export default class WebStorage extends Dexie {
       repositoryId: obj.repository,
       type: obj.fileType
     };
+    await this.updateIndexes(repo, obj);
     return this.files.put(data);
   }
 
-  async store<T>(obj: T, repo: Repository): Promise<string> {
+  async updateIndexes(repo: Repository, obj: IdnadrevFile<any, any>): Promise<string> {
+    await Promise.all(repo.indexes.map(async i => {
+      if (i.onUpdate(obj) === IndexUpdateState.CHANGED) {
+        return await this.storeIndex(i, repo);
+      } else {
+        return 'no change';
+      }
+    }));
+    return 'ok';
+  }
+
+  async store<T extends IdnadrevFile<any, any>>(obj: T, repo: Repository): Promise<string> {
     console.log('storing %o', obj);
     let json = JSON.stringify(obj);
     let [encrypted, nonce] = await repo.encrypt(json);
-    if (obj instanceof IdnadrevFile) {
-
-      let data: PersistedIdnadrevFile = {
-        data: encrypted,
-        nonce: nonce,
-        id: obj.id,
-        repositoryId: obj.repository,
-        type: obj.fileType,
-      };
-      return this.files.put(data);
-    }
-    return Promise.reject('No compatible type ' + typeof obj);
+    let data: PersistedIdnadrevFile = {
+      data: encrypted,
+      nonce: nonce,
+      id: obj.id,
+      repositoryId: obj.repository,
+      type: obj.fileType,
+    };
+    await this.updateIndexes(repo, obj);
+    return this.files.put(data);
   }
 
 
