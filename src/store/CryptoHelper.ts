@@ -11,6 +11,18 @@ nacl_factory.instantiate((ready: any) => {
   nacl = ready;
 });
 
+export class RandomHelper {
+  static getRandomValues?: (array: Uint32Array | Uint8Array) => void= undefined;
+
+  static fillRandom(array: Uint8Array | Uint32Array) {
+    if (this.getRandomValues) {
+      this.getRandomValues(array);
+    } else {
+      crypto.getRandomValues(array);
+    }
+  }
+}
+
 
 export type Nonce = Uint8Array;
 export type Key = Uint8Array;
@@ -47,7 +59,7 @@ export function doubleHashSync(plaintext: string, salt: string): Uint8Array {
 //fixme externalize to worker in the future
 export function encrypt(data: Uint8Array | string, key: Key): Promise<[EncryptedData, Nonce]> {
   return new Promise<[EncryptedData, Nonce]>((resolve, reject) => {
-    resolve(encryptSync(data,key));
+    resolve(encryptSync(data, key));
   });
 }
 
@@ -79,7 +91,7 @@ export function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Ui
 
 
 export function fillRandomValues(array: Uint8Array | Uint32Array) {
-  crypto.getRandomValues(array);
+  RandomHelper.fillRandom(array);
 }
 
 export function toHex32(array: Uint32Array): string {

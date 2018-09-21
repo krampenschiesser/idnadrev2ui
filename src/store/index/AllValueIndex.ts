@@ -38,7 +38,7 @@ export default class AllValueIndex<V> extends Index {
     let retval = IndexUpdateState.UNCHANGED;
     if (!this.type || file.fileType === this.type) {
       let fieldValues: V[];
-      let value = this.getValueForKey(this.field,file);
+      let value = this.getValueForKey(this.field, file);
       if (Array.isArray(value)) {
         fieldValues = value;
       } else {
@@ -66,8 +66,8 @@ export default class AllValueIndex<V> extends Index {
     return retval;
   }
 
-  getValueForKey(key: string , obj: IdnadrevFile<any,any>) :V {
-    return key.split('.').reduce((currentObject,pathName)=>{
+  getValueForKey(key: string, obj: IdnadrevFile<any, any>): V {
+    return key.split('.').reduce((currentObject, pathName) => {
       return currentObject && currentObject[pathName];
     }, obj);
   }
@@ -76,7 +76,7 @@ export default class AllValueIndex<V> extends Index {
     let retval = IndexUpdateState.UNCHANGED;
     if (!this.type || file.fileType === this.type) {
       let fieldValues: V[];
-      let value = this.getValueForKey(this.field,file);
+      let value = this.getValueForKey(this.field, file);
       if (Array.isArray(value)) {
         fieldValues = value;
       } else {
@@ -120,16 +120,51 @@ export default class AllValueIndex<V> extends Index {
 
 
   toJson(): string {
-    return JSON.stringify(this);
+    let obj: JsonConversion = {
+      id: this.id,
+      repo: this.repo,
+      type: this.type,
+      inverse: Array.from(this.inverse.entries()).map(v => {
+        v[1] = Array.from(v[1]);
+        return v;
+      }),
+      values: Array.from(this.values.entries()).map(v => {
+        v[1] = Array.from(v[1]);
+        return v;
+      })
+    };
+    return JSON.stringify(obj);
   }
 
   static fromJson<V>(json: string): AllValueIndex<V> {
-    let index: AllValueIndex<V> = JSON.parse(json);
+    let parsed: JsonConversion = JSON.parse(json);
+    let allValueIndex = new AllValueIndex<V>(parsed.repo, parsed.field, parsed.type, parsed.id);
 
-    return index;
+    parsed.inverse.forEach(entry => {
+      let key = entry[0];
+      let setAsArray = entry[1];
+      let set = new Set<V>(setAsArray);
+      allValueIndex.inverse.set(key, set);
+    });
+    parsed.values.forEach(entry => {
+      let key = entry[0];
+      let setAsArray = entry[1];
+      let set = new Set<FileId>(setAsArray);
+      allValueIndex.values.set(key, set);
+    });
+
+    return allValueIndex;
   }
 
   getType(): IndexType {
     return IndexType.ALL_VALUE;
   }
+}
+
+interface JsonConversion {
+  id: FileId,
+  repo: RepositoryId,
+  type?: FileType,
+  inverse: [],
+  values: []
 }

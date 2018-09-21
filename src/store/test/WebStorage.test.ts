@@ -8,6 +8,7 @@ import { LocalStorage } from 'node-localstorage';
 
 Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+WebStorage.populate = false;
 
 class Crypto {
   getRandomValues(arr: Uint8Array) {

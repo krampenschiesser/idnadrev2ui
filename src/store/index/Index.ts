@@ -33,7 +33,7 @@ export default abstract class Index {
   abstract getType(): IndexType;
 }
 
-export function fromJson(type: IndexType, json: string): Index {
+export function indexFromJson(type: IndexType, json: string): Index {
   if (type === IndexType.ALL_VALUE) {
     return AllValueIndex.fromJson(json);
   } else {

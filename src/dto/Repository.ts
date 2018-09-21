@@ -4,6 +4,9 @@ import { RepositoryToken } from './RepositoryToken';
 import { decrypt, decryptToUtf8, encrypt, EncryptedData, encryptSync, fillRandomValues, fromHex, hashSync, Nonce, toHex32, toHex8 } from '../store/CryptoHelper';
 import uuid from 'uuid';
 import Index from '../store/index/Index';
+import AllValueIndex from '../store/index/AllValueIndex';
+import { Tag } from './Tag';
+import { FileType } from './FileType';
 
 export default class Repository {
   id: RepositoryId;
@@ -13,7 +16,10 @@ export default class Repository {
   nonce: Nonce;
   data: Uint8Array;
 
-  indexes: Index[];
+  private tagIndex?: AllValueIndex<Tag>;
+  private contextIndex?: AllValueIndex<string>;
+  private nameIndex?: AllValueIndex<string>;
+  private finishedTaskIndex?: AllValueIndex<boolean>;
 
   constructor(name: string, pw?: string) {
     this.name = name;
@@ -31,10 +37,31 @@ export default class Repository {
       let tuple = encryptSync(encryptionPw, hashedPw);
       this.data = tuple[0];
       this.nonce = tuple[1];
+
+      this.tagIndex = new AllValueIndex<Tag>(this.id, 'tag');
+      this.contextIndex = new AllValueIndex<string>(this.id, 'details.context', FileType.Task);
+      this.nameIndex = new AllValueIndex<string>(this.id, 'name');
+      this.finishedTaskIndex = new AllValueIndex<boolean>(this.id, 'isFinished', FileType.Task);
     }
   }
 
-  changePw(old: string, current: string): Promise<boolean> {
+  setIndexes(indexes: Index[]) {
+    for (let index of indexes) {
+      if (index instanceof AllValueIndex) {
+        if (index.field === 'tag') {
+          this.tagIndex = index;
+        } else if (index.field === 'details.context') {
+          this.contextIndex = index;
+        } else if (index.field === 'isFinished') {
+          this.finishedTaskIndex = index;
+        } else if (index.field === 'name') {
+          this.nameIndex = index;
+        }
+      }
+    }
+  }
+
+  async changePw(old: string, current: string): Promise<boolean> {
     let saltString = toHex32(this.salt);
     let hashedPw = hashSync(old, saltString);
     return decrypt(this.data, this.nonce, hashedPw).then(async token => {
@@ -97,5 +124,54 @@ export default class Repository {
     return decrypt(this.data, this.nonce, hashedPw).then(fulfilled => {
       this.token = fulfilled;
     });
+  }
+
+  get indexes(): Index[] {
+    let retval = [];
+    let all = [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex];
+    for (let index of all) {
+      if (!index) {
+        throw 'index not initialized, access not allowed';
+      }else {
+        retval.push(index);
+      }
+    }
+    return retval;
+  }
+
+  get getTagIndex(): AllValueIndex<Tag> {
+    if(!this.tagIndex) {
+      throw 'tag index not defined';
+    }
+    return this.tagIndex;
+  }
+
+  get getContextIndex(): AllValueIndex<string> {
+    if(!this.contextIndex) {
+      throw 'content index not defined';
+    }
+    return this.contextIndex;
+  }
+
+  get getNameIndex(): AllValueIndex<string> {
+    if(!this.nameIndex) {
+      throw 'name index not defined';
+    }
+    return this.nameIndex;
+  }
+
+  get getFinishedTaskIndex(): AllValueIndex<boolean> {
+    if(!this.finishedTaskIndex) {
+      throw 'finished task index not defined';
+    }
+    return this.finishedTaskIndex;
+  }
+
+  logout() {
+    this.token = undefined;
+    this.tagIndex = undefined;
+    this.contextIndex = undefined;
+    this.nameIndex = undefined;
+    this.finishedTaskIndex = undefined;
   }
 }

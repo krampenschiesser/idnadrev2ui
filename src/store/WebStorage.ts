@@ -13,7 +13,7 @@ import FileFilter from './FileFilter';
 import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
 import { EncryptedData, Nonce } from './CryptoHelper';
-import Index, { IndexType, IndexUpdateState } from './index/Index';
+import Index, { indexFromJson, IndexType, IndexUpdateState } from './index/Index';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
@@ -178,7 +178,18 @@ function toRepository(persisted: PersistedRepository): Repository {
   return repository;
 }
 
+
+export async function toIndex(persisted: PersistedIndex | undefined, repo: Repository): Promise<Index | undefined> {
+  if (persisted === undefined) {
+    return persisted;
+  }
+  let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+  let idx = indexFromJson(persisted.type, decrypt);
+  return idx;
+}
+
 export default class WebStorage extends Dexie {
+  static populate = true;
   files: Dexie.Table<PersistedIdnadrevFile, string>;
   repositories: Dexie.Table<PersistedRepository, string>;
   indexes: Dexie.Table<PersistedIndex, string>;
@@ -191,6 +202,9 @@ export default class WebStorage extends Dexie {
       indexes: 'id, repositoryId'
     });
     this.on('populate', () => {
+      if(!WebStorage.populate) {
+        return;
+      }
       try {
         let repos = generateRepositories();
         repos.forEach(r => this.storeRepository(r));
@@ -219,7 +233,6 @@ export default class WebStorage extends Dexie {
   }
 
   async storeRepository(obj: Repository): Promise<string> {
-    console.log('storing %o', obj);
     let data: PersistedRepository = {
       data: obj.data,
       nonce: obj.nonce,
@@ -264,7 +277,6 @@ export default class WebStorage extends Dexie {
   }
 
   async store<T extends IdnadrevFile<any, any>>(obj: T, repo: Repository): Promise<string> {
-    console.log('storing %o', obj);
     let json = JSON.stringify(obj);
     let [encrypted, nonce] = await repo.encrypt(json);
     let data: PersistedIdnadrevFile = {
@@ -575,5 +587,13 @@ export default class WebStorage extends Dexie {
 
   getRepositories(): Promise<Repository[]> {
     return this.repositories.toArray().then(persisted => persisted.map(t => toRepository(t)));
+  }
+
+  async loadIndexes(repo: Repository): Promise<Index[]> {
+    let persisted = await this.indexes.where('repositoryId').equals(repo.id).toArray();
+    let indexesUndefined: (Index | undefined)[] = await Promise.all(persisted.map(pi => toIndex(pi, repo)));
+    // @ts-ignore
+    let indexes: Index[] = indexesUndefined.filter(f => f !== undefined);
+    return indexes;
   }
 }

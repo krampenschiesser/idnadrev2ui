@@ -105,3 +105,19 @@ test('Array', function () {
   expect(existing.size).toEqual(2);
 
 });
+
+test('JSON conversion', function () {
+  let index = new AllValueIndex<Tag>('test', 'tags', FileType.Task);
+  let task = new Task('test');
+  task.tags = [new Tag('test1'), new Tag('test2')];
+  index.onUpdate(task);
+
+  let json = index.toJson();
+  index = AllValueIndex.fromJson(json);
+  let allValues = index.getAllValues();
+
+  expect(allValues.size).toEqual(2);
+  expect(index.inverse.size).toEqual(1);
+  let ids = index.getIds(new Tag('test'));
+  expect(ids.size).toEqual(1);
+});

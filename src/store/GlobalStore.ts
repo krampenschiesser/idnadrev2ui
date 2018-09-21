@@ -91,10 +91,10 @@ export default class GlobalStore {
   loadRepositories(): Promise<Repository[]> {
     if (this.repositories.length === 0) {
       return this.webStorage.getRepositories().then(repos => {
-        repos.forEach(r=>{
+        repos.forEach(r => {
           let item = window.sessionStorage.getItem(r.id);
-          if(item) {
-            r.openWithHash(item);
+          if (item) {
+            this.openRepositoryHashed(r, item);
           }
         });
         this.repositories = repos;
@@ -121,4 +121,19 @@ export default class GlobalStore {
     }
   }
 
+  async openRepository(repo: Repository, pw: string): Promise<void> {
+    await repo.open(pw);
+    if (repo.token) {
+      let indexes = await this.webStorage.loadIndexes(repo);
+      repo.setIndexes(indexes);
+    }
+  }
+
+  async openRepositoryHashed(repo: Repository, hash: string): Promise<void> {
+    await repo.openWithHash(hash);
+    if (repo.token) {
+      let indexes = await this.webStorage.loadIndexes(repo);
+      repo.setIndexes(indexes);
+    }
+  }
 }

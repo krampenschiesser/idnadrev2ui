@@ -83,7 +83,7 @@ export default class RepositoryLogin extends React.Component<RepositoryLoginProp
   handleSubmit = async (repo: Repository, pw: string) => {
     this.progress = true;
 
-    repo.open(pw).then(() =>{
+    this.props.store.openRepository(repo,pw).then(() =>{
       console.log('done')
       this.progress = false;
     }).catch(r=>{
