@@ -4,7 +4,7 @@ import { RepositoryToken } from './RepositoryToken';
 import { decrypt, decryptToUtf8, encrypt, EncryptedData, encryptSync, fillRandomValues, fromHex, hashSync, Nonce, toHex32, toHex8 } from '../store/CryptoHelper';
 import uuid from 'uuid';
 import Index from '../store/index/Index';
-import AllValueIndex from '../store/index/AllValueIndex';
+import AllValueIndex, { TagIndex } from '../store/index/AllValueIndex';
 import { Tag } from './Tag';
 import { FileType } from './FileType';
 
@@ -16,7 +16,7 @@ export default class Repository {
   nonce: Nonce;
   data: Uint8Array;
 
-  private tagIndex?: AllValueIndex<Tag>;
+  private tagIndex?: TagIndex;
   private contextIndex?: AllValueIndex<string>;
   private nameIndex?: AllValueIndex<string>;
   private finishedTaskIndex?: AllValueIndex<boolean>;
@@ -38,7 +38,7 @@ export default class Repository {
       this.data = tuple[0];
       this.nonce = tuple[1];
 
-      this.tagIndex = new AllValueIndex<Tag>(this.id, 'tag');
+      this.tagIndex = new TagIndex(this.id);
       this.contextIndex = new AllValueIndex<string>(this.id, 'details.context', FileType.Task);
       this.nameIndex = new AllValueIndex<string>(this.id, 'name');
       this.finishedTaskIndex = new AllValueIndex<boolean>(this.id, 'isFinished', FileType.Task);
@@ -48,7 +48,7 @@ export default class Repository {
   setIndexes(indexes: Index[]) {
     for (let index of indexes) {
       if (index instanceof AllValueIndex) {
-        if (index.field === 'tag') {
+        if (index.field === 'tags') {
           this.tagIndex = index;
         } else if (index.field === 'details.context') {
           this.contextIndex = index;
@@ -57,6 +57,8 @@ export default class Repository {
         } else if (index.field === 'name') {
           this.nameIndex = index;
         }
+      } else if (index instanceof TagIndex) {
+        this.tagIndex = index;
       }
     }
   }
@@ -132,7 +134,7 @@ export default class Repository {
     for (let index of all) {
       if (!index) {
         throw 'index not initialized, access not allowed';
-      }else {
+      } else {
         retval.push(index);
       }
     }
@@ -140,28 +142,28 @@ export default class Repository {
   }
 
   get getTagIndex(): AllValueIndex<Tag> {
-    if(!this.tagIndex) {
+    if (!this.tagIndex) {
       throw 'tag index not defined';
     }
     return this.tagIndex;
   }
 
   get getContextIndex(): AllValueIndex<string> {
-    if(!this.contextIndex) {
+    if (!this.contextIndex) {
       throw 'content index not defined';
     }
     return this.contextIndex;
   }
 
   get getNameIndex(): AllValueIndex<string> {
-    if(!this.nameIndex) {
+    if (!this.nameIndex) {
       throw 'name index not defined';
     }
     return this.nameIndex;
   }
 
   get getFinishedTaskIndex(): AllValueIndex<boolean> {
-    if(!this.finishedTaskIndex) {
+    if (!this.finishedTaskIndex) {
       throw 'finished task index not defined';
     }
     return this.finishedTaskIndex;

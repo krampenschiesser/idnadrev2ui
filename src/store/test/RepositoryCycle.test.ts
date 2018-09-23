@@ -54,12 +54,19 @@ test('Store repository and open with indexes', async () => {
   expect(repo.getFinishedTaskIndex).toBeDefined();
   expect(repo.getNameIndex).toBeDefined();
   expect(repo.getTagIndex).toBeDefined();
-  //
-  // let task = new Task('test', [new Tag('tag')]);
-  // task.details.context = 'context';
-  //
-  // await webStorage.store(task, repo);
-  // expect(repo.getTagIndex.getAllValues()).toContainEqual(new Tag('tag'));
-  // expect(repo.getContextIndex.getAllValues()).toContainEqual('context');
-  // expect(repo.getNameIndex.getAllValues()).toContainEqual('test');
+
+  let task = new Task('test', [new Tag('tag')]);
+  task.details.context = 'context';
+
+  await webStorage.store(task, repo);
+  expect(repo.getTagIndex.getAllValues()).toContainEqual(new Tag('tag'));
+  expect(repo.getContextIndex.getAllValues()).toContainEqual('context');
+  expect(repo.getNameIndex.getAllValues()).toContainEqual('test');
+
+  repo.logout();
+  await store.openRepository(repo, 'test');
+  expect(repo.getTagIndex.getAllValues()).toContainEqual(new Tag('tag'));
+  expect(repo.getContextIndex.getAllValues()).toContainEqual('context');
+  expect(repo.getNameIndex.getAllValues()).toContainEqual('test');
+
 });
