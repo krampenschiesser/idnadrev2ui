@@ -1,14 +1,14 @@
-import { FileId } from '../../dto/FileId';
-import { FileType } from '../../dto/FileType';
+import {v4 as uuid} from 'uuid';
+import {FileId} from '../../dto/FileId';
+import {FileType} from '../../dto/FileType';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import { RepositoryId } from '../../dto/RepositoryId';
-import Index, { IndexType, IndexUpdateState } from './Index';
-import { v4 as uuid } from 'uuid';
-import { Tag } from '../../dto/Tag';
+import {RepositoryId} from '../../dto/RepositoryId';
+import {Tag} from '../../dto/Tag';
+import Index, {IndexType, IndexUpdateState} from './Index';
 
 export default class AllValueIndex<V> extends Index {
   field: string;
-  values: Map<V | undefined, Set<FileId>> = new Map<V | undefined, Set<FileId>>();
+  values: Map<{} | undefined, Set<FileId>> = new Map<{} | undefined, Set<FileId>>();
   inverse: Map<FileId, Set<V | undefined>> = new Map<FileId, Set<V | undefined>>();
 
   constructor(repo: RepositoryId, field: string, type?: FileType, id?: FileId) {
@@ -20,7 +20,7 @@ export default class AllValueIndex<V> extends Index {
     let existing = this.inverse.get(id);
     if (existing !== undefined && !existing.has(value)) {
       for (var it = existing.values(), e = null; e = it.next().value;) {
-        let set = this.values.get(e);
+        let set = this.values.get(this.transformKey(e));
         if (set) {
           set.delete(id);
           existing.delete(e);
@@ -28,7 +28,7 @@ export default class AllValueIndex<V> extends Index {
             this.inverse.delete(id);
           }
           if (set.size === 0) {
-            this.values.delete(e);
+            this.values.delete(this.transformKey(e));
           }
         }
       }
@@ -49,10 +49,10 @@ export default class AllValueIndex<V> extends Index {
         this.removeExisting(file.id, fieldValue);
       }
       for (let fieldValue of fieldValues) {
-        let set = this.values.get(fieldValue);
+        let set = this.values.get(this.transformKey(fieldValue));
         if (!set) {
           set = new Set<FileId>();
-          this.values.set(fieldValue, set);
+          this.values.set(this.transformKey(fieldValue), set);
         }
         set.add(file.id);
         let existingSet = this.inverse.get(file.id);
@@ -85,11 +85,11 @@ export default class AllValueIndex<V> extends Index {
       }
       for (let fieldValue of fieldValues) {
         this.removeExisting(file.id, fieldValue);
-        let value = this.values.get(fieldValue);
+        let value = this.values.get(this.transformKey(fieldValue));
         if (value) {
           value.delete(file.id);
           if (value.size === 0) {
-            this.values.delete(fieldValue);
+            this.values.delete(this.transformKey(fieldValue));
             retval = IndexUpdateState.CHANGED;
           }
         }
@@ -107,16 +107,27 @@ export default class AllValueIndex<V> extends Index {
   }
 
   getAllValues(): Set<V | undefined> {
-    return new Set<V | undefined>(Array.from(this.values.keys()));
+    let set = new Set<V | undefined>();
+    let from: Set<V | undefined>[] = Array.from(this.inverse.values());
+    for (let curSet of from) {
+      curSet.forEach(v => {
+        set.add(v);
+      })
+    }
+    return set;
   }
 
   getIds(key: V | undefined): Set<FileId> {
-    let set = this.values.get(key);
+    let set = this.values.get(this.transformKey(key));
     if (!set) {
       return new Set();
     } else {
       return set;
     }
+  }
+
+  protected transformKey(key: V | undefined): {} | undefined {
+    return key;
   }
 
 
@@ -145,11 +156,11 @@ export default class AllValueIndex<V> extends Index {
       id: this.id,
       repo: this.repo,
       type: this.type,
-      inverse: Array.from(this.inverse.entries()).map((v:any[]) => {
+      inverse: Array.from(this.inverse.entries()).map((v: any[]) => {
         v[1] = Array.from(v[1]);
         return v;
       }),
-      values: Array.from(this.values.entries()).map((v:any[]) => {
+      values: Array.from(this.values.entries()).map((v: any[]) => {
         v[1] = Array.from(v[1]);
         return v;
       }),
@@ -179,6 +190,10 @@ export class TagIndex extends AllValueIndex<Tag> {
     super(repo, 'tags', undefined, id);
   }
 
+  transformKey(key: Tag): {} {
+    return JSON.stringify(key);
+  }
+
   static tagsFromJson(json: string): TagIndex {
     let parsed: JsonConversion = JSON.parse(json);
     let tagIndex = new TagIndex(parsed.repo, parsed.id);
@@ -198,7 +213,7 @@ export class TagIndex extends AllValueIndex<Tag> {
       let key = entry[0];
       let setAsArray = entry[1];
       let set = new Set<FileId>(setAsArray);
-      tagIndex.values.set(new Tag(key.name), set);
+      tagIndex.values.set(key, set);
     });
 
     return tagIndex;
