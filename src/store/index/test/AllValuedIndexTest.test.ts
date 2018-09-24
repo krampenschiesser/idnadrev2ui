@@ -1,6 +1,6 @@
 import { FileType } from '../../../dto/FileType';
 import Task from '../../../dto/Task';
-import AllValueIndex from '../AllValueIndex';
+import AllValueIndex, { TagIndex } from '../AllValueIndex';
 import { Tag } from '../../../dto/Tag';
 
 
@@ -106,18 +106,34 @@ test('Array', function () {
 
 });
 
-test('JSON conversion', function () {
-  let index = new AllValueIndex<Tag>('test', 'tags', FileType.Task);
+test('JSON conversion tags', function () {
+  let index = new TagIndex('test');
   let task = new Task('test');
   task.tags = [new Tag('test1'), new Tag('test2')];
+  index.onUpdate(task);
+
+  let json = index.toJson();
+  index = TagIndex.tagsFromJson(json);
+  let allValues = index.getAllValues();
+
+  expect(allValues.size).toEqual(2);
+  expect(index.inverse.size).toEqual(1);
+  let ids = index.getIds(new Tag('test1'));
+  expect(ids.size).toEqual(1);
+});
+
+test('JSON conversion context', function () {
+  let index = new AllValueIndex<string>('test', 'context', FileType.Task);
+  let task = new Task('test');
+  task.details.context='context';
   index.onUpdate(task);
 
   let json = index.toJson();
   index = AllValueIndex.fromJson(json);
   let allValues = index.getAllValues();
 
-  expect(allValues.size).toEqual(2);
+  expect(allValues.size).toEqual(1);
   expect(index.inverse.size).toEqual(1);
-  let ids = index.getIds(new Tag('test'));
+  let ids = index.getIds('context');
   expect(ids.size).toEqual(1);
 });
