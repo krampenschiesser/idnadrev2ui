@@ -1,20 +1,21 @@
 import Dexie from 'dexie';
-import Task, { TaskContext, TaskState } from '../dto/Task';
-import Thought from '../dto/Thought';
-import Document from '../dto/Document';
-import IdnadrevFile from '../dto/IdnadrevFile';
-import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
-import { TaskFilter } from './TaskFilter';
-import { FileId } from '../dto/FileId';
-import { Tag } from '../dto/Tag';
-import { FileType } from '../dto/FileType';
+import {observable} from "mobx";
 import BinaryFile from '../dto/BinaryFile';
-import FileFilter from './FileFilter';
+import Document from '../dto/Document';
+import {FileId} from '../dto/FileId';
+import {FileType} from '../dto/FileType';
+import IdnadrevFile from '../dto/IdnadrevFile';
 import Repository from '../dto/Repository';
-import { RepositoryId } from '../dto/RepositoryId';
-import { EncryptedData, Nonce } from './CryptoHelper';
-import Index, { indexFromJson, IndexType, IndexUpdateState } from './index/Index';
+import {RepositoryId} from '../dto/RepositoryId';
+import {Tag} from '../dto/Tag';
+import Task, {TaskContext, TaskState} from '../dto/Task';
+import Thought from '../dto/Thought';
+import {EncryptedData, Nonce} from './CryptoHelper';
+import {generateBinaryFiles, generateRepositories, generateTasks, generateThoughts} from './DummyData';
+import FileFilter from './FileFilter';
 import AllValueIndex from './index/AllValueIndex';
+import Index, {indexFromJson, IndexType, IndexUpdateState} from './index/Index';
+import {TaskFilter} from './TaskFilter';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
@@ -194,6 +195,7 @@ export default class WebStorage extends Dexie {
   files: Dexie.Table<PersistedIdnadrevFile, string>;
   repositories: Dexie.Table<PersistedRepository, string>;
   indexes: Dexie.Table<PersistedIndex, string>;
+  @observable
   loaded: boolean = false;
 
   constructor() {
@@ -203,10 +205,12 @@ export default class WebStorage extends Dexie {
       repositories: 'id, name',
       indexes: 'id, repositoryId'
     });
+    console.log("creating db")
     this.on('populate', () => {
       if (!WebStorage.populate) {
         return;
       }
+      console.log("start creating dummy data");
       try {
         let repos = generateRepositories();
         repos.forEach(r => this.storeRepository(r));
@@ -215,19 +219,26 @@ export default class WebStorage extends Dexie {
         generateTasks(repo.id).forEach(t => this.store(t, repo));
         generateBinaryFiles(repo.id).forEach(t => this.storeBinaryFile(t, repo));
         // generateManyTasks().forEach(t => this.store(t));
+        console.log("done creating dummy data");
       } catch (e) {
         console.log('Could not create dummy data', e);
         throw e;
       }
     });
-    this.on('ready', () => {
+    this.open().then(() => {
+      console.log("#loaded");
       this.loaded = true;
     });
+    console.log("done creating db")
   }
 
   async whenLoaded(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.on('ready', () => resolve());
+      if (this.loaded) {
+        resolve();
+      } else {
+        this.on('ready', () => resolve());
+      }
     });
   }
 

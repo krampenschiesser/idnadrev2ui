@@ -1,32 +1,29 @@
-import * as React from 'react';
-import './App.css';
-import GlobalStore from './store/GlobalStore';
-import { observer, Provider } from 'mobx-react';
-import {
-  BrowserRouter as Router,
-  Route,
-} from 'react-router-dom';
-
-import DevTools from 'mobx-react-devtools';
-import { NavigationContainer } from './ui/NavigationContainer';
-import { AddThought } from './ui/thought/AddThought';
-import UiStore from './store/UiStore';
-import ViewThoughts from './ui/thought/ViewThought';
-import ProcessThoughts from './ui/thought/ProcessThoughts';
-import ViewTask from './ui/task/ViewTask';
-import { AddTask } from './ui/task/AddTask';
+import {Spin} from 'antd';
 import LocaleProvider from 'antd/lib/locale-provider';
 import en_US from 'antd/lib/locale-provider/en_US';
+import {observable} from 'mobx';
+import {observer, Provider} from 'mobx-react';
+
+import DevTools from 'mobx-react-devtools';
 import moment from 'moment';
-import PlanTask from './ui/task/PlanTask';
+import * as React from 'react';
+import {BrowserRouter as Router, Route,} from 'react-router-dom';
+import './App.css';
+import GlobalStore from './store/GlobalStore';
+import UiStore from './store/UiStore';
+import {AddDocument} from './ui/document/AddDocument';
 import ViewDocument from './ui/document/ViewDocument';
-import { AddDocument } from './ui/document/AddDocument';
-import { AddFile } from './ui/file/AddFile';
-import ViewRepositories from './ui/repo/ViewRepositories';
-import RepositoryLogin from './ui/repo/RepositoryLogin';
-import { observable } from 'mobx';
-import { Spin } from 'antd';
+import {AddFile} from './ui/file/AddFile';
+import {NavigationContainer} from './ui/NavigationContainer';
 import CreateRepository from './ui/repo/CreateRepository';
+import RepositoryLogin from './ui/repo/RepositoryLogin';
+import ViewRepositories from './ui/repo/ViewRepositories';
+import {AddTask} from './ui/task/AddTask';
+import PlanTask from './ui/task/PlanTask';
+import ViewTask from './ui/task/ViewTask';
+import {AddThought} from './ui/thought/AddThought';
+import ProcessThoughts from './ui/thought/ProcessThoughts';
+import ViewThoughts from './ui/thought/ViewThought';
 
 moment.locale('en');
 
@@ -43,9 +40,10 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
 
   componentWillMount() {
     console.log('start loading');
-    this.props.store.webStorage.on('ready', () => {
+    this.props.store.webStorage.whenLoaded().then(() => {
+      console.log("Load repos")
       this.props.store.loadRepositories().then(repos => {
-        console.log('loaded');
+        console.log('loaded here');
         this.loaded = true;
       });
     });
@@ -101,7 +99,7 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
     } else {
       if (store.repositories.length === 0) {
         content = <CreateRepository store={store} uiStore={uiStore}/>;
-      } else if (store.getOpenRepositories().length === 0) {
+      } else if (store.openRepositories.length === 0) {
         content = (
           <div>
             <Route path='/repo/login/:repoId' component={RepositoryLogin}/>

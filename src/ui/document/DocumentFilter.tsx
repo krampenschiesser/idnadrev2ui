@@ -114,7 +114,7 @@ class RepositoryFilter extends React.Component<FileFilterProps, object> {
   };
 
   render() {
-    let repositories = Array.from(this.props.store.getOpenRepositories());
+    let repositories = Array.from(this.props.store.openRepositories);
     repositories.sort((r1: Repository, r2: Repository) => r1.name.localeCompare(r2.name));
 
     const {getFieldDecorator} = this.props.form;

@@ -22,7 +22,7 @@ export default class RepositorySelector extends React.Component<RepositorySelect
 
   render() {
 
-    let openRepositories = this.props.store.getOpenRepositories();
+    let openRepositories = this.props.store.openRepositories;
     let options = openRepositories.map(r => {
       return (<Option key={r.id} value={r.id}>{r.name}</Option>);
     });

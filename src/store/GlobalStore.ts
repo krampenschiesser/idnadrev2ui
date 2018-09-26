@@ -1,14 +1,14 @@
-import Repository from '../dto/Repository';
-import { observable } from 'mobx';
-import { RepositoryId } from '../dto/RepositoryId';
-import WebStorage from './WebStorage';
-import Thought from '../dto/Thought';
-import Task, { TaskContext } from '../dto/Task';
-import { TaskFilter } from './TaskFilter';
-import { Tag } from '../dto/Tag';
+import {observable} from 'mobx';
+import {FileId} from '../dto/FileId';
 import IdnadrevFile from '../dto/IdnadrevFile';
-import { FileId } from '../dto/FileId';
+import Repository from '../dto/Repository';
+import {RepositoryId} from '../dto/RepositoryId';
+import {Tag} from '../dto/Tag';
+import Task, {TaskContext} from '../dto/Task';
+import Thought from '../dto/Thought';
 import FileFilter from './FileFilter';
+import {TaskFilter} from './TaskFilter';
+import WebStorage from './WebStorage';
 
 export default class GlobalStore {
   colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
@@ -19,6 +19,7 @@ export default class GlobalStore {
   @observable tags: Map<string, Tag> = new Map<string, Tag>();
   @observable contexts: Map<string, TaskContext> = new Map<string, TaskContext>();
   @observable repositories: Repository[] = [];
+  @observable openRepositories: Repository[] = [];
 
   constructor(webStorage: WebStorage) {
     this.webStorage = webStorage;
@@ -51,7 +52,7 @@ export default class GlobalStore {
   }
 
   async getOpenThoughts(): Promise<Thought[]> {
-    let repos = this.getOpenRepositories();
+    let repos = this.openRepositories;
     let thoughts: Thought[] = [];
     for (const repo of repos) {
       let cur = await this.webStorage.loadOpenThoughts(repo);
@@ -61,7 +62,7 @@ export default class GlobalStore {
   }
 
   async getTasks(filter?: TaskFilter): Promise<Task[]> {
-    let repos = this.getOpenRepositories();
+    let repos = this.openRepositories;
     let tasks: Task[] = [];
     for (const repo of repos) {
       let cur = await this.webStorage.getTasks(repo, filter);
@@ -71,7 +72,7 @@ export default class GlobalStore {
   }
 
   async getAllFiles(fileFilter?: FileFilter): Promise<IdnadrevFile<{}, {}>[]> {
-    let repos = this.getOpenRepositories();
+    let repos = this.openRepositories;
     let files: IdnadrevFile<{}, {}>[] = [];
     for (const repo of repos) {
       let cur = await this.webStorage.getAllFiles(repo, fileFilter);
@@ -81,7 +82,7 @@ export default class GlobalStore {
   }
 
   async getTask(parent: FileId, repoId: RepositoryId): Promise<Task | undefined> {
-    let filtered = this.getOpenRepositories().filter(r => r.id === repoId);
+    let filtered = this.openRepositories.filter(r => r.id === repoId);
     if (filtered.length === 0) {
       return undefined;
     } else {
@@ -110,17 +111,6 @@ export default class GlobalStore {
     }
   }
 
-  getOpenRepositories(): Repository[] {
-    return this.repositories.filter(r => {
-      if (r.token !== undefined) {
-        if (r.indexesUndefined.filter(i => i === undefined).length === 0) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
   getRepository(repoId: RepositoryId): Repository | undefined {
     let index = this.repositories.findIndex(r => r.id === repoId);
     if (index >= 0) {
@@ -135,6 +125,7 @@ export default class GlobalStore {
     if (repo.token) {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
+      this.openRepositories.push(repo);
     }
   }
 
@@ -143,12 +134,13 @@ export default class GlobalStore {
     if (repo.token) {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
+      this.openRepositories.push(repo);
     }
   }
 
   getContexts(): Set<TaskContext> {
     let set: Set<TaskContext> = new Set();
-    this.getOpenRepositories().forEach(repo => repo.getContextIndex.getAllValues().forEach(context => {
+    this.openRepositories.forEach(repo => repo.getContextIndex.getAllValues().forEach(context => {
       if (context) {
         set.add(context);
       }
