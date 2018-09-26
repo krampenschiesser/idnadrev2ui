@@ -5,6 +5,7 @@ import Task from '../../dto/Task';
 import { Tag } from '../../dto/Tag';
 import { RandomHelper } from '../CryptoHelper';
 import Dexie from 'dexie';
+// @ts-ignore
 import * as localStorage from 'mock-local-storage';
 
 

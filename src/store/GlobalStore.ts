@@ -28,7 +28,9 @@ export default class GlobalStore {
     // this.webStorage.getAllContexts().then(contexts => {
     //   contexts.forEach(ctx => this.contexts.set(ctx, ctx));
     // }).catch(e => console.error('Could not load contexts %o', e));
-    this.loadRepositories();
+    this.webStorage.whenLoaded().then(() => {
+      this.loadRepositories();
+    });
   }
 
   getTagsStartingWith(input: string): string[] {
@@ -109,7 +111,14 @@ export default class GlobalStore {
   }
 
   getOpenRepositories(): Repository[] {
-    return this.repositories.filter(r => r.token !== undefined);
+    return this.repositories.filter(r => {
+      if (r.token !== undefined) {
+        if (r.indexesUndefined.filter(i => i === undefined).length === 0) {
+          return true;
+        }
+      }
+      return false;
+    });
   }
 
   getRepository(repoId: RepositoryId): Repository | undefined {
@@ -135,5 +144,15 @@ export default class GlobalStore {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
     }
+  }
+
+  getContexts(): Set<TaskContext> {
+    let set: Set<TaskContext> = new Set();
+    this.getOpenRepositories().forEach(repo => repo.getContextIndex.getAllValues().forEach(context => {
+      if (context) {
+        set.add(context);
+      }
+    }));
+    return set;
   }
 }

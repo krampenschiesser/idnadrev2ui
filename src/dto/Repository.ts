@@ -16,10 +16,10 @@ export default class Repository {
   nonce: Nonce;
   data: Uint8Array;
 
-  private tagIndex?: TagIndex;
-  private contextIndex?: AllValueIndex<string>;
-  private nameIndex?: AllValueIndex<string>;
-  private finishedTaskIndex?: AllValueIndex<boolean>;
+  tagIndex?: TagIndex;
+  contextIndex?: AllValueIndex<string>;
+  nameIndex?: AllValueIndex<string>;
+  finishedTaskIndex?: AllValueIndex<boolean>;
 
   constructor(name: string, pw?: string) {
     this.name = name;
@@ -47,18 +47,16 @@ export default class Repository {
 
   setIndexes(indexes: Index[]) {
     for (let index of indexes) {
-      if (index instanceof AllValueIndex) {
-        if (index.field === 'tags') {
-          this.tagIndex = index;
-        } else if (index.field === 'details.context') {
+      if (index instanceof TagIndex) {
+        this.tagIndex = index;
+      } else if (index instanceof AllValueIndex) {
+        if (index.field === 'details.context') {
           this.contextIndex = index;
         } else if (index.field === 'isFinished') {
           this.finishedTaskIndex = index;
         } else if (index.field === 'name') {
           this.nameIndex = index;
         }
-      } else if (index instanceof TagIndex) {
-        this.tagIndex = index;
       }
     }
   }
@@ -128,6 +126,10 @@ export default class Repository {
     });
   }
 
+  get indexesUndefined(): (Index | undefined)[] {
+    return [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex];
+  }
+
   get indexes(): Index[] {
     let retval = [];
     let all = [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex];
@@ -150,7 +152,7 @@ export default class Repository {
 
   get getContextIndex(): AllValueIndex<string> {
     if (!this.contextIndex) {
-      throw 'content index not defined';
+      throw 'context index not defined';
     }
     return this.contextIndex;
   }

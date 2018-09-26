@@ -14,6 +14,7 @@ import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
 import { EncryptedData, Nonce } from './CryptoHelper';
 import Index, { indexFromJson, IndexType, IndexUpdateState } from './index/Index';
+import AllValueIndex from './index/AllValueIndex';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
@@ -193,6 +194,7 @@ export default class WebStorage extends Dexie {
   files: Dexie.Table<PersistedIdnadrevFile, string>;
   repositories: Dexie.Table<PersistedRepository, string>;
   indexes: Dexie.Table<PersistedIndex, string>;
+  loaded: boolean = false;
 
   constructor() {
     super('IdnadrevDb');
@@ -202,7 +204,7 @@ export default class WebStorage extends Dexie {
       indexes: 'id, repositoryId'
     });
     this.on('populate', () => {
-      if(!WebStorage.populate) {
+      if (!WebStorage.populate) {
         return;
       }
       try {
@@ -217,6 +219,15 @@ export default class WebStorage extends Dexie {
         console.log('Could not create dummy data', e);
         throw e;
       }
+    });
+    this.on('ready', () => {
+      this.loaded = true;
+    });
+  }
+
+  async whenLoaded(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.on('ready', () => resolve());
     });
   }
 
@@ -332,39 +343,6 @@ export default class WebStorage extends Dexie {
   }
 
   async getTasks(repo: Repository, filter?: TaskFilter): Promise<Task[]> {
-    //
-    // let promise = this.tasks.where('details.finished').equals(finished ? 1 : 0).and(t => {
-    //   let valid = true;
-    //   if (delegated !== null) {
-    //     valid = t.details.delegation === (delegated ? 1 : 0);
-    //   }
-    //   if (valid && context !== null) {
-    //     if (t.details.context) {
-    //       valid = t.details.context.toLowerCase() === context.toLowerCase();
-    //     } else {
-    //       valid = false;
-    //     }
-    //   }
-    //   if (valid && state !== null) {
-    //     if (t.details.state) {
-    //       valid = t.details.state === state;
-    //     } else {
-    //       valid = false;
-    //     }
-    //   }
-    //   return valid;
-    // }).toArray();
-    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).toArray();
-
-    let mappedTasks: Task[] = [];
-
-    for (let file of tasks) {
-      let task = await toTask(file, repo);
-      if (task) {
-        mappedTasks.push(task);
-      }
-    }
-
     let name: string | null = filter && filter.name !== undefined ? filter.name.toLowerCase() : null;
     let delegatedTo: string | null = filter && filter.delegatedTo !== undefined ? filter.delegatedTo.toLowerCase() : null;
     let parent: FileId | null = filter && filter.parent !== undefined ? filter.parent : null;
@@ -377,19 +355,56 @@ export default class WebStorage extends Dexie {
     let context: TaskContext | null = filter && filter.context !== undefined ? filter.context : null;
     let state: TaskState | null = filter && filter.state !== undefined ? filter.state : null;
 
+    let finishedTaskIndex: AllValueIndex<boolean> = repo.getFinishedTaskIndex;
+    let ids = finishedTaskIndex.getIds(finished);
+    if (tags) {
+      let tagIds: Set<FileId> = new Set();
+      tags.map(tag => repo.getTagIndex.getIds(tag)).forEach(i => i.forEach(v => tagIds.add(v)));
+      retainAll(ids, tagIds);
+    }
+    if (name) {
+      let nameIds: Set<FileId> = new Set();
+      let lowerCaseName = name.toLocaleLowerCase();
+      let nameIndex = repo.getNameIndex;
+      Array.from(nameIndex.getAllValues()).filter((n: string) => {
+        if (n) {
+          if (n.toLocaleLowerCase().indexOf(lowerCaseName) >= 0) {
+            return true;
+          }
+        }
+        return false;
+      }).forEach(v => {
+        if (v) {
+          nameIds.add(v);
+        }
+      });
+      retainAll(ids, nameIds);
+    }
+    if (context) {
+      let contextIds: Set<FileId> = new Set();
+      let contextIndex = repo.getContextIndex;
+      contextIndex.getIds(context).forEach(v => contextIds.add(v));
+      retainAll(ids, contextIds);
+    }
+
+
+    let idSet = new Set(ids);
+    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).toArray();
+    tasks = tasks.filter(t => idSet.has(t.id));
+    let mappedTasks: Task[] = [];
+
+    for (let file of tasks) {
+      let task = await toTask(file, repo);
+      if (task) {
+        mappedTasks.push(task);
+      }
+    }
+
+
     let resultingTasks = mappedTasks.filter(t => {
       let valid = true;
-      if (valid && name !== null) {
-        valid = t.name.toLowerCase().indexOf(name) > 0;
-      }
-      if (valid && finished !== null) {
-        valid = t.isFinished === finished;
-      }
       if (valid && delegated !== null) {
         valid = t.isDelegated === delegated;
-      }
-      if (valid && context !== null) {
-        valid = t.context === context;
       }
       if (valid && state !== null) {
         valid = t.state === state;
@@ -464,6 +479,7 @@ export default class WebStorage extends Dexie {
     }
     return all;
   }
+
 
   async loadParents(t: Task, repo: Repository): Promise<Task[]> {
     if (t.parent) {
@@ -596,4 +612,8 @@ export default class WebStorage extends Dexie {
     let indexes: Index[] = indexesUndefined.filter(f => f !== undefined);
     return indexes;
   }
+}
+
+function retainAll<A>(setA: Set<A>, setB: Set<A>) {
+  Array.from(setA).filter(id => !setB.has(id)).forEach(id => setA.delete(id));
 }

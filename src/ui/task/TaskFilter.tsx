@@ -93,7 +93,7 @@ class ContextFilter extends React.Component<TaskFilterProps, object> {
 
   render() {
 
-    let contexts = Array.from(this.props.store.contexts.keys());
+    let contexts = Array.from(this.props.store.getContexts());
     contexts.sort();
 
     const {getFieldDecorator} = this.props.form;
