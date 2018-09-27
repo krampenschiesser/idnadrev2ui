@@ -14,6 +14,7 @@ import { FileId } from '../../dto/FileId';
 import { TaskFilter } from '../../store/TaskFilter';
 import { TaskFilterView } from './TaskFilter';
 import { dateCell } from '../table/DateCell';
+import { RepositoryId } from '../../dto/RepositoryId';
 
 class TaskTable extends Table<Task> {
 }
@@ -93,6 +94,14 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
     let markdownHover = (name: string, record: Task, index: number) => {
       return <HoverCell onHover={() => this.showMarkdownPreview(record)}>{name}</HoverCell>;
     };
+    let repositoryName = (id: RepositoryId, record: Task, index: number) => {
+      let repository = this.props.store.getRepository(id);
+      if (repository) {
+        return repository.name;
+      } else {
+        return id;
+      }
+    };
     return (
       <div>
         <Row>
@@ -106,7 +115,7 @@ export default class ViewTask extends React.Component<ViewTaskProps, object> {
             <TaskTable expandedRowKeys={fileIds} rowKey='id' dataSource={data}>
               <TaskColumn dataIndex='name' title='Name'/>
               <TaskColumn dataIndex='context' title='Context' render={markdownHover}/>
-              <TaskColumn dataIndex='repository' title='Repository'/>
+              <TaskColumn dataIndex='repository' title='Repository' render={repositoryName}/>
               <TaskColumn dataIndex='updated' title='Updated' render={dateCell}/>
             </TaskTable>
           </Col>

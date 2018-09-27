@@ -18,6 +18,7 @@ import InputNumber from 'antd/lib/input-number';
 import { IdnadrevFileSelection } from '../selection/IdnadrevFileSelection';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import { FileType } from '../../dto/FileType';
+import { Button, Popover } from 'antd';
 
 export interface TaskFilterProps extends FormComponentProps {
   filter: TaskFilter;
@@ -271,6 +272,8 @@ class RemainingTimeFilter extends React.Component<TaskFilterProps, object> {
 @observer
 class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
   lastEdit: number;
+  @observable
+  detailsVisible = false;
 
   reload = () => {
     console.log(this.props.filter);
@@ -298,19 +301,36 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
 
   render() {
     const {reload, ...newProps} = this.props;
+
+    let detailSearch = (
+      <div style={{width: 800}}>
+        <Form layout='vertical'>
+          <TaskStateFilter {...newProps} reload={this.reload}/>
+          <FinishFilter {...newProps} reload={this.reload}/>
+          <DelegatedFilter {...newProps} reload={this.reload}/>
+          <ScheduledFilter {...newProps} reload={this.reload}/>
+          <ProposedFilter {...newProps} reload={this.reload}/>
+          <DelegatedToFilter {...newProps} reload={this.reload}/>
+          <RemainingTimeFilter {...newProps} reload={this.reload}/>
+          <IdnadrevFileSelection fileType={FileType.Task} store={this.props.store} onSelect={this.selectParent}/>
+          <a onClick={() => this.detailsVisible = !this.detailsVisible}>Close</a>
+        </Form>
+      </div>
+    );
     return (
       <Form layout='inline'>
         <NameFilter {...newProps} reload={this.reload}/>
         <ContextFilter {...newProps} reload={this.reload}/>
-        <TaskStateFilter {...newProps} reload={this.reload}/>
         <TagFilter {...newProps} reload={this.reload}/>
-        <FinishFilter {...newProps} reload={this.reload}/>
-        <DelegatedFilter {...newProps} reload={this.reload}/>
-        <ScheduledFilter {...newProps} reload={this.reload}/>
-        <ProposedFilter {...newProps} reload={this.reload}/>
-        <DelegatedToFilter {...newProps} reload={this.reload}/>
-        <RemainingTimeFilter {...newProps} reload={this.reload}/>
-        <IdnadrevFileSelection fileType={FileType.Task} store={this.props.store} onSelect={this.selectParent}/>
+        <Popover
+          content={detailSearch}
+          title="Detailed search options"
+          trigger="click"
+          visible={this.detailsVisible}
+          onVisibleChange={() => this.detailsVisible = !this.detailsVisible}
+        >
+          <Button icon="filter"></Button>
+        </Popover>
       </Form>
     );
   }
