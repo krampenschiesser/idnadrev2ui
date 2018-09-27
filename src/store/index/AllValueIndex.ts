@@ -122,7 +122,7 @@ export default class AllValueIndex<V> extends Index {
     if (!set) {
       return new Set();
     } else {
-      return set;
+      return new Set(set);
     }
   }
 

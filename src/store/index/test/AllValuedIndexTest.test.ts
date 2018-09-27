@@ -137,3 +137,20 @@ test('JSON conversion context', function () {
   let ids = index.getIds('context');
   expect(ids.size).toEqual(1);
 });
+
+test('boolean', () => {
+  let index = new AllValueIndex<boolean>('test', 'isFinished', FileType.Task);
+  let finishedTask = new Task('test');
+  let unfinishedTask= new Task('test2');
+  finishedTask.details.finished = new Date();
+  index.onUpdate(finishedTask);
+  index.onUpdate(unfinishedTask);
+
+  expect(index.getIds(true).size).toEqual(1);
+  expect(index.getIds(false).size).toEqual(1);
+
+  let json = index.toJson();
+  index = AllValueIndex.fromJson(json);
+  expect(index.getIds(true).size).toEqual(1);
+  expect(index.getIds(false).size).toEqual(1);
+});
