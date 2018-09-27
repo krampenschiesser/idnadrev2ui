@@ -1,27 +1,27 @@
-import {Spin} from 'antd';
+import { Spin } from 'antd';
 import LocaleProvider from 'antd/lib/locale-provider';
 import en_US from 'antd/lib/locale-provider/en_US';
-import {observable} from 'mobx';
-import {observer, Provider} from 'mobx-react';
+import { observable } from 'mobx';
+import { observer, Provider } from 'mobx-react';
 
 import DevTools from 'mobx-react-devtools';
 import moment from 'moment';
 import * as React from 'react';
-import {BrowserRouter as Router, Route,} from 'react-router-dom';
+import { BrowserRouter as Router, Route, } from 'react-router-dom';
 import './App.css';
 import GlobalStore from './store/GlobalStore';
 import UiStore from './store/UiStore';
-import {AddDocument} from './ui/document/AddDocument';
+import { AddDocument } from './ui/document/AddDocument';
 import ViewDocument from './ui/document/ViewDocument';
-import {AddFile} from './ui/file/AddFile';
-import {NavigationContainer} from './ui/NavigationContainer';
+import { AddFile } from './ui/file/AddFile';
+import { NavigationContainer } from './ui/NavigationContainer';
 import CreateRepository from './ui/repo/CreateRepository';
 import RepositoryLogin from './ui/repo/RepositoryLogin';
 import ViewRepositories from './ui/repo/ViewRepositories';
-import {AddTask} from './ui/task/AddTask';
+import { AddTask } from './ui/task/AddTask';
 import PlanTask from './ui/task/PlanTask';
 import ViewTask from './ui/task/ViewTask';
-import {AddThought} from './ui/thought/AddThought';
+import { AddThought } from './ui/thought/AddThought';
 import ProcessThoughts from './ui/thought/ProcessThoughts';
 import ViewThoughts from './ui/thought/ViewThought';
 
@@ -37,15 +37,25 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
 
   @observable
   loaded = false;
+  @observable
+  persistentStorageEnabled = false;
 
   componentWillMount() {
     console.log('start loading');
     this.props.store.webStorage.whenLoaded().then(() => {
-      console.log("Load repos")
+      console.log('Load repos');
       this.props.store.loadRepositories().then(repos => {
         console.log('loaded here');
         this.loaded = true;
       });
+    });
+    window.navigator.storage.persist().then(granted => {
+      if (granted) {
+        this.persistentStorageEnabled = true;
+        console.log('using persistence');
+      } else {
+        console.log('persistent storage not granted');
+      }
     });
   }
 
@@ -120,7 +130,6 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
         <Provider store={store} uiStore={uiStore} antLocale={en_US}>
           <Router>
             <LocaleProvider locale={en_US}>
-
               {content}
             </LocaleProvider>
           </Router>
