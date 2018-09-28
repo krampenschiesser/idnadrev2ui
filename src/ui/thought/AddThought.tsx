@@ -18,8 +18,6 @@ import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import ThoughtPreview from './ThoughtPreview';
 
-// const FormItem = Form.Item;
-
 export interface AddThoughtProps extends FormComponentProps {
   children: {};
   thought?: Thought;
@@ -41,11 +39,24 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
     this.props.uiStore.header = 'Add Thought';
   }
 
+  onSubmit = () => {
+    this.props.form.validateFields((err, fields) => {
+      if (!err) {
+        console.log("no error")
+        let repository = this.props.store.getRepository(this.thought.repository);
+        console.log(repository)
+        if (repository) {
+          this.props.store.webStorage.store(this.thought, repository);
+        }
+      }
+    });
+  };
+
   render() {
     return (
       <Row>
         <Col span={12}>
-          <Form layout='horizontal'>
+          <Form onSubmit={this.onSubmit} layout='horizontal'>
             <NameFormItem file={this.thought} form={this.props.form}/>
             <TagFormItem form={this.props.form} store={this.props.store} file={this.thought}/>
             <MarkdownFormItem form={this.props.form} item={this.thought}/>

@@ -1,13 +1,13 @@
-import {observable} from 'mobx';
-import {FileId} from '../dto/FileId';
+import { observable } from 'mobx';
+import { FileId } from '../dto/FileId';
 import IdnadrevFile from '../dto/IdnadrevFile';
 import Repository from '../dto/Repository';
-import {RepositoryId} from '../dto/RepositoryId';
-import {Tag} from '../dto/Tag';
-import Task, {TaskContext} from '../dto/Task';
+import { RepositoryId } from '../dto/RepositoryId';
+import { Tag } from '../dto/Tag';
+import Task, { TaskContext } from '../dto/Task';
 import Thought from '../dto/Thought';
 import FileFilter from './FileFilter';
-import {TaskFilter} from './TaskFilter';
+import { TaskFilter } from './TaskFilter';
 import WebStorage from './WebStorage';
 
 export default class GlobalStore {
@@ -55,9 +55,11 @@ export default class GlobalStore {
     let repos = this.openRepositories;
     let thoughts: Thought[] = [];
     for (const repo of repos) {
+      console.log('Loading from repo', repo);
       let cur = await this.webStorage.loadOpenThoughts(repo);
       cur.forEach(t => thoughts.push(t));
     }
+    console.log('loaded thoughts', thoughts);
     return thoughts;
   }
 
@@ -96,7 +98,7 @@ export default class GlobalStore {
       return this.webStorage.getRepositories().then(repos => {
         repos.forEach(r => {
           let item = window.sessionStorage.getItem(r.id);
-          if (item) {
+          if (item && !this.openRepositories.find(openRepo => openRepo.id === r.id)) {
             this.openRepositoryHashed(r, item);
           }
         });
@@ -125,6 +127,7 @@ export default class GlobalStore {
     if (repo.token) {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
+      console.log('push repo open');
       this.openRepositories.push(repo);
     }
   }
@@ -134,7 +137,10 @@ export default class GlobalStore {
     if (repo.token) {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
-      this.openRepositories.push(repo);
+      console.log('push repo hashed');
+      if (!this.openRepositories.find(openRepo => openRepo.id === repo.id)) {
+        this.openRepositories.push(repo);
+      }
     }
   }
 

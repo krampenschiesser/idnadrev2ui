@@ -21,7 +21,6 @@ export default class RepositorySelector extends React.Component<RepositorySelect
   };
 
   render() {
-
     let openRepositories = this.props.store.openRepositories;
     let options = openRepositories.map(r => {
       return (<Option key={r.id} value={r.id}>{r.name}</Option>);
@@ -29,6 +28,9 @@ export default class RepositorySelector extends React.Component<RepositorySelect
     let lastSelectedRepository = this.props.store.lastSelectedRepository;
     if (lastSelectedRepository === null && openRepositories.length > 0) {
       lastSelectedRepository = openRepositories[0].id;
+    }
+    if (!this.props.file.repository && lastSelectedRepository) {
+      this.props.file.repository = lastSelectedRepository;
     }
     return (
       <Select disabled={openRepositories.length === 0} onChange={this.onChange} defaultValue={lastSelectedRepository === null ? '' : lastSelectedRepository}>
