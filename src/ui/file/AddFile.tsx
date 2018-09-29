@@ -78,7 +78,7 @@ class AddFileForm extends React.Component<AddFileProps, object> {
     return (
       <Row>
         <Col span={12}>
-          <Form layout='horizontal'>
+          <Form layout='horizontal' onSubmit={this.onSubmit}>
             <NameFormItem file={this.file} form={this.props.form}/>
             <TagFormItem form={this.props.form} store={this.props.store} file={this.file}/>
             {editor}
@@ -96,6 +96,12 @@ class AddFileForm extends React.Component<AddFileProps, object> {
       </Row>
     );
   }
+  onSubmit = () => {
+    let repository = this.props.store.getRepository(this.file.repository);
+    if (repository) {
+      this.props.store.webStorage.storeBinaryFile(this.file, repository);
+    }
+  };
 }
 
 export const AddFile = Form.create()(AddFileForm);
