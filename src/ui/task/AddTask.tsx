@@ -1,27 +1,35 @@
-import * as React from 'react';
-import { Form } from 'antd';
-// import {Form, Input} from "antd";
-import { FormComponentProps } from 'antd/lib/form';
-import { inject, observer } from 'mobx-react';
-import NameFormItem from '../form/NameFormItem';
-import TagFormItem from '../form/TagFormItem';
-import GlobalStore from '../../store/GlobalStore';
-import { observable } from 'mobx';
-import MarkdownFormItem from '../form/MarkdownFormItem';
-import FormItem from 'antd/lib/form/FormItem';
+import {Form} from 'antd';
 import Button from 'antd/lib/button/button';
-import UiStore, { UiWidthDimension } from '../../store/UiStore';
-import { FormConstants } from '../form/FormConstants';
-import RepositoryFormItem from '../form/RepositoryFormItem';
-import Row from 'antd/lib/grid/row';
+// import {Form, Input} from "antd";
+import {FormComponentProps} from 'antd/lib/form';
+import FormItem from 'antd/lib/form/FormItem';
 import Col from 'antd/lib/grid/col';
-import TaskPreview from './TaskPreview';
-import Task from '../../dto/Task';
-import {
-  ActionableFormItem, ContextFormItem, DelegatedToFormItem, EstimatedTimeFormItem, FixedDateFormItem,
-  FixedTimeFormItem, ProposedWeekYearFormItem, TaskParentFormItem, TaskStateFormItem, WeekOnlyFormItem
-} from './TaskFormItems';
+import Row from 'antd/lib/grid/row';
 import Tabs from 'antd/lib/tabs';
+import {observable} from 'mobx';
+import {inject, observer} from 'mobx-react';
+import * as React from 'react';
+import Task from '../../dto/Task';
+import GlobalStore from '../../store/GlobalStore';
+import UiStore, {UiWidthDimension} from '../../store/UiStore';
+import {FormConstants} from '../form/FormConstants';
+import MarkdownFormItem from '../form/MarkdownFormItem';
+import NameFormItem from '../form/NameFormItem';
+import RepositoryFormItem from '../form/RepositoryFormItem';
+import TagFormItem from '../form/TagFormItem';
+import {
+  ActionableFormItem,
+  ContextFormItem,
+  DelegatedToFormItem,
+  EstimatedTimeFormItem,
+  FixedDateFormItem,
+  FixedTimeFormItem,
+  ProposedWeekYearFormItem,
+  TaskParentFormItem,
+  TaskStateFormItem,
+  WeekOnlyFormItem
+} from './TaskFormItems';
+import TaskPreview from './TaskPreview';
 import WorkUnitHistoryTable from './WorkUnitHistoryTable';
 
 const Tab = Tabs.TabPane;
@@ -153,7 +161,7 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
 
   render() {
     return (
-      <Form layout='horizontal'>
+      <Form layout='horizontal' onSubmit={this.onSubmit}>
         <Row>
           <Col span={12}>
             <Tabs>
@@ -180,6 +188,13 @@ class AddTaskForm extends React.Component<AddTaskProps, object> {
       </Form>
     );
   }
+
+  onSubmit = () => {
+    let repository = this.props.store.getRepository(this.task.repository);
+    if (repository) {
+      this.props.store.webStorage.store(this.task, repository);
+    }
+  };
 }
 
 export const AddTask = Form.create()(AddTaskForm);

@@ -52,7 +52,7 @@ class AddDocumentForm extends React.Component<AddDocumentProps, object> {
     return (
       <Row>
         <Col span={12}>
-          <Form layout='horizontal'>
+          <Form layout='horizontal' onSubmit={this.onSubmit}>
             <NameFormItem file={this.file} form={this.props.form}/>
             <TagFormItem form={this.props.form} store={this.props.store} file={this.file}/>
             {editor}
@@ -70,6 +70,12 @@ class AddDocumentForm extends React.Component<AddDocumentProps, object> {
       </Row>
     );
   }
+  onSubmit = () => {
+    let repository = this.props.store.getRepository(this.file.repository);
+    if (repository) {
+      this.props.store.webStorage.store(this.file, repository);
+    }
+  };
 }
 
 export const AddDocument = Form.create()(AddDocumentForm);
