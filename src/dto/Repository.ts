@@ -20,6 +20,7 @@ export default class Repository {
   contextIndex?: AllValueIndex<string>;
   nameIndex?: AllValueIndex<string>;
   finishedTaskIndex?: AllValueIndex<boolean>;
+  deletedIndex?: AllValueIndex<boolean>;
 
   constructor(name: string, pw?: string) {
     this.name = name;
@@ -42,6 +43,7 @@ export default class Repository {
       this.contextIndex = new AllValueIndex<string>(this.id, 'details.context', FileType.Task);
       this.nameIndex = new AllValueIndex<string>(this.id, 'name');
       this.finishedTaskIndex = new AllValueIndex<boolean>(this.id, 'isFinished', FileType.Task);
+      this.deletedIndex = new AllValueIndex<boolean>(this.id, 'isDeleted');
     }
   }
 
@@ -56,6 +58,8 @@ export default class Repository {
           this.finishedTaskIndex = index;
         } else if (index.field === 'name') {
           this.nameIndex = index;
+        } else if (index.field === 'isDeleted') {
+          this.deletedIndex = index;
         }
       }
     }
@@ -127,12 +131,12 @@ export default class Repository {
   }
 
   get indexesUndefined(): (Index | undefined)[] {
-    return [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex];
+    return [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
   }
 
   get indexes(): Index[] {
     let retval = [];
-    let all = [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex];
+    let all = [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
     for (let index of all) {
       if (!index) {
         throw 'index not initialized, access not allowed';
@@ -171,11 +175,19 @@ export default class Repository {
     return this.finishedTaskIndex;
   }
 
+  get getDeletedIndex(): AllValueIndex<boolean> {
+    if (!this.deletedIndex) {
+      throw 'deleted task index not defined';
+    }
+    return this.deletedIndex;
+  }
+
   logout() {
     this.token = undefined;
     this.tagIndex = undefined;
     this.contextIndex = undefined;
     this.nameIndex = undefined;
     this.finishedTaskIndex = undefined;
+    this.deletedIndex = undefined;
   }
 }

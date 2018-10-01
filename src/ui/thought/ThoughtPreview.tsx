@@ -10,9 +10,10 @@ import Card from 'antd/lib/card';
 import { DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask } from './ThoughtActions';
 
 export interface ThoughtPreviewProps {
-  thought: Thought | null;
+  thought?: Thought ;
   store: GlobalStore;
   showActions?: boolean;
+  reload?: () => void;
 }
 
 @observer
@@ -20,15 +21,16 @@ export default class ThoughtPreview extends React.Component<ThoughtPreviewProps,
   render() {
     const thought = this.props.thought;
     const showActions = this.props.showActions === undefined ? false : this.props.showActions;
+    const reload = this.props.reload ? this.props.reload : ()=>{};
 
-    if (thought !== null) {
+    if (thought) {
       let actions: React.ReactNode[] = [];
       if (showActions) {
         actions = [
-          <ThoughtToTask key='toTask' store={this.props.store} thought={thought}/>,
-          <ThoughtToDocument key='toDoc' store={this.props.store} thought={thought}/>,
-          <PostponeThought key='postpone' store={this.props.store} thought={thought}/>,
-          <DeleteThought key='delete' store={this.props.store} thought={thought}/>,
+          <ThoughtToTask reload={reload} key='toTask' store={this.props.store} thought={thought}/>,
+          <ThoughtToDocument reload={reload} key='toDoc' store={this.props.store} thought={thought}/>,
+          <PostponeThought reload={reload} key='postpone' store={this.props.store} thought={thought}/>,
+          <DeleteThought reload={reload} key='delete' store={this.props.store} thought={thought}/>,
         ];
       }
       let title = (

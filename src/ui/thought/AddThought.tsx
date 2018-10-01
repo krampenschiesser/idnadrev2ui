@@ -42,11 +42,14 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
   onSubmit = () => {
     this.props.form.validateFields((err, fields) => {
       if (!err) {
-        console.log("no error")
+        console.log('no error');
         let repository = this.props.store.getRepository(this.thought.repository);
-        console.log(repository)
+        console.log(repository);
         if (repository) {
-          this.props.store.webStorage.store(this.thought, repository);
+          this.props.store.webStorage.store(this.thought, repository).then(()=>{
+            this.thought= new Thought('');
+            this.props.form.resetFields();
+          });
         }
       }
     });
@@ -56,13 +59,13 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
     return (
       <Row>
         <Col span={12}>
-          <Form onSubmit={this.onSubmit} layout='horizontal'>
+          <Form layout='horizontal'>
             <NameFormItem file={this.thought} form={this.props.form}/>
             <TagFormItem form={this.props.form} store={this.props.store} file={this.thought}/>
             <MarkdownFormItem form={this.props.form} item={this.thought}/>
             <RepositoryFormItem file={this.thought} store={this.props.store} form={this.props.form}/>
             <FormItem wrapperCol={{offset: FormConstants.buttonOffset}}>
-              <Button type='primary' htmlType='submit'>Submit</Button>
+              <Button type='primary' onClick={this.onSubmit}>Submit</Button>
             </FormItem>
           </Form>
         </Col>

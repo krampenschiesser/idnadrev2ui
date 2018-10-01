@@ -3,12 +3,12 @@ import { FileId } from '../dto/FileId';
 import IdnadrevFile from '../dto/IdnadrevFile';
 import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
-import { Tag } from '../dto/Tag';
 import Task, { TaskContext } from '../dto/Task';
 import Thought from '../dto/Thought';
 import FileFilter from './FileFilter';
 import { TaskFilter } from './TaskFilter';
 import WebStorage from './WebStorage';
+import BinaryFile from '../dto/BinaryFile';
 
 export default class GlobalStore {
   colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
@@ -16,8 +16,6 @@ export default class GlobalStore {
   @observable lastSelectedRepository: RepositoryId | null = null;
   webStorage: WebStorage;
 
-  @observable tags: Map<string, Tag> = new Map<string, Tag>();
-  @observable contexts: Map<string, TaskContext> = new Map<string, TaskContext>();
   @observable repositories: Repository[] = [];
   @observable openRepositories: Repository[] = [];
 
@@ -34,9 +32,25 @@ export default class GlobalStore {
     });
   }
 
+  getAllContexts(): TaskContext[] {
+    let contexts: Set<TaskContext> = new Set();
+    this.openRepositories.map(repo => repo.getContextIndex.getAllValues()).forEach(values => values.forEach(value => {
+      if (value) {
+        contexts.add(value);
+      }
+    }));
+    return Array.from(contexts);
+  }
+
   getTagsStartingWith(input: string): string[] {
     input = input.toLocaleLowerCase();
-    return Array.from(this.tags.keys()).filter(tag => tag.startsWith(input));
+    let tags: Set<string> = new Set();
+    this.openRepositories.map(repo => repo.getTagIndex.getAllValues()).forEach(values => values.forEach(value => {
+      if (value && value.name.toLocaleLowerCase().includes(input)) {
+        tags.add(value.name);
+      }
+    }));
+    return Array.from(tags);
   }
 
   getTagColor(tag: string): string {
@@ -153,4 +167,28 @@ export default class GlobalStore {
     }));
     return set;
   }
+
+  markDeleted(file: IdnadrevFile<any, any>): Promise<string> {
+    file.deleted = new Date();
+    let repo = this.getRepository(file.repository);
+    if (repo) {
+      return this.webStorage.store(file, repo);
+    } else {
+      return new Promise((resolve, reject) => reject('No repository'));
+    }
+  }
+
+  store(file: IdnadrevFile<any, any>): Promise<string> {
+    let repo = this.getRepository(file.repository);
+    if (repo) {
+      if (file instanceof BinaryFile) {
+        return this.webStorage.storeBinaryFile(file, repo);
+      } else {
+        return this.webStorage.store(file, repo);
+      }
+    } else {
+      return new Promise((resolve, reject) => reject('No repository found for ' + file.repository));
+    }
+  }
+
 }

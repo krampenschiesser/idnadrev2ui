@@ -24,7 +24,7 @@ export default abstract class IdnadrevFile<Details, Content> {
 
   created: Date;
   updated: Date;
-  deleted: Date;
+  deleted?: Date;
 
   fileType: FileType;
   @observable tags: Tag[];
@@ -55,4 +55,7 @@ export default abstract class IdnadrevFile<Details, Content> {
     return this;
   }
 
+  get isDeleted(): boolean {
+    return this.deleted !== undefined;
+  }
 }

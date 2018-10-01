@@ -44,7 +44,7 @@ export class ContextFormItem extends React.Component<TaskFormItemProps, object> 
 
   componentDidMount() {
     this.context = this.props.task.context;
-    this.allContexts = Array.from(this.props.store.contexts.keys());
+    this.allContexts = Array.from(this.props.store.getAllContexts());
     this.allContexts.sort();
   }
 
@@ -61,8 +61,6 @@ export class ContextFormItem extends React.Component<TaskFormItemProps, object> 
   };
 
   render() {
-    let contexts = Array.from(this.props.store.contexts.keys());
-    contexts.sort();
 
     const {getFieldDecorator} = this.props.form;
     return (
@@ -72,7 +70,7 @@ export class ContextFormItem extends React.Component<TaskFormItemProps, object> 
             type: 'string', message: 'The input is no valid string',
           }], //initialValue: this.context
         })(
-          <AutoComplete dataSource={contexts} style={{width: 150}} onChange={this.onChange}/>
+          <AutoComplete dataSource={this.allContexts} style={{width: 150}} onChange={this.onChange}/>
         )}
       </FormItem>
     );

@@ -1,21 +1,21 @@
 import Dexie from 'dexie';
-import {observable} from "mobx";
+import { observable } from 'mobx';
 import BinaryFile from '../dto/BinaryFile';
 import Document from '../dto/Document';
-import {FileId} from '../dto/FileId';
-import {FileType} from '../dto/FileType';
+import { FileId } from '../dto/FileId';
+import { FileType } from '../dto/FileType';
 import IdnadrevFile from '../dto/IdnadrevFile';
 import Repository from '../dto/Repository';
-import {RepositoryId} from '../dto/RepositoryId';
-import {Tag} from '../dto/Tag';
-import Task, {TaskContext, TaskState} from '../dto/Task';
+import { RepositoryId } from '../dto/RepositoryId';
+import { Tag } from '../dto/Tag';
+import Task, { TaskContext, TaskState } from '../dto/Task';
 import Thought from '../dto/Thought';
-import {EncryptedData, Nonce} from './CryptoHelper';
-import {generateBinaryFiles, generateRepositories, generateTasks, generateThoughts} from './DummyData';
+import { EncryptedData, Nonce } from './CryptoHelper';
+import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
 import FileFilter from './FileFilter';
 import AllValueIndex from './index/AllValueIndex';
-import Index, {indexFromJson, IndexType, IndexUpdateState} from './index/Index';
-import {TaskFilter} from './TaskFilter';
+import Index, { indexFromJson, IndexType, IndexUpdateState } from './index/Index';
+import { TaskFilter } from './TaskFilter';
 
 interface PersistedIdnadrevFile {
   data: EncryptedData;
@@ -23,6 +23,7 @@ interface PersistedIdnadrevFile {
   id: FileId;
   repositoryId: RepositoryId
   type: FileType;
+  deleted: boolean;
 }
 
 interface PersistedBinaryFile extends PersistedIdnadrevFile {
@@ -156,18 +157,6 @@ async function toBinaryFile(persisted: PersistedBinaryFile | undefined, repo: Re
   return file;
 }
 
-async function toIdnadrevFile(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<IdnadrevFile<any, any> | undefined> {
-  if (persisted === undefined) {
-    return persisted;
-  }
-  let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
-  let parse = JSON.parse(decryptJson);
-  // let file = new IdnadrevFile(parse.name, parse.tags);
-  // Object.assign(file, parse);
-  fileDates(parse);
-  return parse;
-}
-
 function toRepository(persisted: PersistedRepository): Repository {
   if (persisted === undefined) {
     return persisted;
@@ -205,12 +194,12 @@ export default class WebStorage extends Dexie {
       repositories: 'id, name',
       indexes: 'id, repositoryId'
     });
-    console.log("creating db")
+    console.log('creating db');
     this.on('populate', () => {
       if (!WebStorage.populate) {
         return;
       }
-      console.log("start creating dummy data");
+      console.log('start creating dummy data');
       try {
         let repos = generateRepositories();
         repos.forEach(r => this.storeRepository(r));
@@ -219,17 +208,17 @@ export default class WebStorage extends Dexie {
         generateTasks(repo.id).forEach(t => this.store(t, repo));
         generateBinaryFiles(repo.id).forEach(t => this.storeBinaryFile(t, repo));
         // generateManyTasks().forEach(t => this.store(t));
-        console.log("done creating dummy data");
+        console.log('done creating dummy data');
       } catch (e) {
         console.log('Could not create dummy data', e);
         throw e;
       }
     });
     this.open().then(() => {
-      console.log("#loaded");
+      console.log('#loaded');
       this.loaded = true;
     });
-    console.log("done creating db")
+    console.log('done creating db');
   }
 
   async whenLoaded(): Promise<void> {
@@ -281,7 +270,8 @@ export default class WebStorage extends Dexie {
       nonce: nonceJson,
       id: obj.id,
       repositoryId: obj.repository,
-      type: obj.fileType
+      type: obj.fileType,
+      deleted: obj.isDeleted
     };
     await this.updateIndexes(repo, obj);
     return this.files.put(data);
@@ -290,6 +280,17 @@ export default class WebStorage extends Dexie {
   async updateIndexes(repo: Repository, obj: IdnadrevFile<any, any>): Promise<string> {
     await Promise.all(repo.indexes.map(async i => {
       if (i.onUpdate(obj) === IndexUpdateState.CHANGED) {
+        return await this.storeIndex(i, repo);
+      } else {
+        return 'no change';
+      }
+    }));
+    return 'ok';
+  }
+
+  async deleteFromIndexes(repo: Repository, obj: IdnadrevFile<any, any>): Promise<string> {
+    await Promise.all(repo.indexes.map(async i => {
+      if (i.onDelete(obj) === IndexUpdateState.CHANGED) {
         return await this.storeIndex(i, repo);
       } else {
         return 'no change';
@@ -307,18 +308,18 @@ export default class WebStorage extends Dexie {
       id: obj.id,
       repositoryId: obj.repository,
       type: obj.fileType,
+      deleted: obj.isDeleted
     };
     await this.updateIndexes(repo, obj);
     return this.files.put(data);
   }
 
-
   async loadOpenThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Thought).toArray();
+    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Thought).and(f => !f.deleted).toArray();
     let returnvalue = [];
     for (let file of thoughts) {
       let thought = await toThought(file, repo);
-      if (thought && !thought.isPostPoned()) {
+      if (thought && !thought.isPostPoned) {
         returnvalue.push(thought);
       }
     }
@@ -326,7 +327,7 @@ export default class WebStorage extends Dexie {
   }
 
   async loadAllThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts = await this.files.where('type').equals(FileType.Thought).toArray();
+    let thoughts = await this.files.where('type').equals(FileType.Thought).and(f => !f.deleted).toArray();
 
     let returnvalue = [];
     for (let file of thoughts) {
@@ -384,10 +385,8 @@ export default class WebStorage extends Dexie {
           }
         }
         return false;
-      }).forEach(v => {
-        if (v) {
-          nameIds.add(v);
-        }
+      }).forEach(name => {
+        nameIndex.getIds(name).forEach(id => nameIds.add(id));
       });
       retainAll(ids, nameIds);
     }
@@ -400,7 +399,7 @@ export default class WebStorage extends Dexie {
 
 
     let idSet = new Set(ids);
-    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).toArray();
+    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).and(f => !f.deleted).toArray();
     tasks = tasks.filter(t => idSet.has(t.id));
     let mappedTasks: Task[] = [];
 
@@ -513,41 +512,6 @@ export default class WebStorage extends Dexie {
     }
   }
 
-  async getInitialTags(repo: Repository): Promise<Set<Tag>> {//this is crap need different solution
-    // tslint:disable-next-line
-    let tagMapper = (t: IdnadrevFile<any, any> | undefined) => {
-      if (t) {
-        return t.tags;
-      } else {
-        return [];
-      }
-    };
-    let bare = await this.files.toArray();
-    let loaded = await Promise.all(bare.map(async t => await toIdnadrevFile(t, repo)));
-    let tags = loaded.map(tagMapper);
-    let set = new Set();
-    tags.forEach(t => {
-      if (t) {
-        set.add(t);
-      }
-    });
-    return set;
-  }
-
-  async getAllContexts(repo: Repository): Promise<Set<TaskContext>> {//this is crap need different solution
-    let contextMapper = (t: Task | undefined) => {
-      if (t && t.details.context) {
-        return t.details.context;
-      } else {
-        return '';
-      }
-    };
-    let tasks = await Promise.all((await this.files.where('type').equals(FileType.Task).toArray()).map(async t => await toTask(t, repo)));
-    let set = new Set();
-    tasks.map(contextMapper).forEach(context => set.add(context));
-    return set;
-  }
-
   async getAllFiles(repo: Repository, fileFilter?: FileFilter): Promise<IdnadrevFile<any, any>[]> {
     fileFilter = !fileFilter ? {} : fileFilter;
 
@@ -584,7 +548,7 @@ export default class WebStorage extends Dexie {
       types = [FileType.Binary, FileType.Document, FileType.Image, FileType.Task, FileType.Thought];
     }
     let results = await Promise.all(types.map(async t => {
-      let filesForType = await this.files.where('type').equals(t).toArray();
+      let filesForType = await this.files.where('type').equals(t).and(f => !f.deleted).toArray();
       let functor = async (f: PersistedIdnadrevFile) => {
         if (t === FileType.Binary) {
           let bla: any = f;

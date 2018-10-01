@@ -12,9 +12,10 @@
 import IdnadrevFile from './IdnadrevFile';
 import { FileType } from './FileType';
 import { Tag } from './Tag';
+import moment from 'moment';
 
 export class ThoughtDetails {
-  showAgainAfter: Date | null;
+  showAgainAfter?: Date;
 }
 
 export default class Thought extends IdnadrevFile<ThoughtDetails, string> {
@@ -25,8 +26,11 @@ export default class Thought extends IdnadrevFile<ThoughtDetails, string> {
     this.details = new ThoughtDetails();
   }
 
-  isPostPoned(): boolean {
-    return this.details.showAgainAfter === null || this.details.showAgainAfter <= new Date();
+  get isPostPoned(): boolean {
+    if (this.details.showAgainAfter) {
+      return moment(this.details.showAgainAfter).isAfter(moment());
+    }
+    return false;
   }
 
   withContent(content: string): Thought {

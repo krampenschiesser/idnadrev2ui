@@ -23,22 +23,14 @@ function noop() {
 @observer
 export default class ProcessThoughts extends React.Component<ProcessThoughtsProps, object> {
   @observable thoughts: Thought[];
-  @observable previewThought: Thought | null = null;
+  @observable previewThought?: Thought;
 
   componentWillMount() {
     this.props.uiStore.header = 'Process Thoughts';
   }
 
   componentDidMount() {
-    this.props.store.getOpenThoughts().then((t: Thought[]) => {
-      this.thoughts = t;
-      if (this.thoughts && this.thoughts.length > 0) {
-        this.previewThought = this.thoughts[0];
-      }
-    }).catch(e => {
-      console.error('Could not load thoughts', e);
-      console.error(e);
-    });
+    this.reload();
     window.onkeydown = this.onKeyPress; //fixme replace with below and get that working
     // window.addEventListener('onkeydown', this.onKeyPress, true);
   }
@@ -48,6 +40,20 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
     // window.removeEventListener('onkeydown', this.onKeyPress);
   }
 
+  reload = () => {
+    this.props.store.getOpenThoughts().then((t: Thought[]) => {
+      this.thoughts = t;
+      if (this.thoughts && this.thoughts.length > 0) {
+        this.previewThought = this.thoughts[0];
+      } else {
+        this.previewThought = undefined;
+      }
+    }).catch(e => {
+      console.error('Could not load thoughts', e);
+      console.error(e);
+    });
+  };
+
   switchThought = (page: number) => {
     if (this.thoughts.length > page - 1) {
       this.previewThought = this.thoughts[page - 1];
@@ -55,14 +61,21 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
   };
 
   next = () => {
-    if (this.getPageNumber() < this.thoughts.length) {
+    if (this.hasNext()) {
       console.log('next page ' + this.getPageNumber() + 1);
       this.switchThought(this.getPageNumber() + 1);
     }
   };
 
+  hasNext = () => {
+    return this.getPageNumber() < this.thoughts.length;
+  };
+  hasPrevious = () => {
+    return this.getPageNumber() > 1;
+  };
+
   previous = () => {
-    if (this.getPageNumber() > 1) {
+    if (this.hasPrevious()) {
       this.switchThought(this.getPageNumber() - 1);
     }
   };
@@ -92,18 +105,29 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
           <Content>
             <Layout>
               <Content>
-                <ThoughtPreview showActions thought={this.previewThought} store={this.props.store}/>
+                <ThoughtPreview reload={this.swap} showActions thought={this.previewThought} store={this.props.store}/>
               </Content>
             </Layout>
           </Content>
           <Footer style={{textAlign: 'center'}}>
-            <Pagination current={pageNumber} pageSize={1}
-                        total={thoughts.length} onChange={this.switchThought}/>
+            <Pagination
+              current={pageNumber} pageSize={1}
+              total={thoughts.length} onChange={this.switchThought}/>
           </Footer>
         </Layout>
       </div>
     );
   }
+
+  swap = () => {
+    if (this.hasNext()) {
+      this.next();
+    } else if (this.hasPrevious()) {
+      this.previous();
+    } else {
+      this.reload();
+    }
+  };
 
   private getPageNumber(): number {
     let pageNumber = 0;
