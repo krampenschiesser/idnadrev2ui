@@ -9,7 +9,7 @@ import GlobalStore from '../../store/GlobalStore';
 
 const Option = Select.Option;
 import Select from 'antd/lib/select';
-import { TaskState } from '../../dto/Task';
+import Task, { TaskState } from '../../dto/Task';
 import TagContainer from '../tag/TagContainer';
 import { observable, observe } from 'mobx';
 import { Tag } from '../../dto/Tag';
@@ -19,6 +19,7 @@ import { IdnadrevFileSelection } from '../selection/IdnadrevFileSelection';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import { FileType } from '../../dto/FileType';
 import { Button, Popover } from 'antd';
+import { FileId } from '../../dto/FileId';
 
 export interface TaskFilterProps extends FormComponentProps {
   filter: TaskFilter;
@@ -103,7 +104,9 @@ class ContextFilter extends React.Component<TaskFilterProps, object> {
         {getFieldDecorator('context', {})(
           <Select style={{width: 120}} onChange={this.onChange}>
             <Option key='none' value={undefined}>None</Option>
-            {contexts.map(c => <Option key={c} value={c}>{c}</Option>)}
+            {contexts.map(c => {
+              return <Option key={c} value={c}>{c}</Option>;
+            })}
           </Select>
         )}
       </FormItem>
@@ -299,8 +302,25 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
     this.reload();
   };
 
+  hasParent = (file: Task, all: Task[], parentId: FileId): boolean => {
+    if (file.parent == parentId) {
+      return true;
+    } else if (file.parent) {
+      let index = all.findIndex(f => f.id == file.parent);
+      if (index >= 0) {
+        return this.hasParent(all[index], all, parentId);
+      }
+    }
+    return false;
+  };
+
   render() {
     const {reload, ...newProps} = this.props;
+    let parentFilter = (file: Task, all: Task[]):boolean => {
+      return all.find(other => {
+        return this.hasParent(other, all, file.id);
+      }) !== undefined;
+    };
 
     let detailSearch = (
       <div style={{width: 800}}>
@@ -312,7 +332,7 @@ class TaskFilterViewForm extends React.Component<TaskFilterProps, object> {
           <ProposedFilter {...newProps} reload={this.reload}/>
           <DelegatedToFilter {...newProps} reload={this.reload}/>
           <RemainingTimeFilter {...newProps} reload={this.reload}/>
-          <IdnadrevFileSelection fileType={FileType.Task} store={this.props.store} onSelect={this.selectParent}/>
+          <IdnadrevFileSelection<Task> filter={parentFilter} fileType={FileType.Task} store={this.props.store} onSelect={this.selectParent}/>
           <a onClick={() => this.detailsVisible = !this.detailsVisible}>Close</a>
         </Form>
       </div>

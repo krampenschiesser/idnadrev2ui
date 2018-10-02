@@ -10,20 +10,21 @@ import { IdnadrevFileSelectionTable } from './IdnadrevFileSelectionTable';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 
-export interface IdnadrevFileSelectionProps {
+export interface IdnadrevFileSelectionProps<T extends IdnadrevFile<any,any>>  {
   fileType?: FileType;
   store: GlobalStore;
-  onSelect: (file: IdnadrevFile<{}, {}> | undefined) => void;
+  onSelect: (file: T | undefined) => void;
+  filter?: (file: T, files: T[]) => boolean;
 }
 
 @observer
-export class IdnadrevFileSelection extends React.Component<IdnadrevFileSelectionProps, object> {
+export class IdnadrevFileSelection<T extends IdnadrevFile<any,any>> extends React.Component<IdnadrevFileSelectionProps<T>, object> {
   @observable names: string[];
   @observable tableVisible: boolean = false;
   @observable selected: IdnadrevFile<{}, {}> | undefined;
   @observable name: string | undefined;
 
-  selectFile = (file: IdnadrevFile<{}, {}> | undefined) => {
+  selectFile = (file: T | undefined) => {
     if (file) {
       this.selected = file;
       this.name = file.name;
@@ -58,7 +59,7 @@ export class IdnadrevFileSelection extends React.Component<IdnadrevFileSelection
         <Modal
           title='Select parent' visible={this.tableVisible} onOk={() => this.tableVisible = false}
           onCancel={() => this.tableVisible = false}>
-          <IdnadrevFileSelectionTable onSelect={this.selectFile} nameFilter={this.name} tags={[]} store={this.props.store}/>
+          <IdnadrevFileSelectionTable<T> onSelect={this.selectFile} nameFilter={this.name} fileType={this.props.fileType}  filter={this.props.filter} tags={[]} store={this.props.store}/>
         </Modal>
       </div>
     );

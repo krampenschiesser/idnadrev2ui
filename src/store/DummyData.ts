@@ -2,7 +2,7 @@ import moment from 'moment';
 import BinaryFile from '../dto/BinaryFile';
 import Repository from '../dto/Repository';
 import { Tag } from '../dto/Tag';
-import Task, { FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, WorkUnit } from '../dto/Task';
+import Task, { Delegation, DelegationState, FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling, TaskState, WorkUnit } from '../dto/Task';
 import Thought from '../dto/Thought';
 import { RepositoryId } from '../dto/RepositoryId';
 import { fromHex } from './CryptoHelper';
@@ -25,6 +25,12 @@ export function generateTasks(repo: RepositoryId): Task[] {
   let t4 = new Task('Buy steak', [new Tag('beef')]).withContent('# I am hungry!!!').withRepository(repo);
   let t5 = new Task('Buy beer', [new Tag('drinks')]).withContent('I am thirsty!!!').withRepository(repo);
   let t6 = new Task('Finished', [new Tag('finished')]).withContent('A finished task...').withRepository(repo);
+  t5.details.state=TaskState.Asap;
+  t4.details.state=TaskState.Later;
+  t3.details.state=TaskState.Delegated;
+  t3.details.delegation= new DelegationState();
+  t3.details.delegation.current= new Delegation("somebody");
+
 
   t6.details.finished = new Date();
 

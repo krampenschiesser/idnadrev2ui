@@ -65,6 +65,7 @@ export async function toThought(persisted: PersistedIdnadrevFile | undefined, re
     return persisted;
   }
   let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+  console.log(decrypt);
   let parse = JSON.parse(decrypt);
   let thought = new Thought(parse.name, parse.tags, parse.content);
   Object.assign(thought, parse);
@@ -315,7 +316,7 @@ export default class WebStorage extends Dexie {
   }
 
   async loadOpenThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Thought).and(f => !f.deleted).toArray();
+    let thoughts: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Thought).and(f => f.repositoryId == repo.id).and(f => !f.deleted).toArray();
     let returnvalue = [];
     for (let file of thoughts) {
       let thought = await toThought(file, repo);
@@ -327,7 +328,7 @@ export default class WebStorage extends Dexie {
   }
 
   async loadAllThoughts(repo: Repository): Promise<Thought[]> {
-    let thoughts = await this.files.where('type').equals(FileType.Thought).and(f => !f.deleted).toArray();
+    let thoughts = await this.files.where('type').equals(FileType.Thought).and(f => f.repositoryId == repo.id).and(f => !f.deleted).toArray();
 
     let returnvalue = [];
     for (let file of thoughts) {
@@ -340,17 +341,17 @@ export default class WebStorage extends Dexie {
   }
 
   async loadThoughtById(id: string, repo: Repository): Promise<Thought | undefined> {
-    let thought = await this.files.where('id').equals(id).first();
+    let thought = await this.files.where('id').equals(id).and(f => f.repositoryId == repo.id).first();
     return await toThought(thought, repo);
   }
 
   async loadDocumentById(id: string, repo: Repository): Promise<Document | undefined> {
-    let doc = await this.files.where('id').equals(id).first();
+    let doc = await this.files.where('id').equals(id).and(f => f.repositoryId == repo.id).first();
     return await toDocument(doc, repo);
   }
 
   async loadTaskById(id: string, repo: Repository): Promise<Task | undefined> {
-    let task = await this.files.where('id').equals(id).first();
+    let task = await this.files.where('id').equals(id).and(f => f.repositoryId == repo.id).first();
     return await toTask(task, repo);
   }
 
@@ -369,7 +370,9 @@ export default class WebStorage extends Dexie {
 
     let finishedTaskIndex: AllValueIndex<boolean> = repo.getFinishedTaskIndex;
     let ids = finishedTaskIndex.getIds(finished);
-    if (tags) {
+    if (tags && tags.length > 0) {
+      console.log("TAGS");
+      console.log(tags);
       let tagIds: Set<FileId> = new Set();
       tags.map(tag => repo.getTagIndex.getIds(tag)).forEach(i => i.forEach(v => tagIds.add(v)));
       retainAll(ids, tagIds);
@@ -399,7 +402,7 @@ export default class WebStorage extends Dexie {
 
 
     let idSet = new Set(ids);
-    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).and(f => !f.deleted).toArray();
+    let tasks: PersistedIdnadrevFile[] = await this.files.where('type').equals(FileType.Task).and(f => f.repositoryId == repo.id).and(f => !f.deleted).toArray();
     tasks = tasks.filter(t => idSet.has(t.id));
     let mappedTasks: Task[] = [];
 
@@ -421,8 +424,12 @@ export default class WebStorage extends Dexie {
       }
 
       if (valid && delegatedTo !== null) {
-        if (t.details.delegation.current && t.details.delegation.current.to) {
-          valid = t.details.delegation.current.to.toLowerCase().indexOf(delegatedTo) > 0;
+        if (t.details.delegation.current) {
+          console.log("Delegation!!!")
+          console.log(t.details.delegation.current.to)
+          console.log(delegatedTo)
+
+          valid = t.details.delegation.current.to.toLowerCase().indexOf(delegatedTo) >= 0;
         } else {
           valid = false;
         }
@@ -466,15 +473,6 @@ export default class WebStorage extends Dexie {
             valid = false;
           }
         } else {
-          valid = false;
-        }
-      }
-      if (valid && tags !== null) {
-        tags.map(requestedTag => {
-          let requestedTagName = requestedTag.name.toLowerCase();
-          return t.tags.some(tag => tag.name.toLowerCase() === requestedTagName);
-        }).forEach(found => valid = valid && found);
-        if (tags.length === 0) {
           valid = false;
         }
       }
@@ -522,7 +520,7 @@ export default class WebStorage extends Dexie {
         return false;
       } else {
         let valid = fileFilter.name ? file.name.toLowerCase().indexOf(lowerCase) >= 0 : true;
-        if (valid && fileFilter.tags) {
+        if (valid && fileFilter.tags && fileFilter.tags.length > 0) {
           fileFilter.tags.map(requestedTag => {
             let requestedTagName = requestedTag.name.toLowerCase();
             return file.tags.some(tag => tag.name.toLowerCase() === requestedTagName);
@@ -548,7 +546,7 @@ export default class WebStorage extends Dexie {
       types = [FileType.Binary, FileType.Document, FileType.Image, FileType.Task, FileType.Thought];
     }
     let results = await Promise.all(types.map(async t => {
-      let filesForType = await this.files.where('type').equals(t).and(f => !f.deleted).toArray();
+      let filesForType = await this.files.where('type').equals(t).and(f => !f.deleted).and(f => f.repositoryId == repo.id).toArray();
       let functor = async (f: PersistedIdnadrevFile) => {
         if (t === FileType.Binary) {
           let bla: any = f;

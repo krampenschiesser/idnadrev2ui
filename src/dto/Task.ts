@@ -50,18 +50,20 @@ export class WorkUnit {
 export class Delegation {
   @observable delegationStarted: Date;
   @observable to: string;
+
+
+  constructor(to?: string, delegationStarted?: Date) {
+    this.delegationStarted = delegationStarted ? delegationStarted : new Date();
+    this.to = to ? to : '';
+  }
 }
 
 export class DelegationHistory extends Delegation {
-  @observable delegationStarted: Date;
   @observable delegationEnded: Date;
-  @observable to: string;
 
-  constructor(original: Delegation) {
-    super();
-    this.delegationStarted = original.delegationStarted;
-    this.to = original.to;
-    this.delegationEnded = new Date();
+  constructor(original: Delegation, delegationEnded?: Date) {
+    super(original.to, original.delegationStarted);
+    this.delegationEnded = delegationEnded ? delegationEnded : new Date();
   }
 }
 
@@ -254,5 +256,4 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     }
     return false;
   }
-
 }

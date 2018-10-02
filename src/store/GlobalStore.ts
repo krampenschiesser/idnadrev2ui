@@ -151,7 +151,7 @@ export default class GlobalStore {
     if (repo.token) {
       let indexes = await this.webStorage.loadIndexes(repo);
       repo.setIndexes(indexes);
-      console.log('push repo hashed');
+      console.log('push repo ' + repo.name + ' hashed');
       if (!this.openRepositories.find(openRepo => openRepo.id === repo.id)) {
         this.openRepositories.push(repo);
       }

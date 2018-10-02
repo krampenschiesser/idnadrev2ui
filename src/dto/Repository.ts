@@ -100,7 +100,7 @@ export default class Repository {
 
   decryptToText(data: Uint8Array, nonce: Nonce): Promise<string> {
     if (this.token) {
-      return decryptToUtf8(data, nonce, this.token);
+      return decryptToUtf8(data, nonce, this.token).catch(reason => this.name + " could not decrypt because "+reason);
     } else {
       return new Promise<string>((resolve, reject) => reject('not logged into repository'));
     }

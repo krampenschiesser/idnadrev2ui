@@ -122,8 +122,10 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
   swap = () => {
     if (this.hasNext()) {
       this.next();
+      this.reload();
     } else if (this.hasPrevious()) {
       this.previous();
+      this.reload();
     } else {
       this.reload();
     }

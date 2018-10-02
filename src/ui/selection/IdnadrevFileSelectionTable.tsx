@@ -18,14 +18,17 @@ import { PaginationProps } from 'antd/lib/pagination/Pagination';
 
 class FileTable extends Table<IdnadrevFile<{}, {}>> {
 }
+
 class FileColumn extends Column<IdnadrevFile<{}, {}>> {
 }
-export interface IdnadrevFileSelectionTableProps {
+
+export interface IdnadrevFileSelectionTableProps<T extends IdnadrevFile<{},{}>> {
   fileType?: FileType;
   nameFilter?: string;
   tags: Tag[];
   store: GlobalStore;
-  onSelect: (file: IdnadrevFile<{}, {}>) => void;
+  onSelect: (file: T) => void;
+  filter?: (file: T, files: T[]) => boolean;
 }
 
 interface NameFilterProps {
@@ -40,12 +43,12 @@ class NameFilter extends React.Component<NameFilterProps, object> {
 }
 
 @observer
-export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSelectionTableProps, object> {
-  @observable files: IdnadrevFile<{}, {}>[] = [];
-  @observable selectedFile: IdnadrevFile<{}, {}> | undefined;
+export class IdnadrevFileSelectionTable<T extends IdnadrevFile<{},{}>> extends React.Component<IdnadrevFileSelectionTableProps<T>, object> {
+  @observable files: T[] = [];
+  @observable selectedFile: T | undefined;
   @observable nameFilter: string | undefined;
 
-  constructor(props: IdnadrevFileSelectionTableProps) {
+  constructor(props: IdnadrevFileSelectionTableProps<T>) {
     super(props);
     this.nameFilter = props.nameFilter;
   }
@@ -54,7 +57,10 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
     this.props.store.getAllFiles({
       types: this.props.fileType ? [this.props.fileType] : undefined,
       name: this.nameFilter
-    }).then(files => this.files = files)//
+    }).then(files => {
+      // @ts-ignore
+      this.files = files;
+    })//
       .catch(e => console.error('Could not load files, %o', e));
   }
 
@@ -63,10 +69,10 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
 
     let currentRows = this.selectedFile === undefined ? [] : [this.selectedFile.id];
 
-    const rowSelection: TableRowSelection<IdnadrevFile<{}, {}>> = {
+    const rowSelection: TableRowSelection<T> = {
       type: 'radio',
       selectedRowKeys: currentRows,
-      onSelect: (record: IdnadrevFile<{}, {}>, selected: boolean, selectedRows: Object[]) => {
+      onSelect: (record: T, selected: boolean, selectedRows: Object[]) => {
         if (selected) {
           this.selectedFile = record;
           this.props.onSelect(record);
@@ -76,7 +82,7 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
       }
     };
 
-    const rowClick = (name: string, record: IdnadrevFile<{}, {}>, index: number) => {
+    const rowClick = (name: string, record: T, index: number) => {
       return (
         <ClickCell
           onClick={() => {
@@ -91,6 +97,10 @@ export class IdnadrevFileSelectionTable extends React.Component<IdnadrevFileSele
     if (this.nameFilter) {
       const needle = this.nameFilter.toLowerCase();
       data = data.filter(f => f.name.toLowerCase().indexOf(needle) > 0);
+    }
+    if (this.props.filter) {
+      let filter = this.props.filter;
+      data = data.filter(f => filter(f, data));
     }
 
     return (

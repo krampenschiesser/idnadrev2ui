@@ -60,7 +60,7 @@ export default class ViewRepositories extends React.Component<ViewRepositoriesPr
   reload = () => {
     this.props.store.loadRepositories().then((t: Repository[]) => {
       this.repositories = [];
-      this.repositories = t;
+      this.repositories = Array.from(t).slice().sort((a, b) => a.name.localeCompare(b.name));
     }).catch(e => {
       console.error('Could not load repositories', e);
       console.error(e);
