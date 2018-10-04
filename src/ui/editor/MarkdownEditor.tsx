@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import { UnControlled as CodeMirror } from 'react-codemirror2';
 import './MarkdownEditor.css';
 
-require('codemirror/lib/codemirror.css');
-require('codemirror/theme/material.css');
-require('codemirror/theme/neat.css');
-require('codemirror/theme/ttcn.css');
+let CodeMirror: any = undefined;
 
-require('codemirror/mode/gfm/gfm');
-require('codemirror/mode/javascript/javascript');
+if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+  CodeMirror = require("./CodeMirrorWrapper");
+}
+
 
 export interface MarkdownEditorProps {
   item: IdnadrevFile<{}, string>;
@@ -30,8 +28,9 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
   };
 
   render() {
-    return (
-      <div>
+    let editor = undefined;
+    if (CodeMirror) {
+      editor = (
         <CodeMirror
           className='MarkdownEditor'
           value={this.props.item.content}
@@ -44,6 +43,15 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
             this.onTextChange(value);
           }}
         />
+      );
+    } else {
+      editor = (
+        <textarea onChange={e => this.onTextChange(e.target.value)}>{this.props.item.content}</textarea>
+      );
+    }
+    return (
+      <div>
+        {editor}
       </div>
     );
   }

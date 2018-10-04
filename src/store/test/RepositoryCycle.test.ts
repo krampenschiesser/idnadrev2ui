@@ -1,43 +1,10 @@
-import WebStorage from '../WebStorage';
-import GlobalStore from '../GlobalStore';
 import Repository from '../../dto/Repository';
 import Task from '../../dto/Task';
 import { Tag } from '../../dto/Tag';
-import { RandomHelper } from '../CryptoHelper';
-import Dexie from 'dexie';
-// @ts-ignore
-import * as localStorage from 'mock-local-storage';
+import TestStore from "../../test/DbMock.test";
 
-
-// @ts-ignore
-global.window = {};
-// @ts-ignore
-window.localStorage = global.localStorage;
-// @ts-ignore
-window.sessionStorage = global.sessionStorage;
-// @ts-ignore
-let _bla = localStorage;
-
-Dexie.dependencies.indexedDB = require('fake-indexeddb');
-Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
-WebStorage.populate = false;
-
-const webStorage = new WebStorage();
-const store = new GlobalStore(webStorage);
-
-function randomMock<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | null>(array: T): T {
-  if (array) {
-    if (array instanceof DataView) {
-      return array;
-    }
-    for (let i = 0; i < array.length; i++) {
-      array[i] = i + 1;
-    }
-  }
-  return array;
-}
-
-RandomHelper.getRandomValues = randomMock;
+const store = TestStore;
+const webStorage = TestStore.webStorage;
 
 test('Store repository and open with indexes', async () => {
   jest.setTimeout(30000);
