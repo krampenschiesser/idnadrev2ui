@@ -93,7 +93,7 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
         <Route path='/file/add' component={AddFile}/>
 
         <Route exact path='/task' component={ViewTask}/>
-        <Route path='/task/edit' component={AddTask}/>
+        <Route path='/task/edit/:taskId' component={AddTask}/>
         <Route path='/task/add' component={AddTask}/>
         <Route path='/task/plan' component={PlanTask}/>
 
@@ -127,13 +127,13 @@ class Idnadrev extends React.Component<IdnadrevProps, object> {
 
     return (
       <div className='App'>
-        <Provider store={store} uiStore={uiStore} antLocale={en_US}>
-          <Router>
+        <Router>
+          <Provider store={store} uiStore={uiStore} antLocale={en_US}>
             <LocaleProvider locale={en_US}>
               {content}
             </LocaleProvider>
-          </Router>
-        </Provider>
+          </Provider>
+        </Router>
         <DevTools/>
       </div>
     );

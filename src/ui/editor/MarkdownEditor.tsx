@@ -3,11 +3,15 @@ import { observer } from 'mobx-react';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import './MarkdownEditor.css';
 
-let CodeMirror: any = undefined;
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 
-if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-  CodeMirror = require("./CodeMirrorWrapper");
-}
+require('codemirror/lib/codemirror.css');
+require('codemirror/theme/material.css');
+require('codemirror/theme/neat.css');
+require('codemirror/theme/ttcn.css');
+
+require('codemirror/mode/gfm/gfm');
+require('codemirror/mode/javascript/javascript');
 
 
 export interface MarkdownEditorProps {
@@ -16,6 +20,7 @@ export interface MarkdownEditorProps {
 
 @observer
 export class MarkdownEditor extends React.Component<MarkdownEditorProps, object> {
+  static useTextArea: boolean = false;
   text: string;
 
   constructor(props: MarkdownEditorProps) {
@@ -28,12 +33,16 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
   };
 
   render() {
-    let editor = undefined;
-    if (CodeMirror) {
-      editor = (
+    if(MarkdownEditor.useTextArea) {
+      return (
+        <textarea onChange={e => this.onTextChange(e.target.value)} value={this.props.item.content} />
+      );
+    }else {
+    return (
+      <div>
         <CodeMirror
           className='MarkdownEditor'
-          value={this.props.item.content}
+          value={this.text}
           options={{
             mode: 'gfm',
             theme: 'ttcn',
@@ -43,16 +52,9 @@ export class MarkdownEditor extends React.Component<MarkdownEditorProps, object>
             this.onTextChange(value);
           }}
         />
-      );
-    } else {
-      editor = (
-        <textarea onChange={e => this.onTextChange(e.target.value)}>{this.props.item.content}</textarea>
-      );
-    }
-    return (
-      <div>
-        {editor}
       </div>
     );
+
+    }
   }
 }

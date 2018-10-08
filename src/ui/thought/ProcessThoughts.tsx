@@ -7,10 +7,11 @@ import UiStore from '../../store/UiStore';
 import ThoughtPreview from './ThoughtPreview';
 import { Layout } from 'antd';
 import Pagination from 'antd/lib/pagination/Pagination';
+import { RouteComponentProps } from 'react-router';
 
 const {Footer, Content} = Layout;
 
-export interface ProcessThoughtsProps {
+export interface ProcessThoughtsProps extends RouteComponentProps<any>{
   store: GlobalStore;
   uiStore: UiStore;
 }
@@ -105,7 +106,7 @@ export default class ProcessThoughts extends React.Component<ProcessThoughtsProp
           <Content>
             <Layout>
               <Content>
-                <ThoughtPreview reload={this.swap} showActions thought={this.previewThought} store={this.props.store}/>
+                <ThoughtPreview {...this.props} reload={this.swap} showActions thought={this.previewThought} store={this.props.store}/>
               </Content>
             </Layout>
           </Content>

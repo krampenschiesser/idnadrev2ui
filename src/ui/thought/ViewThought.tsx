@@ -12,20 +12,21 @@ import { dateCell } from '../table/DateCell';
 import HoverCell from '../table/HoverCell';
 import { DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask } from './ThoughtActions';
 import { RepositoryId } from '../../dto/RepositoryId';
+import { RouteComponentProps } from 'react-router';
 
 const {Column} = Table;
 
 class ThoughtTable extends Table<Thought> {}
 class ThoughtColumn extends Column<Thought> {}
 
-export interface ViewThoughtProps {
+export interface ViewThoughtProps extends RouteComponentProps<any>{
   store: GlobalStore;
   uiStore: UiStore;
 }
 
 @inject('store', 'uiStore')
 @observer
-export default class ViewThoughts extends React.Component<ViewThoughtProps, object> {
+export default class ViewThoughts extends React.Component<ViewThoughtProps, object>  {
   @observable thoughts: Thought[];
   @observable previewThought?: Thought;
 
@@ -78,17 +79,17 @@ export default class ViewThoughts extends React.Component<ViewThoughtProps, obje
             <ThoughtColumn dataIndex='repository' title='Repository' render={repositoryName}/>
             <Column key='action' title='Action' render={(text, record: Thought) => (
               <div>
-                <ThoughtToTask reload={this.reload} store={this.props.store} asIcon thought={record}/>
-                <ThoughtToDocument reload={this.reload} store={this.props.store} asIcon thought={record}/>
-                <PostponeThought reload={this.reload} store={this.props.store} asIcon thought={record}/>
-                <DeleteThought reload={this.reload} store={this.props.store} asIcon thought={record}/>
+                <ThoughtToTask {...this.props} reload={this.reload} asIcon thought={record}/>
+                <ThoughtToDocument {...this.props} reload={this.reload} asIcon thought={record}/>
+                <PostponeThought {...this.props} reload={this.reload} asIcon thought={record}/>
+                <DeleteThought {...this.props} reload={this.reload} asIcon thought={record}/>
               </div>
             )}/>
           </ThoughtTable>
         </Col>
         <Col span={12}>
           <div style={{marginLeft: 20}}>
-            <ThoughtPreview showActions thought={this.previewThought} store={this.props.store}/>
+            <ThoughtPreview {...this.props} showActions thought={this.previewThought}/>
           </div>
         </Col>
       </Row>

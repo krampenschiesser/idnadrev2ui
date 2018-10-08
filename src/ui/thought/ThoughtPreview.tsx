@@ -8,8 +8,9 @@ import TagViewer from '../tag/TagViewer';
 import { MarkdownViewer } from '../editor/MarkdownViewer';
 import Card from 'antd/lib/card';
 import { DeleteThought, PostponeThought, ThoughtToDocument, ThoughtToTask } from './ThoughtActions';
+import { RouteComponentProps } from 'react-router';
 
-export interface ThoughtPreviewProps {
+export interface ThoughtPreviewProps extends RouteComponentProps<any>{
   thought?: Thought ;
   store: GlobalStore;
   showActions?: boolean;
@@ -22,15 +23,20 @@ export default class ThoughtPreview extends React.Component<ThoughtPreviewProps,
     const thought = this.props.thought;
     const showActions = this.props.showActions === undefined ? false : this.props.showActions;
     const reload = this.props.reload ? this.props.reload : ()=>{};
+    // const routeProps = {
+    //   history: this.props.history,
+    //   match: this.props.match,
+    //   location: this.props.location,
+    // }
 
     if (thought) {
       let actions: React.ReactNode[] = [];
       if (showActions) {
         actions = [
-          <ThoughtToTask reload={reload} key='toTask' store={this.props.store} thought={thought}/>,
-          <ThoughtToDocument reload={reload} key='toDoc' store={this.props.store} thought={thought}/>,
-          <PostponeThought reload={reload} key='postpone' store={this.props.store} thought={thought}/>,
-          <DeleteThought reload={reload} key='delete' store={this.props.store} thought={thought}/>,
+          <ThoughtToTask {...this.props} reload={reload} key='toTask' store={this.props.store} thought={thought}/>,
+          <ThoughtToDocument {...this.props} reload={reload} key='toDoc' store={this.props.store} thought={thought}/>,
+          <PostponeThought {...this.props} reload={reload} key='postpone' store={this.props.store} thought={thought}/>,
+          <DeleteThought {...this.props} reload={reload} key='delete' store={this.props.store} thought={thought}/>,
         ];
       }
       let title = (

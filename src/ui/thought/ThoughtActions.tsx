@@ -9,8 +9,10 @@ import GlobalStore from '../../store/GlobalStore';
 import Task from '../../dto/Task';
 import moment from 'moment';
 import { InputNumber, Modal } from 'antd';
+import { RouteComponentProps } from 'react-router';
+import * as H from 'history';
 
-export interface ThoughtActionProps {
+export interface ThoughtActionProps extends RouteComponentProps<any> {
   hoverColor?: string;
   asIcon?: boolean;
   thought: Thought;
@@ -23,11 +25,11 @@ class ThoughtAction extends React.Component<ThoughtActionProps, object> {
   icon: string;
   title: string;
 
-  callback = (thought: Thought, store: GlobalStore): Promise<string> => {
+  callback = (thought: Thought, store: GlobalStore, history: H.History): Promise<string> => {
     return new Promise(resolve => resolve());
   };
 
-  constructor(callback: (thought: Thought, store: GlobalStore) => Promise<string>, icon: string, title: string, props: ThoughtActionProps) {
+  constructor(callback: (thought: Thought, store: GlobalStore, history: H.History) => Promise<string>, icon: string, title: string, props: ThoughtActionProps) {
     super(props);
     this.callback = callback;
     this.icon = icon;
@@ -35,6 +37,7 @@ class ThoughtAction extends React.Component<ThoughtActionProps, object> {
   }
 
   render() {
+    console.log("History: ",this.props.history);
     let actionStyle = {fontSize: 20, marginRight: '10px', cursor: 'pointer'};
     if (this.hover) {
       let color = this.props.hoverColor ? this.props.hoverColor : '#1890ff';
@@ -46,13 +49,13 @@ class ThoughtAction extends React.Component<ThoughtActionProps, object> {
       return (
         <span onMouseEnter={() => this.hover = true} onMouseLeave={() => this.hover = false}>
                     <Icon
-                      onClick={() => this.callback(this.props.thought, this.props.store).then(() => this.props.reload())} style={actionStyle}
+                      onClick={() => this.callback(this.props.thought, this.props.store,this.props.history).then(() => this.props.reload())} style={actionStyle}
                       title={this.title}
                       type={this.icon}/>
                 </span>
       );
     } else {
-      return <Button icon={this.icon} onClick={() => this.callback(this.props.thought, this.props.store).then(() => this.props.reload())}>{this.title}</Button>;
+      return <Button icon={this.icon} onClick={() => this.callback(this.props.thought, this.props.store,this.props.history).then(() => this.props.reload())}>{this.title}</Button>;
     }
   }
 }
@@ -95,7 +98,7 @@ export class PostponeThought extends React.Component<ThoughtActionProps, object>
         title="Postpone for how many days?"
         visible={this.showModal}
         onOk={() => {
-          postponeThought(this.props.thought, this.props.store, this.postponeDays).then(() => {
+          postponeThought(this.props.thought, this.props.store,this.props.history, this.postponeDays).then(() => {
             this.showModal = false;
             this.props.reload();
           });
@@ -136,31 +139,39 @@ export class DeleteThought extends ThoughtAction {
   }
 }
 
-function toTask(thought: Thought, store: GlobalStore): Promise<string> {
+function toTask(thought: Thought, store: GlobalStore,history: H.History): Promise<string> {
   let task = new Task(thought.name, thought.tags, thought.content);
-  task.repository=thought.repository;
-  task.created=thought.created;
-  task.updated=thought.updated;
-  return store.store(task).then(() => {
+  task.repository = thought.repository;
+  task.created = thought.created;
+  task.updated = thought.updated;
+  return store.store(task).then(taskId => {
+     store.markDeleted(thought);
+     return taskId;
+  }).then(taskId=>{
+    console.log("Pushing history")
+    window.location.href= "/task/edit/"+taskId;
+    history.replace("/task/edit/"+taskId);
+    history.goBack();
+    history.goForward();
+    return taskId;
+  });
+}
+
+function toDocument(thought: Thought, store: GlobalStore,history: H.History): Promise<string> {
+  let document = new Document(thought.name, thought.tags, thought.content);
+  document.repository = thought.repository;
+  document.created = thought.created;
+  document.updated = thought.updated;
+  return store.store(document).then(() => {
     return store.markDeleted(thought);
   });
 }
 
-function toDocument(thought: Thought, store: GlobalStore): Promise<string> {
-  let document = new Document(thought.name, thought.tags, thought.content);
-  document.repository=thought.repository;
-  document.created=thought.created;
-  document.updated=thought.updated;
-  return store.store(document).then(() => {
-   return store.markDeleted(thought);
-  });
-}
-
-function postponeThought(thought: Thought, store: GlobalStore, days?: number): Promise<string> {
+function postponeThought(thought: Thought, store: GlobalStore, history: H.History, days?: number ): Promise<string> {
   thought.details.showAgainAfter = moment().add(!days ? 7 : days, 'd').toDate();
   return store.store(thought);
 }
 
-function deleteThought(thought: Thought, store: GlobalStore): Promise<string> {
+function deleteThought(thought: Thought, store: GlobalStore,history: H.History): Promise<string> {
   return store.markDeleted(thought);
 }

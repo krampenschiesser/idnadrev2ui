@@ -30,6 +30,8 @@ export default class UiStore {
   @observable uiOrientation = UiOrientation.Landscape;
   @observable header: string = '';
 
+  goBackOnConfirm?: string;
+
   @action
   updateWidth(width: number, height: number) {
     if (width < UiWidthDimension.sm) {

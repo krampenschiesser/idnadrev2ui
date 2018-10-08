@@ -17,8 +17,9 @@ import RepositoryFormItem from '../form/RepositoryFormItem';
 import Row from 'antd/lib/grid/row';
 import Col from 'antd/lib/grid/col';
 import ThoughtPreview from './ThoughtPreview';
+import { RouteComponentProps } from 'react-router';
 
-export interface AddThoughtProps extends FormComponentProps {
+export interface AddThoughtProps extends FormComponentProps, RouteComponentProps<any>{
   children: {};
   thought?: Thought;
   store: GlobalStore;
@@ -43,14 +44,10 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
     this.props.form.validateFields((err, fields) => {
       if (!err) {
         console.log('no error');
-        let repository = this.props.store.getRepository(this.thought.repository);
-        console.log(repository);
-        if (repository) {
-          this.props.store.webStorage.store(this.thought, repository).then(()=>{
-            this.thought= new Thought('');
-            this.props.form.resetFields();
-          });
-        }
+        this.props.store.store(this.thought).then(() => {
+          this.thought = new Thought('');
+          this.props.form.resetFields();
+        });
       }
     });
   };
@@ -71,7 +68,7 @@ class AddThoughtForm extends React.Component<AddThoughtProps, object> {
         </Col>
         <Col span={12}>
           <div style={{marginLeft: 20}}>
-            <ThoughtPreview thought={this.thought} store={this.props.store}/>
+            <ThoughtPreview {...this.props}/>
           </div>
         </Col>
       </Row>

@@ -1,5 +1,4 @@
 import Dexie from 'dexie';
-// @ts-ignore
 import * as localStorage from 'mock-local-storage';
 import WebStorage from '../store/WebStorage';
 import GlobalStore from '../store/GlobalStore';
