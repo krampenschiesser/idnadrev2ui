@@ -1,8 +1,8 @@
-import IdnadrevFile from '../../dto/IdnadrevFile';
-import { RepositoryId } from '../../dto/RepositoryId';
-import { FileId } from '../../dto/FileId';
-import { FileType } from '../../dto/FileType';
 import AllValueIndex, { TagIndex } from './AllValueIndex';
+import { RepositoryId } from '../dto/RepositoryId';
+import { FileId } from '../dto/FileId';
+import { FileType } from '../dto/FileType';
+import IdnadrevFile from '../dto/IdnadrevFile';
 
 export enum IndexType {
   ALL_VALUES, ALL_TAG

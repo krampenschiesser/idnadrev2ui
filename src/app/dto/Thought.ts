@@ -12,7 +12,7 @@
 import IdnadrevFile from './IdnadrevFile';
 import { FileType } from './FileType';
 import { Tag } from './Tag';
-import moment from 'moment';
+import * as moment from 'moment';
 
 export class ThoughtDetails {
   showAgainAfter?: Date;

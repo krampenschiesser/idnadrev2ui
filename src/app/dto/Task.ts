@@ -9,12 +9,11 @@
  * except according to those terms.
  */
 
-import { observable } from 'mobx';
 import IdnadrevFile from './IdnadrevFile';
 import { FileType } from './FileType';
 import { FileId } from './FileId';
 import { Tag } from './Tag';
-import moment from 'moment';
+import * as moment from 'moment';
 
 export enum TaskState {
   None = 'None',
@@ -24,8 +23,8 @@ export enum TaskState {
 }
 
 export class WorkUnit {
-  @observable start: Date;
-  @observable end?: Date;
+  start: Date;
+  end?: Date;
 
   constructor() {
     this.start = new Date();
@@ -48,8 +47,8 @@ export class WorkUnit {
 }
 
 export class Delegation {
-  @observable delegationStarted: Date;
-  @observable to: string;
+  delegationStarted: Date;
+  to: string;
 
 
   constructor(to?: string, delegationStarted?: Date) {
@@ -59,7 +58,7 @@ export class Delegation {
 }
 
 export class DelegationHistory extends Delegation {
-  @observable delegationEnded: Date;
+  delegationEnded: Date;
 
   constructor(original: Delegation, delegationEnded?: Date) {
     super(original.to, original.delegationStarted);
@@ -73,37 +72,37 @@ export class DelegationState {
 }
 
 export class ProposedDateTime {
-  @observable proposedDateTime: Date;
-  @observable proposedDateOnly: boolean = true;
+  proposedDateTime: Date;
+  proposedDateOnly: boolean = true;
 }
 
 export class ProposedWeekDayYear {
-  @observable proposedYear: number = moment().year();
-  @observable proposedWeek: number = moment().isoWeek();
-  @observable proposedWeekDay?: number;
+  proposedYear: number = moment().year();
+  proposedWeek: number = moment().isoWeek();
+  proposedWeekDay?: number;
 }
 
 export class FixedScheduling {
-  @observable scheduledDateTime: Date;
-  @observable scheduledDateOnly: boolean = false;
+  scheduledDateTime: Date;
+  scheduledDateOnly: boolean = false;
 }
 
 export class Scheduling {
-  @observable fixedScheduling?: FixedScheduling;
-  @observable proposedWeekDayYear?: ProposedWeekDayYear;
-  @observable proposedDate?: ProposedDateTime;
+  fixedScheduling?: FixedScheduling;
+  proposedWeekDayYear?: ProposedWeekDayYear;
+  proposedDate?: ProposedDateTime;
 }
 
 export class TaskDetails {
-  @observable state: TaskState = TaskState.None;
-  @observable parent?: FileId;
-  @observable context?: TaskContext;
-  @observable estimatedTime?: Seconds;
-  @observable delegation: DelegationState = new DelegationState();
-  @observable schedule?: Scheduling;
-  @observable workUnits: WorkUnit[] = [];
-  @observable finished?: Date;
-  @observable action: boolean;
+  state: TaskState = TaskState.None;
+  parent?: FileId;
+  context?: TaskContext;
+  estimatedTime?: Seconds;
+  delegation: DelegationState = new DelegationState();
+  schedule?: Scheduling;
+  workUnits: WorkUnit[] = [];
+  finished?: Date;
+  action: boolean;
 }
 
 export type TaskContext = string;

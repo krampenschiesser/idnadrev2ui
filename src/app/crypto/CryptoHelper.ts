@@ -1,13 +1,5 @@
-import * as scrypt from 'scryptsy';
-import * as nacl_factory from 'js-nacl';
+import { scrypt_simple, to_uint8, encrypt as chacha_encrypt, decrypt as chacha_decrypt, to_utf8 } from 'rasm-crypt';
 
-// tslint:disable-next-line
-var nacl: any = null;
-// tslint:disable-next-line
-nacl_factory.instantiate((ready: any) => {
-  console.log('NaCl is ready');
-  nacl = ready;
-});
 
 export class RandomHelper {
   static getRandomValues?: (array: Uint32Array | Uint8Array) => void = undefined;
@@ -29,7 +21,9 @@ export type EncryptedData = Uint8Array;
 // fixme externalize to worker in the future
 export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
   return new Promise<Uint8Array>(((resolve, reject) => {
-    const key = scrypt(plaintext, salt, 16384, 8, 1, 32);
+    let salt_uint8 = to_uint8(salt);
+    let plaintext_uint8 = to_uint8(plaintext);
+    const key = scrypt_simple(plaintext_uint8, salt_uint8, 32);
     resolve(key);
   }));
 }
@@ -37,20 +31,28 @@ export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
 // fixme externalize to worker in the future
 export function doubleHash(plaintext: string, salt: string): Promise<[Uint8Array, Uint8Array]> {
   return new Promise<[Uint8Array, Uint8Array]>(((resolve, reject) => {
-    const key = scrypt(plaintext, salt, 16384, 8, 1, 32);
-    const double = scrypt(key, salt, 16384, 8, 1, 32);
+    let salt_uint8 = to_uint8(salt);
+    let plaintext_uint8 = to_uint8(plaintext);
+    const key = scrypt_simple(plaintext_uint8, salt_uint8, 32);
+    const double = scrypt_simple(key, salt_uint8, 32);
     resolve([key, double]);
   }));
 }
 
 export function hashSync(plaintext: string | Uint8Array, salt: string): Uint8Array {
-  const key = scrypt(plaintext, salt, 16384, 8, 1, 32);
+  let salt_uint8 = to_uint8(salt);
+  if (typeof  plaintext === 'string') {
+    plaintext = to_uint8(plaintext);
+  }
+  const key = scrypt_simple(plaintext, salt_uint8, 32);
   return key;
 }
 
 export function doubleHashSync(plaintext: string, salt: string): Uint8Array {
-  const key = scrypt(plaintext, salt, 16384, 8, 1, 32);
-  const double = scrypt(key, salt, 16384, 8, 1, 32);
+  let salt_uint8 = to_uint8(salt);
+  let plaintext_uint8 = to_uint8(plaintext);
+  const key = scrypt_simple(plaintext_uint8, salt_uint8, 32);
+  const double = scrypt_simple(key, salt_uint8, 32);
   return double;
 }
 
@@ -63,18 +65,28 @@ export function encrypt(data: Uint8Array | string, key: Key): Promise<[Encrypted
 
 export function encryptSync(data: Uint8Array | string, key: Key): [EncryptedData, Nonce] {
   if (typeof  data === 'string') {
-    data = nacl.encode_utf8(data);
+    data = to_uint8(data);
   }
-  const nonce = nacl.crypto_secretbox_random_nonce();
-  const encrypted = nacl.crypto_secretbox(data, nonce, key);
+  const nonce = new Uint8Array(12);
+  fillRandomValues(nonce);
+
+  let res = chacha_encrypt(key, nonce, new Uint8Array(0), data);
+  let authTag = res.get_auth_tag();
+  let ciphertext = res.get_ciphertext();
+  let encrypted = new Uint8Array(authTag.length + ciphertext.length);
+  encrypted.set(authTag, 0);
+  encrypted.set(ciphertext, authTag.length);
   return [encrypted, nonce];
 }
 
 // fixme externalize to worker in the future
 export function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    const decoded = nacl.crypto_secretbox_open(data, nonce, key);
-    const result = nacl.decode_utf8(decoded);
+    let tag = data.slice(0, 16);
+    let ciphertext = data.slice(16, data.length);
+
+    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), tag, ciphertext);
+    const result = to_utf8(decoded);
     resolve(result);
   });
 }
@@ -82,7 +94,10 @@ export function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Prom
 // fixme externalize to worker in the future
 export function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Uint8Array> {
   return new Promise<Uint8Array>((resolve, reject) => {
-    const decoded = nacl.crypto_secretbox_open(data, nonce, key);
+    let tag = data.slice(0, 16);
+    let ciphertext = data.slice(16, data.length);
+
+    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), tag, ciphertext);
     resolve(decoded);
   });
 }

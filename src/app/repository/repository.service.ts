@@ -69,12 +69,17 @@ export class RepositoryService {
     return repository;
   }
 
-  openRepository(id: RepositoryId, pw: string): Repository {
-    this._repositories.f
-    return new Repository(name, pw);
+  async openRepository(id: RepositoryId, pw: string): Promise<Repository> {
+    const found = this._repositories.find(repo => repo.id === id);
+    if (!found) {
+      throw 'Repository ' + id + ' not found';
+    }
+    await found.open(pw);
+    this.notifyChanges();
+    return found;
   }
 
-  getToken(id: RepositoryId): RepositoryToken | undefined {
-    return undefined;
-  }
+  // getToken(id: RepositoryId): RepositoryToken | undefined {
+  //   return undefined;
+  // }
 }
