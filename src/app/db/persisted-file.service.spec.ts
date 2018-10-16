@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PersistedFileService } from './persistedfile.service';
+import { PersistedFileService } from './persisted-file.service';
 
 describe('PersistedfileService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

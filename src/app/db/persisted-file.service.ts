@@ -6,7 +6,8 @@ import Thought from '../dto/Thought';
 import Task from '../dto/Task';
 import Document from '../dto/Document';
 import BinaryFile from '../dto/BinaryFile';
-import Index, { indexFromJson } from './Index';
+import Index from './Index';
+import { indexFromJson } from './IndexFromJson';
 
 @Injectable({
   providedIn: 'root'
@@ -115,10 +116,7 @@ export class PersistedFileService {
     return file;
   }
 
-  toRepository(persisted: PersistedRepository): Repository | undefined {
-    if (persisted === undefined) {
-      return undefined;
-    }
+  toRepository(persisted: PersistedRepository): Repository {
     let repository = new Repository(persisted.name, '');
     repository.id = persisted.id;
     repository.nonce = persisted.nonce;
@@ -135,5 +133,16 @@ export class PersistedFileService {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let idx = indexFromJson(persisted.type, decrypt);
     return idx;
+  }
+
+  toPersistedRepo(obj: Repository) : PersistedRepository {
+    let data: PersistedRepository = {
+      data: obj.data,
+      nonce: obj.nonce,
+      salt: obj.salt,
+      id: obj.id,
+      name: obj.name,
+    };
+    return data;
   }
 }

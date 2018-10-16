@@ -34,7 +34,7 @@ export class RepositoryService {
       }
       return r;
     }));
-    this._repositories.concat(repos);
+    this._repositories = this._repositories.concat(repos);
     this.notifyChanges();
   }
 

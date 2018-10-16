@@ -84,8 +84,7 @@ export function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Prom
   return new Promise<string>((resolve, reject) => {
     let tag = data.slice(0, 16);
     let ciphertext = data.slice(16, data.length);
-
-    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), tag, ciphertext);
+    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), ciphertext, tag);
     const result = to_utf8(decoded);
     resolve(result);
   });
@@ -97,7 +96,7 @@ export function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Ui
     let tag = data.slice(0, 16);
     let ciphertext = data.slice(16, data.length);
 
-    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), tag, ciphertext);
+    const decoded = chacha_decrypt(key, nonce, new Uint8Array(0), ciphertext, tag);
     resolve(decoded);
   });
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import Dexie from 'dexie';
 import { PersistedBinaryFile, PersistedIdnadrevFile, PersistedIndex, PersistedRepository } from './PersistedFiles';
 import { PersistedFileService } from './persisted-file.service';
@@ -9,21 +9,44 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import { FileType } from '../dto/FileType';
 import { FileId } from '../dto/FileId';
 import { RepositoryId } from '../dto/RepositoryId';
+import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DexieService extends Dexie {
+  static populate = isDevMode();
   private files: Dexie.Table<PersistedIdnadrevFile, string>;
   private repositories: Dexie.Table<PersistedRepository, string>;
   private indexes: Dexie.Table<PersistedIndex, string>;
+  private persistedFileService: PersistedFileService;
 
   constructor(persistedFileService: PersistedFileService) {
     super('idnadrevdb');
+    this.persistedFileService = persistedFileService;
     this.version(1).stores({
       files: 'id, repositoryId, type',
       repositories: 'id, name',
       indexes: 'id, repositoryId'
+    });
+    this.on('populate', () => {
+      if (!DexieService.populate) {
+        return;
+      }
+      console.log('start creating dummy data');
+      try {
+        let repos = generateRepositories();
+        repos.forEach(r => this.storeRepository(r));
+        let repo = repos[0];
+        generateThoughts(repo.id).forEach(t => this.store(t, repo));
+        generateTasks(repo.id).forEach(t => this.store(t, repo));
+        generateBinaryFiles(repo.id).forEach(t => this.storeBinaryFile(t, repo));
+        // generateManyTasks().forEach(t => this.store(t));
+        console.log('done creating dummy data');
+      } catch (e) {
+        console.log('Could not create dummy data', e);
+        throw e;
+      }
     });
   }
 
@@ -41,13 +64,7 @@ export class DexieService extends Dexie {
   }
 
   async storeRepository(obj: Repository): Promise<string> {
-    let data: PersistedRepository = {
-      data: obj.data,
-      nonce: obj.nonce,
-      salt: obj.salt,
-      id: obj.id,
-      name: obj.name,
-    };
+    let data = this.persistedFileService.toPersistedRepo(obj);
     await Promise.all(obj.indexes.map(async i => await this.storeIndex(i, obj)));
     return this.repositories.put(data);
   }
@@ -115,6 +132,7 @@ export class DexieService extends Dexie {
   getAllRepos(): Promise<PersistedRepository[]> {
     return this.repositories.toArray();
   }
+
   getAllNonDeleted(repositoryId: RepositoryId, type: FileType): Promise<PersistedIdnadrevFile[]> {
     return this.files.where('type').equals(type).and(f => f.repositoryId == repositoryId).and(f => !f.deleted).toArray();
   }

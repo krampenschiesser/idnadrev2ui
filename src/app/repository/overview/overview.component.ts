@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RepositoryService } from '../repository.service';
+import Repository from '../../dto/Repository';
 
 @Component({
   selector: 'app-overview',
@@ -8,6 +9,7 @@ import { RepositoryService } from '../repository.service';
 })
 export class OverviewComponent implements OnInit {
   private repoService: RepositoryService;
+  repositories: Repository[];
 
   constructor(repoService: RepositoryService) {
     this.repoService = repoService;
@@ -15,6 +17,7 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit() {
     this.repoService.loadAllRepositories();
+    this.repoService.repositories.subscribe(repos=>this.repositories=repos);
   }
 
 }
