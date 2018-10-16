@@ -1,0 +1,10 @@
+.NavLink {
+    color: dimgrey;
+}
+.NavLink:hover {
+    color: lightgrey;
+}
+
+.NavLinkActive {
+    color: lightseagreen;
+}
