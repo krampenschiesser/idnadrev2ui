@@ -10,6 +10,8 @@ import { FileType } from '../dto/FileType';
 import { FileId } from '../dto/FileId';
 import { RepositoryId } from '../dto/RepositoryId';
 import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
+import * as waitUntil from 'async-wait-until';
+import { isAvailable } from 'rasm-crypt';
 
 @Injectable({
   providedIn: 'root'
@@ -29,10 +31,11 @@ export class DexieService extends Dexie {
       repositories: 'id, name',
       indexes: 'id, repositoryId'
     });
-    this.on('populate', () => {
+    this.on('populate', async () => {
       if (!DexieService.populate) {
         return;
       }
+      await waitUntil(() => isAvailable(), 5000, 50);
       console.log('start creating dummy data');
       try {
         let repos = generateRepositories();
