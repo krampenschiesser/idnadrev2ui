@@ -1,6 +1,12 @@
-<p>
-  overview works! {{repositories.length}}
-</p>
+<h1>Repositories</h1>
+<p-dialog [positionTop]="100" [focusOnShow]="false" [modal]="true" header="Login into repository {{repoToLogin?.name}}" [(visible)]="showLoginDialog">
+
+  <input #pw type="password" pPassword  (keyup.enter)="this.openRepo(pw.value)" [feedback]="false"/>
+  <button pButton type="button" label="Primary" class="ui-button-rounded" (click)="this.openRepo(pw.value)">Login</button>
+</p-dialog>
 <p *ngFor="let repo of repositories">
-  {{ repo.name }}
+  <p-card title={{repo.name}}>
+    <button *ngIf="!repo.isOpen()" pButton type="button" label="Primary" class="ui-button-rounded" (click)="this.loginRepo(repo)">Login</button>
+    <button *ngIf="repo.isOpen()" pButton type="button" label="Primary" class="ui-button-rounded" (click)="this.logoutRepo(repo)">Logout</button>
+  </p-card>
 </p>

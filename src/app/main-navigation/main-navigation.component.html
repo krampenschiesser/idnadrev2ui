@@ -1,6 +1,10 @@
 <div>
 
 
+  <a routerLink="/home" routerLinkActive="NavLinkActive" class="NavLink" pTooltip="Home">
+    <fa-icon [icon]="homeIcon" class="fa-3x"></fa-icon>
+    <br/>
+  </a>
   <a routerLink="/inbox" routerLinkActive="NavLinkActive" class="NavLink" pTooltip="Inbox">
     <fa-icon [icon]="inboxIcon" class="fa-3x"></fa-icon>
     <br/>
@@ -13,7 +17,7 @@
     <fa-icon [icon]="docsIcon" class="fa-3x"></fa-icon>
     <br/>
   </a>
-  <a routerLink="/repos" routerLinkActive="active" class="NavLink" pTooltip="Repositories">
+  <a routerLink="/repo" routerLinkActive="active" class="NavLink" pTooltip="Repositories">
     <fa-icon [icon]="reposIcon" class="fa-3x"></fa-icon>
     <br/>
   </a>

@@ -82,4 +82,12 @@ export class RepositoryService {
   // getToken(id: RepositoryId): RepositoryToken | undefined {
   //   return undefined;
   // }
+  logout(id: RepositoryId) {
+    const found = this._repositories.find(repo => repo.id === id);
+    if (!found) {
+      throw 'Repository ' + id + ' not found';
+    }
+    found.logout();
+    this.notifyChanges();
+  }
 }

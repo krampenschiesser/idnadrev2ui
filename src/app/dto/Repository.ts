@@ -31,10 +31,10 @@ export default class Repository {
       this.token = encryptionPw;
 
       fillRandomValues(this.salt);
-      const  salty = toHex32(this.salt);
-      const  hashedPw = hashSync(pw, salty);
+      const salty = toHex32(this.salt);
+      const hashedPw = hashSync(pw, salty);
 
-      const  tuple = encryptSync(encryptionPw, hashedPw);
+      const tuple = encryptSync(encryptionPw, hashedPw);
       this.data = tuple[0];
       this.nonce = tuple[1];
 
@@ -99,7 +99,7 @@ export default class Repository {
 
   decryptToText(data: Uint8Array, nonce: Nonce): Promise<string> {
     if (this.token) {
-      return decryptToUtf8(data, nonce, this.token).catch(reason => this.name + " could not decrypt because "+reason);
+      return decryptToUtf8(data, nonce, this.token).catch(reason => this.name + ' could not decrypt because ' + reason);
     } else {
       return new Promise<string>((resolve, reject) => reject('not logged into repository'));
     }
@@ -182,6 +182,7 @@ export default class Repository {
   }
 
   logout() {
+    sessionStorage.removeItem(this.id);
     this.token = undefined;
     this.tagIndex = undefined;
     this.contextIndex = undefined;
