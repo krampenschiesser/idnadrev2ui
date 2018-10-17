@@ -35,40 +35,45 @@ export class DexieService extends Dexie {
       if (!DexieService.populate) {
         return;
       }
-      await waitUntil(() => isAvailable(), 5000, 50);
-      console.log('start creating dummy data');
-      try {
-        let repos = generateRepositories();
-        repos.forEach(r => this.storeRepository(r));
-        let repo = repos[0];
-        generateThoughts(repo.id).forEach(t => this.store(t, repo));
-        generateTasks(repo.id).forEach(t => this.store(t, repo));
-        generateBinaryFiles(repo.id).forEach(t => this.storeBinaryFile(t, repo));
-        // generateManyTasks().forEach(t => this.store(t));
-        console.log('done creating dummy data');
-      } catch (e) {
-        console.log('Could not create dummy data', e);
-        throw e;
-      }
+      this.transaction('rw?', this.repositories, this.indexes, this.files, async () => {
+        await waitUntil(isAvailable, 5000, 50);
+        console.log('start creating dummy data');
+        try {
+          let repos = generateRepositories();
+          await Promise.all(repos.map(r => this.storeRepository(r)));
+          let repo = repos[0];
+          await Promise.all(generateThoughts(repo.id).map(t => this.store(t, repo)));
+          await Promise.all(generateTasks(repo.id).map(t => this.store(t, repo)));
+          await Promise.all(generateBinaryFiles(repo.id).map(t => this.storeBinaryFile(t, repo)));
+          // generateManyTasks().forEach(t => this.store(t));
+          console.log('done creating dummy data');
+        } catch (e) {
+          console.log('Could not create dummy data', e);
+          throw e;
+        }
+      });
     });
   }
 
 
   async storeIndex(index: Index, repo: Repository): Promise<string> {
+    console.log("storing index")
     let [encrypted, nonce] = await repo.encrypt(index.toJson());
     let data: PersistedIndex = {
       data: encrypted,
       nonce: nonce,
       id: index.id,
       repositoryId: index.repo,
-      type: index.getType(),
+      type: index.getType()
     };
     return this.indexes.put(data);
   }
 
   async storeRepository(obj: Repository): Promise<string> {
+    console.log('storing repository', obj.name);
     let data = this.persistedFileService.toPersistedRepo(obj);
-    await Promise.all(obj.indexes.map(async i => await this.storeIndex(i, obj)));
+    await Promise.all(obj.indexes.map(i => this.storeIndex(i, obj)));
+    console.log('stored repository', obj.name);
     return this.repositories.put(data);
   }
 
