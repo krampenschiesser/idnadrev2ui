@@ -1,0 +1,28 @@
+<form [formGroup]="addForm">
+  <p-card title="Add repository">
+    <br/>
+    <div class="ui-inputgroup">
+      <div class="p-grid">
+        <div class="p-col">
+          <span class="ui-float-label">
+              <input #name id="float-input" type="text" size="30" pInputText formControlName="name">
+              <label for="float-input">Repository name</label>
+          </span>
+        </div>
+        <div class="p-col">
+          <span class="ui-float-label">
+            <input
+              (focus)="this.showPwInfo()" (blur)="this.hidePwInfo()"
+              #pw id="password" type="password" pPassword (keyup.enter)="this.createRepo(name.value, pw.value)"
+              formControlName="password"/>
+            <label for="password">Password</label>
+          </span>
+        </div>
+        <div class="p-col">
+          <p-button type="button" icon="pi pi-plus" (click)="this.createRepo(name.value, pw.value)" label="Create"></p-button>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</form>
+<p-messages [(value)]="msgs"></p-messages>
