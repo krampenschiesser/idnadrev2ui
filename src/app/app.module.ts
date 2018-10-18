@@ -1,22 +1,23 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes }  from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { RepositoryModule } from './repository/repository.module';
-import { SidebarModule, DialogModule, ButtonModule, MessageService } from 'primeng/primeng';
-import {CardModule} from 'primeng/card';
+import { SidebarModule, DialogModule, ButtonModule, MessageService, InputTextModule } from 'primeng/primeng';
+import { CardModule } from 'primeng/card';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MainNavigationComponent } from './main-navigation/main-navigation.component';
-import {TooltipModule} from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastModule } from 'primeng/toast';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const appRoutes: Routes = [
   // { path: 'repo',   component: OverviewComponent}, // <-- delete this line
-  { path: '',   redirectTo: '/repo', pathMatch: 'full' },
+  {path: '', redirectTo: '/repo', pathMatch: 'full'},
   // { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -38,9 +39,11 @@ const appRoutes: Routes = [
     DialogModule,
     ButtonModule,
     CardModule,
-    ToastModule
+    ToastModule,
+    ReactiveFormsModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
