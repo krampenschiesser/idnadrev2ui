@@ -1,4 +1,5 @@
-import { scrypt_simple, to_uint8, encrypt as chacha_encrypt, decrypt as chacha_decrypt, to_utf8 } from 'rasm-crypt';
+import { scrypt_simple, to_uint8, encrypt as chacha_encrypt, decrypt as chacha_decrypt, to_utf8, isAvailable } from 'rasm-crypt';
+import * as waitUntil from 'async-wait-until';
 
 
 export class RandomHelper {
@@ -19,7 +20,8 @@ export type Key = Uint8Array;
 export type EncryptedData = Uint8Array;
 
 // fixme externalize to worker in the future
-export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
+export async function hash(plaintext: string, salt: string): Promise<Uint8Array> {
+  await waitUntil(isAvailable, 5000, 50);
   return new Promise<Uint8Array>(((resolve, reject) => {
     let salt_uint8 = to_uint8(salt);
     let plaintext_uint8 = to_uint8(plaintext);
@@ -29,7 +31,8 @@ export function hash(plaintext: string, salt: string): Promise<Uint8Array> {
 }
 
 // fixme externalize to worker in the future
-export function doubleHash(plaintext: string, salt: string): Promise<[Uint8Array, Uint8Array]> {
+export async function doubleHash(plaintext: string, salt: string): Promise<[Uint8Array, Uint8Array]> {
+  await waitUntil(isAvailable, 5000, 50);
   return new Promise<[Uint8Array, Uint8Array]>(((resolve, reject) => {
     let salt_uint8 = to_uint8(salt);
     let plaintext_uint8 = to_uint8(plaintext);
@@ -57,7 +60,8 @@ export function doubleHashSync(plaintext: string, salt: string): Uint8Array {
 }
 
 // fixme externalize to worker in the future
-export function encrypt(data: Uint8Array | string, key: Key): Promise<[EncryptedData, Nonce]> {
+export async function encrypt(data: Uint8Array | string, key: Key): Promise<[EncryptedData, Nonce]> {
+  await waitUntil(isAvailable, 5000, 50);
   return new Promise<[EncryptedData, Nonce]>((resolve, reject) => {
     resolve(encryptSync(data, key));
   });
@@ -80,7 +84,8 @@ export function encryptSync(data: Uint8Array | string, key: Key): [EncryptedData
 }
 
 // fixme externalize to worker in the future
-export function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Promise<string> {
+export async function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Promise<string> {
+  await waitUntil(isAvailable, 5000, 50);
   return new Promise<string>((resolve, reject) => {
     let tag = data.slice(0, 16);
     let ciphertext = data.slice(16, data.length);
@@ -91,7 +96,8 @@ export function decryptToUtf8(data: EncryptedData, nonce: Nonce, key: Key): Prom
 }
 
 // fixme externalize to worker in the future
-export function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Uint8Array> {
+export async function decrypt(data: EncryptedData, nonce: Nonce, key: Key): Promise<Uint8Array> {
+  await waitUntil(isAvailable, 5000, 50);
   return new Promise<Uint8Array>((resolve, reject) => {
     let tag = data.slice(0, 16);
     let ciphertext = data.slice(16, data.length);

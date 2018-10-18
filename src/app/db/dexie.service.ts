@@ -9,9 +9,6 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import { FileType } from '../dto/FileType';
 import { FileId } from '../dto/FileId';
 import { RepositoryId } from '../dto/RepositoryId';
-import { generateBinaryFiles, generateRepositories, generateTasks, generateThoughts } from './DummyData';
-import * as waitUntil from 'async-wait-until';
-import { isAvailable } from 'rasm-crypt';
 
 @Injectable({
   providedIn: 'root'
@@ -30,28 +27,6 @@ export class DexieService extends Dexie {
       files: 'id, repositoryId, type',
       repositories: 'id, name',
       indexes: 'id, repositoryId'
-    });
-    this.on('populate', async () => {
-      if (!DexieService.populate) {
-        return;
-      }
-      this.transaction('rw?', this.repositories, this.indexes, this.files, async () => {
-        await waitUntil(isAvailable, 5000, 50);
-        console.log('start creating dummy data');
-        try {
-          let repos = generateRepositories();
-          await Promise.all(repos.map(r => this.storeRepository(r)));
-          let repo = repos[0];
-          await Promise.all(generateThoughts(repo.id).map(t => this.store(t, repo)));
-          await Promise.all(generateTasks(repo.id).map(t => this.store(t, repo)));
-          await Promise.all(generateBinaryFiles(repo.id).map(t => this.storeBinaryFile(t, repo)));
-          // generateManyTasks().forEach(t => this.store(t));
-          console.log('done creating dummy data');
-        } catch (e) {
-          console.log('Could not create dummy data', e);
-          throw e;
-        }
-      });
     });
   }
 
