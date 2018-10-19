@@ -30,10 +30,7 @@ export class PersistedFileService {
     }
   }
 
-  async toThought(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Thought | undefined> {
-    if (persisted === undefined) {
-      return new Promise<Thought | undefined>(resolve => resolve(undefined));
-    }
+  async toThought(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Thought> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     console.log(decrypt);
     let parse = JSON.parse(decrypt);
@@ -135,7 +132,7 @@ export class PersistedFileService {
     return idx;
   }
 
-  toPersistedRepo(obj: Repository) : PersistedRepository {
+  toPersistedRepo(obj: Repository): PersistedRepository {
     let data: PersistedRepository = {
       data: obj.data,
       nonce: obj.nonce,

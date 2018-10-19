@@ -16,7 +16,7 @@ export class RepositoryService {
   private persistedFile: PersistedFileService;
 
   public repositories = new BehaviorSubject<Repository[]>([]);
-  private _repositories: Repository[] = [];
+   _repositories: Repository[] = [];
 
   constructor(dexie: DexieService, persistedFile: PersistedFileService) {
     this.dexie = dexie;
@@ -42,8 +42,8 @@ export class RepositoryService {
     this.repositories.next(Array.from(this._repositories));
   }
 
-  get openRepositories(): Observable<Repository[]> {
-    return this.repositories.pipe(map(repos => repos.filter(r => r.isOpen())));
+  get openRepositories(): Repository[] {
+    return this._repositories.filter(r=>r.isOpen());
   }
 
   private async openRepositoryHashed(repo: Repository, hash: string): Promise<void> {

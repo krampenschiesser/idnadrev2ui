@@ -1,0 +1,29 @@
+<h1>Thoughts</h1>
+
+
+<div class="p-grid">
+  <div class="p-col">
+  <p-table [value]="thoughts" [rowHover]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Created</th>
+        <th>Name</th>
+        <th>Repository</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-thought>
+      <tr (mouseover)="this.showPreview(thought)">
+        <td>{{thought.created | date: "short"}}</td>
+        <td>{{thought.name}}</td>
+        <td>{{thought.repository | repositoryName}}</td>
+        <td>
+          <p-button label="To Task"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  </div>
+  <div class="p-col">
+  </div>
+</div>

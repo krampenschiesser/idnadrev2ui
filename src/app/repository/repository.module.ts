@@ -10,6 +10,7 @@ import { AddShortComponent } from './add-short/add-short.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RepositoryNamePipe } from './repository-name.pipe';
 
 const routes: Routes = [
   {path: 'repo', component: OverviewComponent},
@@ -33,7 +34,8 @@ const routes: Routes = [
     ProgressSpinnerModule,
     BlockUIModule
   ],
-  declarations: [OverviewComponent,  EditComponent, AddShortComponent]
+  declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe],
+  exports:[RepositoryNamePipe]
 })
 export class RepositoryModule {
 }
