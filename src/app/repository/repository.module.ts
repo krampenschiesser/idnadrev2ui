@@ -5,7 +5,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { EditComponent } from './edit/edit.component';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
-import { ButtonModule, InputTextModule, MessagesModule, PanelModule, PasswordModule } from 'primeng/primeng';
+import { BlockUIModule, ButtonModule, InputTextModule, MessagesModule, PanelModule, PasswordModule, ProgressSpinnerModule } from 'primeng/primeng';
 import { AddShortComponent } from './add-short/add-short.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
@@ -29,7 +29,9 @@ const routes: Routes = [
     ButtonModule,
     ToastModule,
     PanelModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ProgressSpinnerModule,
+    BlockUIModule
   ],
   declarations: [OverviewComponent,  EditComponent, AddShortComponent]
 })

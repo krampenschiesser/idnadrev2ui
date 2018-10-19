@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { RepositoryService } from '../repository.service';
 
 @Component({
   selector: 'app-add-repo-short',
@@ -13,15 +14,22 @@ export class AddShortComponent implements OnInit {
   });
 
   msgs = [];
+  private repoService: RepositoryService;
 
-  constructor() {
+  creating = false;
+
+  constructor(repoService: RepositoryService) {
+    this.repoService = repoService;
   }
 
   ngOnInit() {
   }
 
-  createRepo(name: string, pw: string) {
-
+  async createRepo(name: string, pw: string) {
+    this.creating = true;
+    await this.repoService.createRepository(name, pw).catch(() => this.creating = false);
+    this.creating = false;
+    this.addForm.reset();
   }
 
   hidePwInfo() {
