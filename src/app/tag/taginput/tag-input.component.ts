@@ -31,7 +31,6 @@ export class TagInputComponent implements OnInit {
 
   @Input()
   set originalTags(tags: Tag[]) {
-    console.log(tags);
     this.tags = tags.map(t => t.name);
   }
 
@@ -44,7 +43,7 @@ export class TagInputComponent implements OnInit {
   onSelect(text: string) {
     let selectedTags = this.tagService.getAsTag(this.tags);
     this.selectedTags.emit(selectedTags);
-    if(this.parentFormControl) {
+    if (this.parentFormControl) {
       this.parentFormControl.patchValue(selectedTags);
     }
   }

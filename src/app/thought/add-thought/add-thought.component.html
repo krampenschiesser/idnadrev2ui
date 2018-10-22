@@ -11,7 +11,12 @@
   </div>
   <div class="p-grid">
     <div class="p-col">
-      <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="initialTags" (selectedTags)="this.setTags($event)"></app-tag-input>
+      <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="tagsControl.value" (selectedTags)="this.setTags($event)"></app-tag-input>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <app-markdown-editor [parentFormControl]="contentControl"></app-markdown-editor>
     </div>
   </div>
   <div class="p-grid">

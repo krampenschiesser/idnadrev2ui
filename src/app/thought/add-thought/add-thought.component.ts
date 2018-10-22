@@ -15,8 +15,8 @@ export class AddThoughtComponent implements OnInit {
     content: new FormControl(''),
   });
 
-  initialTags = [new Tag('Test')];
   tagsControl = this.form.get('tags');
+  contentControl = this.form.get('content');
 
   constructor() {
   }

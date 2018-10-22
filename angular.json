@@ -28,7 +28,9 @@
               "node_modules/primeflex/primeflex.css",
               "node_modules/primeicons/primeicons.css",
               "src/styles.css",
-              "node_modules/primeng/resources/themes/luna-amber/theme.css"
+              "node_modules/primeng/resources/themes/luna-amber/theme.css",
+              "node_modules/codemirror/lib/codemirror.css",
+              "node_modules/codemirror/theme/monokai.css"
             ],
             "scripts": []
           },
