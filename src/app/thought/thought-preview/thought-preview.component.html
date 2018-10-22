@@ -1,0 +1,32 @@
+<p-card>
+  <p-header>
+    <div class="p-grid">
+      <div class="p-col-6">
+        <span class="Title ui-card-title">{{thought.name}}</span>
+      </div>
+      <div class="p-col-6">
+        <span>{{thought.updated | date: "short"}}</span>
+      </div>
+      <div class="p-col" style="padding-left: 15px">
+        <app-tagview [tags]="thought.tags"></app-tagview>
+      </div>
+    </div>
+  </p-header>
+  <app-markdown-viewer [markdown]="thought.content"></app-markdown-viewer>
+  <p-footer>
+    <div class="p-grid">
+      <div class="p-col">
+        <button pButton type="button" icon="fa fa-clipboard-list" label="Task" (click)="this.onTask.emit()"></button>
+      </div>
+      <div class="p-col">
+        <button pButton type="button" icon="fa fa-book" label="Document" class="ui-button-info" (click)="this.onDocument.emit()"></button>
+      </div>
+      <div class="p-col">
+        <button pButton type="button" icon="fa fa-hourglass-start" label="Postpone" class="ui-button-secondary" (click)="this.onPostpone.emit()"></button>
+      </div>
+      <div class="p-col">
+        <button pButton type="button" icon="fa fa-trash" label="Delete" class="ui-button-danger" (click)="this.onDelete.emit()"></button>
+      </div>
+    </div>
+  </p-footer>
+</p-card>

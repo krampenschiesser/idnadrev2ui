@@ -25,7 +25,7 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    MainNavigationComponent
+    MainNavigationComponent,
   ],
   imports: [
     RepositoryModule,
@@ -45,7 +45,7 @@ const appRoutes: Routes = [
     ReactiveFormsModule
   ],
   providers: [MessageService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
 }

@@ -7,6 +7,7 @@ import { RepositoryId } from '../dto/RepositoryId';
 import { RepositoryService } from '../repository/repository.service';
 import { FileType } from '../dto/FileType';
 import { PersistedIdnadrevFile } from '../db/PersistedFiles';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,30 @@ export class ThoughtService {
   }
 
   notifyChanges() {
-    this.thoughts.next(Array.from(this._thoughts));
+    this.thoughts.next(this._thoughts.slice());
   }
 
+  store(thought: Thought): Promise<string> {
+    let repository = this.repositoryService.getRepository(thought.repository);
+    console.log(repository);
+    return this.dexie.store(thought, repository);
+  }
+
+  async delete(thought: Thought): Promise<string> {
+    thought.deleted = new Date();
+    const id = await this.store(thought);
+    const index = this._thoughts.findIndex(thought => thought.id === thought.id);
+    if (index >= 0) {
+      this._thoughts.splice(index, 1);
+    }
+    this.notifyChanges();
+    return id;
+  }
+
+  async postpone(thought: Thought, days: number): Promise<string> {
+    thought.details.showAgainAfter = moment().add(days, 'd').toDate();
+    const id = await this.store(thought);
+    await this.loadAllOpenThoughts();
+    return id;
+  }
 }

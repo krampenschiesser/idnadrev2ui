@@ -2,13 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddThoughtComponent } from './add-thought/add-thought.component';
 import { RouterModule, Routes } from '@angular/router';
-import { OverviewComponent } from '../repository/overview/overview.component';
-import { EditComponent } from '../repository/edit/edit.component';
 import { ThoughtOverviewComponent } from './thought-overview/thought-overview.component';
 import { ThoughtProcessComponent } from './thought-process/thought-process.component';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RepositoryModule } from '../repository/repository.module';
+import { MarkdownModule } from '../markdown/markdown.module';
+import { CardModule } from 'primeng/card';
+import { ThoughtPreviewComponent } from './thought-preview/thought-preview.component';
+import { TagModule } from '../tag/tag.module';
+import { DialogModule, InputTextModule, TooltipModule } from 'primeng/primeng';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {path: 'thought/process', component: ThoughtProcessComponent},
@@ -24,7 +28,15 @@ const routes: Routes = [
     TableModule,
     ButtonModule,
     RepositoryModule,
+    MarkdownModule,
+    CardModule,
+    TagModule,
+    TooltipModule,
+    DialogModule,
+    InputTextModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
-  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent]
+  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent]
 })
 export class ThoughtModule { }

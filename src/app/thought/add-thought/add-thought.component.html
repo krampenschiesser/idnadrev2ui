@@ -1,3 +1,22 @@
-<p>
-  add-thought works!
-</p>
+<h1>Add thought</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="p-grid">
+    <div class="p-col">
+       <span class="ui-float-label">
+              <input #name id="float-name" type="text" size="30" pInputText formControlName="name">
+              <label for="float-name">Name</label>
+       </span>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="initialTags" (selectedTags)="this.setTags($event)"></app-tag-input>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info"></button>
+    </div>
+  </div>
+</form>

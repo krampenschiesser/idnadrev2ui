@@ -6,11 +6,14 @@
 
 
 <div class="p-grid">
-  <div class="p-col-2" style="height: 100vh">
-    <app-main-navigation></app-main-navigation>
+  <div class="p-col-fixed NavBar">
+    <p-card>
+      <div class="NavContent">
+        <app-main-navigation></app-main-navigation>
+      </div>
+    </p-card>
   </div>
-  <div class="p-col">
-
+  <div class="p-col" style="padding-left: 1.25em;">
     <router-outlet></router-outlet>
   </div>
 </div>

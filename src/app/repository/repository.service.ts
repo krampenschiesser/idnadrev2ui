@@ -16,7 +16,7 @@ export class RepositoryService {
   private persistedFile: PersistedFileService;
 
   public repositories = new BehaviorSubject<Repository[]>([]);
-   _repositories: Repository[] = [];
+  _repositories: Repository[] = [];
 
   constructor(dexie: DexieService, persistedFile: PersistedFileService) {
     this.dexie = dexie;
@@ -43,7 +43,7 @@ export class RepositoryService {
   }
 
   get openRepositories(): Repository[] {
-    return this._repositories.filter(r=>r.isOpen());
+    return this._repositories.filter(r => r.isOpen());
   }
 
   private async openRepositoryHashed(repo: Repository, hash: string): Promise<void> {
@@ -83,11 +83,16 @@ export class RepositoryService {
   //   return undefined;
   // }
   logout(id: RepositoryId) {
-    const found = this._repositories.find(repo => repo.id === id);
-    if (!found) {
-      throw 'Repository ' + id + ' not found';
-    }
+    const found = this.getRepository(id);
     found.logout();
     this.notifyChanges();
+  }
+
+  getRepository(repositoryId: RepositoryId) {
+    const found = this._repositories.find(repo => repo.id === repositoryId);
+    if (!found) {
+      throw 'Repository ' + repositoryId + ' not found';
+    }
+    return found;
   }
 }

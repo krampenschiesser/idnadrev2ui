@@ -14,7 +14,7 @@ export function generateRepositories(): Repository[] {
 export function generateThoughts(repo: RepositoryId): Thought[] {
   let t1 = new Thought('test', [new Tag('tag1'), new Tag('tag2')]).withContent('hello world').withRepository(repo);
   let t2 = new Thought('Sauerland', [new Tag('tag1')]).withContent('hello Sauerland').withRepository(repo);
-  let t3 = new Thought('Beer', [new Tag('tag1'), new Tag('tag3')]).withContent('I want beer').withRepository(repo);
+  let t3 = new Thought('Beer', [new Tag('tag1'), new Tag('tag3')]).withContent('I want **beer**').withRepository(repo);
   return [t1, t2, t3];
 }
 
