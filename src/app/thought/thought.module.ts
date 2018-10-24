@@ -11,8 +11,9 @@ import { MarkdownModule } from '../markdown/markdown.module';
 import { CardModule } from 'primeng/card';
 import { ThoughtPreviewComponent } from './thought-preview/thought-preview.component';
 import { TagModule } from '../tag/tag.module';
-import { BlockUIModule, DialogModule, InputTextModule, MessageModule, MessagesModule, TooltipModule } from 'primeng/primeng';
+import { BlockUIModule, CheckboxModule, DialogModule, InputTextModule, MessageModule, MessagesModule, TooltipModule } from 'primeng/primeng';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ThoughtFilterComponent } from './thought-filter/thought-filter.component';
 
 const routes: Routes = [
   {path: 'thought/process', component: ThoughtProcessComponent},
@@ -38,8 +39,9 @@ const routes: Routes = [
     ReactiveFormsModule,
     MessageModule,
     MessagesModule,
-    BlockUIModule
+    BlockUIModule,
+    CheckboxModule
   ],
-  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent]
+  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent]
 })
 export class ThoughtModule { }

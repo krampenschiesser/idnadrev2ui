@@ -18,9 +18,9 @@
   </button>
 </p-dialog>
 
-
 <div class="p-grid">
   <div class="p-col">
+    <app-thought-filter (filter)="onFilter($event)"></app-thought-filter>
     <p-table [value]="thoughts" [rowHover]="true">
       <ng-template pTemplate="header">
         <tr>

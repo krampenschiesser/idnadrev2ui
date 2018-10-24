@@ -41,11 +41,19 @@ export class TagInputComponent implements OnInit {
     this.results.push(prefix);
   }
 
-  onSelect(text: string) {
+  onUnselect(text: string) {
+    this.updateChanges();
+  }
+
+  private updateChanges() {
     let selectedTags = this.tagService.getAsTag(this.tags);
     this.selectedTags.emit(selectedTags);
     if (this.parentFormControl) {
       this.parentFormControl.patchValue(selectedTags);
     }
+  }
+
+  onSelect(text: string) {
+    this.updateChanges();
   }
 }

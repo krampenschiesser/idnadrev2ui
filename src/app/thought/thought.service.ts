@@ -24,7 +24,7 @@ export class ThoughtService {
     this.repositoryService = repositoryService;
   }
 
-  async loadAllOpenThoughts(): Promise<Thought[]> {
+  async loadAllThoughts(): Promise<Thought[]> {
     await this.repositoryService.loadAllRepositories();
     let openRepositories = this.repositoryService.openRepositories;
 
@@ -33,7 +33,6 @@ export class ThoughtService {
       let persisted = await this.dexie.getAllNonDeleted(repo.id, FileType.Thought);
       thoughts = thoughts.concat(await Promise.all(persisted.map(p => this.persistedFile.toThought(p, repo))));
     }
-    thoughts = thoughts.filter(t => !t.isPostPoned);
     this._thoughts = thoughts;
     this.notifyChanges();
     return thoughts;
@@ -62,15 +61,15 @@ export class ThoughtService {
   async postpone(thought: Thought, days: number): Promise<string> {
     thought.details.showAgainAfter = moment().add(days, 'd').toDate();
     const id = await this.store(thought);
-    await this.loadAllOpenThoughts();
+    await this.loadAllThoughts();
     return id;
   }
 
-  async getThought(id: string) : Promise<Thought|undefined> {
+  async getThought(id: string): Promise<Thought | undefined> {
     let file = await this.dexie.getById(id);
-    if(file) {
+    if (file) {
       let repository = this.repositoryService.getRepository(file.repositoryId);
-      return this.persistedFile.toThought(file,repository);
+      return this.persistedFile.toThought(file, repository);
     }
     return undefined;
   }
