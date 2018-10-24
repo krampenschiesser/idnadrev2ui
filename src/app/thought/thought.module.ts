@@ -11,7 +11,7 @@ import { MarkdownModule } from '../markdown/markdown.module';
 import { CardModule } from 'primeng/card';
 import { ThoughtPreviewComponent } from './thought-preview/thought-preview.component';
 import { TagModule } from '../tag/tag.module';
-import { DialogModule, InputTextModule, TooltipModule } from 'primeng/primeng';
+import { BlockUIModule, DialogModule, InputTextModule, MessageModule, MessagesModule, TooltipModule } from 'primeng/primeng';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
@@ -35,7 +35,10 @@ const routes: Routes = [
     DialogModule,
     InputTextModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MessageModule,
+    MessagesModule,
+    BlockUIModule
   ],
   declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent]
 })

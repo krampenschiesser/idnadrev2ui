@@ -1,7 +1,7 @@
-<p-autoComplete *ngIf="!label" id="autoCompleteTags" (onSelect)="onSelect($event)" [(ngModel)]="tags" [suggestions]="results" (completeMethod)="search($event)" [multiple]="true">
+<p-autoComplete *ngIf="!label" id="autoCompleteTags" (onSelect)="onSelect($event)" [(ngModel)]="tags" [suggestions]="results" (completeMethod)="search($event)" [multiple]="true" >
 </p-autoComplete>
 <span *ngIf="label" class="ui-float-label">
-  <p-autoComplete id="autoCompleteTags" (onSelect)="onSelect($event)" [(ngModel)]="tags" [suggestions]="results" (completeMethod)="search($event)" [multiple]="true">
-  </p-autoComplete>
-  <label for="autoCompleteTags">{{label}}</label>
+    <p-autoComplete id="autoCompleteTags" (onSelect)="onSelect($event)" [(ngModel)]="tags" [suggestions]="results" (completeMethod)="search($event)" [multiple]="true" >
+    </p-autoComplete>
+    <label for="autoCompleteTags">{{label}}</label>
 </span>

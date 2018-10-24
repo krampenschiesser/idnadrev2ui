@@ -16,7 +16,6 @@ export default class Repository {
   data: Uint8Array;
 
   tagIndex?: TagIndex;
-  contextIndex?: AllValueIndex<string>;
   nameIndex?: AllValueIndex<string>;
   finishedTaskIndex?: AllValueIndex<boolean>;
   deletedIndex?: AllValueIndex<boolean>;
@@ -39,7 +38,6 @@ export default class Repository {
       this.nonce = tuple[1];
 
       this.tagIndex = new TagIndex(this.id);
-      this.contextIndex = new AllValueIndex<string>(this.id, 'details.context', FileType.Task);
       this.nameIndex = new AllValueIndex<string>(this.id, 'name');
       this.finishedTaskIndex = new AllValueIndex<boolean>(this.id, 'isFinished', FileType.Task);
       this.deletedIndex = new AllValueIndex<boolean>(this.id, 'isDeleted');
@@ -51,9 +49,7 @@ export default class Repository {
       if (index instanceof TagIndex) {
         this.tagIndex = index;
       } else if (index instanceof AllValueIndex) {
-        if (index.field === 'details.context') {
-          this.contextIndex = index;
-        } else if (index.field === 'isFinished') {
+        if (index.field === 'isFinished') {
           this.finishedTaskIndex = index;
         } else if (index.field === 'name') {
           this.nameIndex = index;
@@ -130,12 +126,12 @@ export default class Repository {
   }
 
   get indexesUndefined(): (Index | undefined)[] {
-    return [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
+    return [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
   }
 
   get indexes(): Index[] {
     let retval = [];
-    let all = [this.tagIndex, this.contextIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
+    let all = [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
     for (let index of all) {
       if (!index) {
         throw 'index not initialized, access not allowed';
@@ -151,13 +147,6 @@ export default class Repository {
       throw 'tag index not defined';
     }
     return this.tagIndex;
-  }
-
-  get getContextIndex(): AllValueIndex<string> {
-    if (!this.contextIndex) {
-      throw 'context index not defined';
-    }
-    return this.contextIndex;
   }
 
   get getNameIndex(): AllValueIndex<string> {
@@ -185,7 +174,6 @@ export default class Repository {
     sessionStorage.removeItem(this.id);
     this.token = undefined;
     this.tagIndex = undefined;
-    this.contextIndex = undefined;
     this.nameIndex = undefined;
     this.finishedTaskIndex = undefined;
     this.deletedIndex = undefined;

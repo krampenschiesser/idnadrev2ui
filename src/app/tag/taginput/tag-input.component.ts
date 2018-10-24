@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { Tag } from '../../dto/Tag';
 import { TagService } from '../tag.service';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-tag-input',
   templateUrl: './tag-input.component.html',
-  styleUrls: ['./tag-input.component.css']
+  styleUrls: ['./tag-input.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TagInputComponent implements OnInit {
   @Output() selectedTags = new EventEmitter<Tag[]>();

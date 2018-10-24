@@ -54,6 +54,10 @@ export class ThoughtOverviewComponent implements OnInit {
 
   }
 
+  edit() {
+    this.router.navigate(['/thought/'+this.selectedThought.id]);
+  }
+
   thoughtToDoc() {
     this.router.navigate(['/doc/fromThought', {fromThoughtId: this.selectedThought.id}]);
   }

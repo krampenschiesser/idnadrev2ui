@@ -34,10 +34,6 @@ export function generateTasks(repo: RepositoryId): Task[] {
 
   t6.details.finished = new Date();
 
-  t1.details.context = 'outside';
-  t4.details.context = 'store';
-  t5.details.context = 'store';
-
   t4.parent = t3.id;
   t5.parent = t3.id;
   t3.parent = t2.id;

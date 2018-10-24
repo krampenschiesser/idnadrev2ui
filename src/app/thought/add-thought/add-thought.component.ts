@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Tag } from '../../dto/Tag';
+import Thought from '../../dto/Thought';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
+import { ThoughtService } from '../thought.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-add-thought',
@@ -9,26 +14,69 @@ import { Tag } from '../../dto/Tag';
 })
 export class AddThoughtComponent implements OnInit {
   form = new FormGroup({
-    name: new FormControl(''),
+    name: new FormControl('', [Validators.required]),
     tags: new FormControl([]),
-    postpone: new FormControl(0),
+    postpone: new FormControl(),
+    repository: new FormControl(undefined, [Validators.required]),
     content: new FormControl(''),
   });
 
   tagsControl = this.form.get('tags');
   contentControl = this.form.get('content');
 
-  constructor() {
+  thoughtInEdit = new Thought('');
+  creating = false;
+
+  constructor(private route: ActivatedRoute, private thoughtService: ThoughtService) {
   }
 
   ngOnInit() {
+    this.form.patchValue(this.thoughtInEdit);
+    this.route.paramMap.pipe(
+      switchMap((params: ParamMap) =>
+        this.thoughtService.getThought(params.get('id')))
+    ).subscribe(thought => {
+      if (thought) {
+        this.thoughtInEdit = thought;
+        this.form.patchValue(this.thoughtInEdit);
+      }
+    });
+
+    this.form.valueChanges.subscribe(value => {
+      this.applyFormChanges(value);
+    });
+  }
+
+  applyFormChanges(value: any) {
+    let name = value.name;
+    let content = value.content;
+    let tags = value.tags;
+    let repositoryId = value.repository;
+    let postpone = value.postpone;
+    if (this.thoughtInEdit && this.form.valid) {
+      this.thoughtInEdit.name = name;
+      this.thoughtInEdit.content = content;
+      this.thoughtInEdit.tags = tags;
+      this.thoughtInEdit.repository = repositoryId;
+      if (postpone) {
+        this.thoughtInEdit.details.showAgainAfter = moment().add(postpone, 'days').toDate();
+      }
+    }
   }
 
   onSubmit() {
-    console.log(this.form);
-  }
-
-  setTags(tags: Tag[]) {
-
+    this.creating = true;
+    if (this.form.valid) {
+      this.applyFormChanges(this.form.value);
+      this.thoughtService.store(this.thoughtInEdit).then(() => {
+        this.creating = false;
+        this.thoughtInEdit = new Thought('');
+        this.form.patchValue(this.thoughtInEdit);
+      }).catch(() => {
+        this.creating = false;
+        this.thoughtInEdit = new Thought('');
+        this.form.patchValue(this.thoughtInEdit);
+      });
+    }
   }
 }

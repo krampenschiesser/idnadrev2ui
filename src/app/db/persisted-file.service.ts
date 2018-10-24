@@ -32,7 +32,6 @@ export class PersistedFileService {
 
   async toThought(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Thought> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
-    console.log(decrypt);
     let parse = JSON.parse(decrypt);
     let thought = new Thought(parse.name, parse.tags, parse.content);
     Object.assign(thought, parse);

@@ -17,7 +17,6 @@ export class AppComponent {
 
   constructor(dexie: DexieService) {
     this.dexie = dexie;
-    console.log(this.dexie)
   }
 
   async createDummyData() {

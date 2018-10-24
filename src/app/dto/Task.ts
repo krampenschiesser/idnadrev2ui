@@ -96,7 +96,6 @@ export class Scheduling {
 export class TaskDetails {
   state: TaskState = TaskState.None;
   parent?: FileId;
-  context?: TaskContext;
   estimatedTime?: Seconds;
   delegation: DelegationState = new DelegationState();
   schedule?: Scheduling;
@@ -105,7 +104,6 @@ export class TaskDetails {
   action: boolean;
 }
 
-export type TaskContext = string;
 export type Seconds = number;
 
 export default class Task extends IdnadrevFile<TaskDetails, string> {
@@ -136,10 +134,6 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
 
   get isFinished() {
     return this.details.finished != null;
-  }
-
-  get context() {
-    return this.details.context;
   }
 
   withContent(content: string): Task {

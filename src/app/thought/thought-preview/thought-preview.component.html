@@ -16,7 +16,10 @@
   <p-footer>
     <div class="p-grid">
       <div class="p-col">
-        <button pButton type="button" icon="fa fa-clipboard-list" label="Task" (click)="this.onTask.emit()"></button>
+        <button pButton type="button" icon="fa fa-edit" label="Edit" (click)="this.onEdit.emit()"></button>
+      </div>
+      <div class="p-col">
+        <button pButton type="button" icon="fa fa-clipboard-list" label="Task" class="ui-button-success" (click)="this.onTask.emit()"></button>
       </div>
       <div class="p-col">
         <button pButton type="button" icon="fa fa-book" label="Document" class="ui-button-info" (click)="this.onDocument.emit()"></button>

@@ -3,10 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { DexieService } from '../db/dexie.service';
 import { PersistedFileService } from '../db/persisted-file.service';
 import Thought from '../dto/Thought';
-import { RepositoryId } from '../dto/RepositoryId';
 import { RepositoryService } from '../repository/repository.service';
 import { FileType } from '../dto/FileType';
-import { PersistedIdnadrevFile } from '../db/PersistedFiles';
 import * as moment from 'moment';
 
 @Injectable({
@@ -47,7 +45,6 @@ export class ThoughtService {
 
   store(thought: Thought): Promise<string> {
     let repository = this.repositoryService.getRepository(thought.repository);
-    console.log(repository);
     return this.dexie.store(thought, repository);
   }
 
@@ -67,5 +64,14 @@ export class ThoughtService {
     const id = await this.store(thought);
     await this.loadAllOpenThoughts();
     return id;
+  }
+
+  async getThought(id: string) : Promise<Thought|undefined> {
+    let file = await this.dexie.getById(id);
+    if(file) {
+      let repository = this.repositoryService.getRepository(file.repositoryId);
+      return this.persistedFile.toThought(file,repository);
+    }
+    return undefined;
   }
 }

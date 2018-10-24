@@ -12,6 +12,7 @@ export class ThoughtPreviewComponent implements OnInit {
   @Output() onPostpone = new EventEmitter<void>();
   @Output() onTask = new EventEmitter<void>();
   @Output() onDocument = new EventEmitter<void>();
+  @Output() onEdit = new EventEmitter<void>();
 
   constructor() {
   }

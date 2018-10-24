@@ -1,0 +1,7 @@
+<p-autoComplete *ngIf="!label" id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
+</p-autoComplete>
+<span *ngIf="label" class="ui-float-label">
+  <p-autoComplete id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
+  </p-autoComplete>
+  <label for="autoCompleteRepoId">{{label}}</label>
+</span>

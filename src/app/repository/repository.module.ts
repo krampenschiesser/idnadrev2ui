@@ -5,12 +5,13 @@ import { OverviewComponent } from './overview/overview.component';
 import { EditComponent } from './edit/edit.component';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
-import { BlockUIModule, ButtonModule, InputTextModule, MessagesModule, PanelModule, PasswordModule, ProgressSpinnerModule } from 'primeng/primeng';
+import { AutoCompleteModule, BlockUIModule, ButtonModule, InputTextModule, MessagesModule, PanelModule, PasswordModule, ProgressSpinnerModule } from 'primeng/primeng';
 import { AddShortComponent } from './add-short/add-short.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RepositoryNamePipe } from './repository-name.pipe';
+import { RepositorySelectorComponent } from './repository-selector/repository-selector.component';
 
 const routes: Routes = [
   {path: 'repo', component: OverviewComponent},
@@ -32,10 +33,12 @@ const routes: Routes = [
     PanelModule,
     FontAwesomeModule,
     ProgressSpinnerModule,
-    BlockUIModule
+    BlockUIModule,
+    AutoCompleteModule,
+    FormsModule
   ],
-  declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe],
-  exports:[RepositoryNamePipe]
+  declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe, RepositorySelectorComponent],
+  exports:[RepositoryNamePipe,RepositorySelectorComponent]
 })
 export class RepositoryModule {
 }

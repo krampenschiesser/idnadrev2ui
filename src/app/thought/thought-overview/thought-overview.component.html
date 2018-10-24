@@ -38,7 +38,10 @@
           <td>
             <div class="p-grid">
               <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-clipboard-list" pTooltip="To Task" (click)="this.thoughtToTask()"></button>
+                <button pButton type="button" icon="fa fa-edit" pTooltip="Edit" (click)="this.edit()"></button>
+              </div>
+              <div class="p-col ActionButton">
+                <button pButton type="button" icon="fa fa-clipboard-list" pTooltip="To Task" class="ui-button-success" (click)="this.thoughtToTask()"></button>
               </div>
               <div class="p-col ActionButton">
                 <button pButton type="button" icon="fa fa-book" pTooltip="To Document" class="ui-button-info" (click)="this.thoughtToDoc()"></button>
@@ -56,6 +59,6 @@
     </p-table>
   </div>
   <div class="p-col PaddingTop">
-    <app-thought-preview *ngIf="selectedThought" [thought]="selectedThought" (onDelete)="this.delete($event)" (onDocument)="this.thoughtToDoc()" (onTask)="this.thoughtToTask()" (onPostpone)="showPostponeDialog=true"></app-thought-preview>
+    <app-thought-preview *ngIf="selectedThought" [thought]="selectedThought" (onEdit)="edit()" (onDelete)="this.delete($event)" (onDocument)="this.thoughtToDoc()" (onTask)="this.thoughtToTask()" (onPostpone)="showPostponeDialog=true"></app-thought-preview>
   </div>
 </div>
