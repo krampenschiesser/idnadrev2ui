@@ -18,7 +18,7 @@ export class IdnadrevFileFilterComponent implements OnInit {
     type: new FormControl(),
   });
   @Output() filter = new EventEmitter<IdnadrevFileFilter>();
-  types=[FileType.Task,FileType.Document,FileType.Thought,FileType.Binary];
+  types = [{label: 'Task', value: FileType.Task}, {label: 'Document', value: FileType.Document}, {label: 'Thought', value: FileType.Thought}, {label: 'Binary', value: FileType.Binary}];
 
   constructor() {
   }
@@ -27,11 +27,14 @@ export class IdnadrevFileFilterComponent implements OnInit {
     this.form.valueChanges.pipe(
       debounceTime(10),
       distinctUntilChanged()).subscribe(newFormValue => {
+      if (newFormValue.type) {
+        newFormValue.type = newFormValue.type.value;
+      }
       this.filter.emit(newFormValue);
     });
   }
 
-  onReset(){
+  onReset() {
     this.form.reset();
   }
 

@@ -14,6 +14,7 @@ import { BlockUIModule, CheckboxModule, DialogModule, DropdownModule, InputTextM
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IdnadrevFilePreviewComponent } from './idnadrev-file-preview/idnadrev-file-preview.component';
 import { IdnadrevFileFilterComponent } from './idnadrev-file-filter/idnadrev-file-filter.component';
+import { FileTypePipe } from './file-type.pipe';
 
 const routes: Routes = [
   {path: 'doc/:id', component: AddDocumentComponent},
@@ -41,6 +42,6 @@ const routes: Routes = [
     CheckboxModule,
     DropdownModule
   ],
-  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent]
+  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe]
 })
 export class DocumentModule { }
