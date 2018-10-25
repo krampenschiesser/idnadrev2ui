@@ -9,10 +9,10 @@ import Thought from '../../dto/Thought';
 export class ThoughtPreviewComponent implements OnInit {
   @Input() thought: Thought;
   @Output() onDelete = new EventEmitter<void>();
+  @Output() onEdit = new EventEmitter<void>();
   @Output() onPostpone = new EventEmitter<void>();
   @Output() onTask = new EventEmitter<void>();
   @Output() onDocument = new EventEmitter<void>();
-  @Output() onEdit = new EventEmitter<void>();
 
   constructor() {
   }

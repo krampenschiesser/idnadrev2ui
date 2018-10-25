@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {TaskModule} from "../task/task.module";
+import {ThoughtModule} from "../thought/thought.module";
 import { DocumentOverviewComponent } from './document-overview/document-overview.component';
 import { AddDocumentComponent } from './add-document/add-document.component';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
@@ -40,7 +42,9 @@ const routes: Routes = [
     MessagesModule,
     BlockUIModule,
     CheckboxModule,
-    DropdownModule
+    DropdownModule,
+    TaskModule,
+    ThoughtModule
   ],
   declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe]
 })

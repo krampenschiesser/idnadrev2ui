@@ -42,6 +42,7 @@ const routes: Routes = [
     BlockUIModule,
     CheckboxModule
   ],
-  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent]
+  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent],
+  exports:[ThoughtPreviewComponent]
 })
 export class ThoughtModule { }

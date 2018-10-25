@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import IdnadrevFile from '../../dto/IdnadrevFile';
-import { Router } from '@angular/router';
-import { DocumentService } from '../document.service';
-import IdnadrevFileFilter, { filterFiles } from '../../filter/IdnadrevFileFilter';
+import IdnadrevFileFilter, {filterFiles} from '../../filter/IdnadrevFileFilter';
+import {DocumentService} from '../document.service';
 
 @Component({
   selector: 'app-document-overview',
@@ -14,7 +14,7 @@ export class DocumentOverviewComponent implements OnInit {
   files: IdnadrevFile<any, any>[];
   allFiles: IdnadrevFile<any, any>[];
 
-  tableRows=20;
+  tableRows = 20;
 
   constructor(private router: Router, private docService: DocumentService) {
   }
@@ -39,6 +39,6 @@ export class DocumentOverviewComponent implements OnInit {
   }
 
   showPreview(file: IdnadrevFile<any, any>) {
-
+    this.selectedFile = file;
   }
 }
