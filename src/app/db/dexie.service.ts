@@ -14,7 +14,6 @@ import { RepositoryId } from '../dto/RepositoryId';
   providedIn: 'root'
 })
 export class DexieService extends Dexie {
-  static populate = isDevMode();
   private files: Dexie.Table<PersistedIdnadrevFile, string>;
   private repositories: Dexie.Table<PersistedRepository, string>;
   private indexes: Dexie.Table<PersistedIndex, string>;
@@ -32,7 +31,7 @@ export class DexieService extends Dexie {
 
 
   async storeIndex(index: Index, repo: Repository): Promise<string> {
-    console.log("storing index")
+    console.log('storing index');
     let [encrypted, nonce] = await repo.encrypt(index.toJson());
     let data: PersistedIndex = {
       data: encrypted,
@@ -116,8 +115,12 @@ export class DexieService extends Dexie {
     return this.repositories.toArray();
   }
 
-  getAllNonDeleted(repositoryId: RepositoryId, type: FileType): Promise<PersistedIdnadrevFile[]> {
-    return this.files.where('type').equals(type).and(f => f.repositoryId == repositoryId).and(f => !f.deleted).toArray();
+  getAllNonDeleted(repositoryId: RepositoryId, type?: FileType): Promise<PersistedIdnadrevFile[]> {
+    if (type) {
+      return this.files.where('type').equals(type).and(f => f.repositoryId == repositoryId).and(f => !f.deleted).toArray();
+    } else {
+      return this.files.where('repositoryId').equals(repositoryId).and(f => !f.deleted).toArray();
+    }
   }
 
   getById(id: FileId): Promise<PersistedIdnadrevFile | undefined> {

@@ -39,10 +39,7 @@ export class PersistedFileService {
     return thought;
   }
 
-  async toTask(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Task | undefined> {
-    if (persisted === undefined) {
-      return new Promise<Task | undefined>(resolve => resolve(undefined));
-    }
+  async toTask(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Task> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let parse = JSON.parse(decrypt);
     let task = new Task(parse.name, parse.tags, parse.content);
@@ -86,10 +83,7 @@ export class PersistedFileService {
     return task;
   }
 
-  async toDocument(persisted: PersistedIdnadrevFile | undefined, repo: Repository): Promise<Document | undefined> {
-    if (persisted === undefined) {
-      return new Promise<Document | undefined>(resolve => resolve(undefined));
-    }
+  async toDocument(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Document> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let parse = JSON.parse(decrypt);
     let doc = new Document(parse.name, parse.tags, parse.content);
@@ -98,10 +92,7 @@ export class PersistedFileService {
     return doc;
   }
 
-  async toBinaryFile(persisted: PersistedBinaryFile | undefined, repo: Repository): Promise<BinaryFile | undefined> {
-    if (persisted === undefined) {
-      return new Promise<BinaryFile | undefined>(resolve => resolve(undefined));
-    }
+  async toBinaryFile(persisted: PersistedBinaryFile, repo: Repository): Promise<BinaryFile > {
     let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
     let decryptContent = await repo.decrypt(persisted.dataBinary, persisted.nonceBinary);
     let parse = JSON.parse(decryptJson);
@@ -122,10 +113,7 @@ export class PersistedFileService {
   }
 
 
-  async toIndex(persisted: PersistedIndex | undefined, repo: Repository): Promise<Index | undefined> {
-    if (persisted === undefined) {
-      return new Promise<Index | undefined>(resolve => resolve(undefined));
-    }
+  async toIndex(persisted: PersistedIndex , repo: Repository): Promise<Index > {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let idx = indexFromJson(persisted.type, decrypt);
     return idx;

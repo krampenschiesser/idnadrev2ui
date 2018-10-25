@@ -1,0 +1,33 @@
+<div class="p-grid">
+  <div class="p-col">
+    <h1>Documents</h1>
+  </div>
+  <div class="p-col-fixed" style="width: 7em">
+    <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new document" style="width: 5em; height: 2.5em; margin-top: 27px" (click)="this.addDoc()"></button>
+  </div>
+</div>
+
+<div class="p-grid">
+  <div class="p-col">
+    <app-idnadrev-file-filter (filter)="onFilter($event)"></app-idnadrev-file-filter>
+    <p-table [value]="files" [rowHover]="true" [paginator]="true" [rows]="tableRows">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Created</th>
+          <th>Name</th>
+          <th>Repository</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-file>
+        <tr (mouseover)="this.showPreview(file)">
+          <td>{{file.updated | date: "short"}}</td>
+          <td>{{file.name}}</td>
+          <td>{{file.repository | repositoryName}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="p-col PaddingTop">
+    <app-idnadrev-file-preview *ngIf="selectedFile" [file]="selectedFile"></app-idnadrev-file-preview>
+  </div>
+</div>

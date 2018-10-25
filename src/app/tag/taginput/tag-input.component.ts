@@ -37,8 +37,14 @@ export class TagInputComponent implements OnInit {
 
   search(event: any) {
     const prefix = event.query;
-    this.results = this.allTags.filter(tag => tag.toLocaleLowerCase().indexOf(prefix.toLocaleLowerCase()) >= 0);
-    this.results.push(prefix);
+    console.log('prefix', prefix);
+    if (prefix === '' || prefix.trim() === '') {
+      console.log('setting all tags',this.allTags);
+      this.results = this.allTags.slice();
+    } else {
+      this.results = this.allTags.filter(tag => tag.toLocaleLowerCase().indexOf(prefix.toLocaleLowerCase()) >= 0);
+      this.results.push(prefix);
+    }
   }
 
   onUnselect(text: string) {

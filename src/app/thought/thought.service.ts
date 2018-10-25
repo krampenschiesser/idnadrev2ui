@@ -25,7 +25,7 @@ export class ThoughtService {
   }
 
   async loadAllThoughts(): Promise<Thought[]> {
-    await this.repositoryService.loadAllRepositories();
+    await this.repositoryService.waitLoadAllRepositoriesOnce();
     let openRepositories = this.repositoryService.openRepositories;
 
     let thoughts: Thought[] = [];

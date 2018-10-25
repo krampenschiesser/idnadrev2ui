@@ -1,8 +1,5 @@
-import { Tag } from '../dto/Tag';
+import IdnadrevFileFilter from '../filter/IdnadrevFileFilter';
 
-export interface ThoughtFilter {
-  name?: string;
-  content?: string;
-  tags?: Tag[];
+export interface ThoughtFilter extends IdnadrevFileFilter{
   postponed?: boolean;
 }

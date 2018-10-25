@@ -3,6 +3,7 @@ import { ThoughtService } from '../thought.service';
 import Thought from '../../dto/Thought';
 import { Router } from '@angular/router';
 import { ThoughtFilter } from '../ThoughtFilter';
+import { filterFiles } from '../../filter/IdnadrevFileFilter';
 
 @Component({
   selector: 'app-thought-overview',
@@ -36,28 +37,13 @@ export class ThoughtOverviewComponent implements OnInit {
   }
 
   onFilter(filter: ThoughtFilter) {
-    this.thoughts = this.allThoughts.filter(t => {
-        let valid = true;
-        if (filter.name) {
-          valid = valid && t.name.toLocaleLowerCase().includes(filter.name.toLocaleLowerCase());
-        }
-        if (filter.content) {
-          valid = valid && t.content.toLocaleLowerCase().includes(filter.content.toLocaleLowerCase());
-        }
-        if (filter.tags && filter.tags.length > 0) {
-          let tagsContainedInThought = t.tags.filter(tag => filter.tags.find(ft => ft.name === tag.name));
-          if (tagsContainedInThought.length !== filter.tags.length) {
-            valid = false;
-          }
-        }
-        if (filter.postponed) {
-          valid = valid && t.isPostPoned;
-        } else {
-          valid = valid && !t.isPostPoned;
-        }
-        return valid;
+    this.thoughts = filterFiles(this.allThoughts,filter,t=>{
+      if (filter.postponed) {
+        return t.isPostPoned;
+      } else {
+        return !t.isPostPoned;
       }
-    );
+    });
   }
 
   showPreview(thought: Thought) {

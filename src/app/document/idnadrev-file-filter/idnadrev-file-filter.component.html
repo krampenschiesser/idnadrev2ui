@@ -16,6 +16,12 @@
        </span>
     </div>
     <div class="p-col">
+      <span class="ui-float-label">
+        <p-dropdown id="typeSelection" [options]="types" formControlName="type"></p-dropdown>
+        <label for="typeSelection">File Type</label>
+       </span>
+    </div>
+    <div class="p-col">
       <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
     </div>
   </div>

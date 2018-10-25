@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastModule } from 'primeng/toast';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ThoughtModule } from './thought/thought.module';
+import { DocumentModule } from './document/document.module';
 
 const appRoutes: Routes = [
   // { path: 'repo',   component: OverviewComponent}, // <-- delete this line
@@ -30,6 +31,7 @@ const appRoutes: Routes = [
   imports: [
     RepositoryModule,
     ThoughtModule,
+    DocumentModule,
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(

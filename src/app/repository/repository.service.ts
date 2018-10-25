@@ -23,6 +23,12 @@ export class RepositoryService {
     this.persistedFile = persistedFile;
   }
 
+  async waitLoadAllRepositoriesOnce(): Promise<void> {
+    if(this._repositories.length==0) {
+      await this.loadAllRepositories();
+    }
+  }
+
   async loadAllRepositories(): Promise<void> {
     let persistedRepos = await this.dexie.getAllRepos();
     let existingIds = new Set<RepositoryId>(this._repositories.map(r => r.id));
