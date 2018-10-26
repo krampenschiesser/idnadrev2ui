@@ -1,3 +1,39 @@
-<p>
-  add-document works!
-</p>
+<h1>Add document</h1>
+
+<p-blockUI [blocked]="creating"></p-blockUI>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="p-grid">
+    <div class="p-col">
+       <span class="ui-float-label">
+              <input #name id="float-name" type="text" size="30" pInputText formControlName="name">
+              <label for="float-name">Name</label>
+       </span>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="tagsControl.value"></app-tag-input>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <app-repository-selector label="Repository" [parentFormControl]="form.get('repository')"></app-repository-selector>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="Repository is required" *ngIf="!form.controls['repository'].valid&&form.controls['repository'].dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <app-markdown-editor [parentFormControl]="contentControl"></app-markdown-editor>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col">
+      <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+    </div>
+  </div>
+</form>

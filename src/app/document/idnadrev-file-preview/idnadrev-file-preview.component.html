@@ -1,6 +1,6 @@
-<app-document-preview *ngIf="document" [doc]="document" (onDelete)="onDelete()" (onEdit)="onEdit()"></app-document-preview>
-<app-task-preview *ngIf="task" [task]="task" (onDelete)="onDelete()" (onEdit)="onEdit()"></app-task-preview>
-<app-thought-preview *ngIf="thought" [thought]="thought" (onDelete)="onDelete()" (onEdit)="onEdit()"></app-thought-preview>
+<app-document-preview *ngIf="document" [doc]="document" (onDelete)="onDelete.emit()" (onEdit)="onEdit.emit()"></app-document-preview>
+<app-task-preview *ngIf="task" [task]="task" (onDelete)="onDelete.emit()" (onEdit)="onEdit.emit()"></app-task-preview>
+<app-thought-preview *ngIf="thought" [thought]="thought" (onDelete)="onDelete.emit()" (onEdit)="onEdit.emit()"></app-thought-preview>
 <div *ngIf="binaryFile">
   Binary file
 </div>

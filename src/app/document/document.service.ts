@@ -11,6 +11,8 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import Task from '../dto/Task';
 import BinaryFile from '../dto/BinaryFile';
 import { PersistedBinaryFile } from '../db/PersistedFiles';
+import { ThoughtService } from '../thought/thought.service';
+import { TaskService } from '../task/task.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +23,7 @@ export class DocumentService {
   public files = new BehaviorSubject<IdnadrevFile<any, any>[]>([]);
   private _files: IdnadrevFile<any, any>[] = [];
 
-  constructor(private dexie: DexieService, private persistedFile: PersistedFileService, private repositoryService: RepositoryService) {
+  constructor(private dexie: DexieService, private persistedFile: PersistedFileService, private repositoryService: RepositoryService, private thoughtService: ThoughtService, private taskService: TaskService) {
   }
 
   async allFiles(): Promise<IdnadrevFile<any, any>[]> {
@@ -44,7 +46,6 @@ export class DocumentService {
       binaryFiles = binaryFiles.concat(await Promise.all(persisted.filter(p => p.type === FileType.Binary).map(p => this.persistedFile.toBinaryFile(p, repo))));
       files = files.concat(documents, tasks, thoughts, binaryFiles);
     }
-    console.log(files);
     this._files = files;
     this.notifyChanges();
     return thoughts;
@@ -62,11 +63,29 @@ export class DocumentService {
   async delete(doc: Document): Promise<string> {
     doc.deleted = new Date();
     const id = await this.store(doc);
-    const index = this._files.findIndex(thought => thought.id === thought.id);
+    const index = this._files.findIndex(thought => thought.id === doc.id);
     if (index >= 0) {
       this._files.splice(index, 1);
     }
     this.notifyChanges();
+    return id;
+  }
+
+  async deleteFile(file: IdnadrevFile<any, any>): Promise<string> {
+    file.deleted = new Date();
+    let repository = this.repositoryService.getRepository(file.repository);
+    const id = this.dexie.store(file, repository);
+
+    const index = this._files.findIndex(f => f.id === file.id);
+    if (index >= 0) {
+      this._files.splice(index, 1);
+    }
+    this.notifyChanges();
+    if (file instanceof Thought) {
+      this.thoughtService.removeFromList(file);
+    } else if (file instanceof Task) {
+      this.taskService.removeFromList(file);
+    }
     return id;
   }
 

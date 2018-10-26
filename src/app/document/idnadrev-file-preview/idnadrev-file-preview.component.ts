@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import BinaryFile from '../../dto/BinaryFile';
 import Document from '../../dto/Document';
 import IdnadrevFile from '../../dto/IdnadrevFile';
@@ -15,6 +15,9 @@ export class IdnadrevFilePreviewComponent implements OnInit {
   task?: Task;
   document?: Document;
   binaryFile?: BinaryFile;
+
+  @Output() onEdit = new EventEmitter<void>();
+  @Output() onDelete = new EventEmitter<void>();
 
   constructor() {
   }
@@ -37,13 +40,5 @@ export class IdnadrevFilePreviewComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  onEdit() {
-
-  }
-
-  onDelete() {
-
   }
 }

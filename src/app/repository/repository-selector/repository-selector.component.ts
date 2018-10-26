@@ -33,8 +33,8 @@ export class RepositorySelectorComponent implements OnInit {
     this.repoService.repositories.subscribe(next => {
       this.all = next.filter(r => r.isOpen());
 
-      if (selectFirst && next.length > 0) {
-        this.selectedRepo = next[0];
+      if (selectFirst && next.filter(n=>n.isOpen()).length > 0) {
+        this.selectedRepo = next.filter(n=>n.isOpen())[0];
         this.parentFormControl.patchValue(this.selectedRepo.id);
         this.selectedRepoEmitter.emit(this.selectedRepo.id);
       }

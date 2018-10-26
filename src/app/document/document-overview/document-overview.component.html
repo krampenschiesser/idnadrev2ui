@@ -30,6 +30,6 @@
     </p-table>
   </div>
   <div class="p-col PaddingTop">
-    <app-idnadrev-file-preview *ngIf="selectedFile" [file]="selectedFile"></app-idnadrev-file-preview>
+    <app-idnadrev-file-preview (onEdit)="onEdit()" (onDelete)="onDelete()" *ngIf="selectedFile" [file]="selectedFile"></app-idnadrev-file-preview>
   </div>
 </div>

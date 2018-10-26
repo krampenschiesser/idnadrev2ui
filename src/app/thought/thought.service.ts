@@ -50,11 +50,7 @@ export class ThoughtService {
   async delete(thought: Thought): Promise<string> {
     thought.deleted = new Date();
     const id = await this.store(thought);
-    const index = this._thoughts.findIndex(thought => thought.id === thought.id);
-    if (index >= 0) {
-      this._thoughts.splice(index, 1);
-    }
-    this.notifyChanges();
+    this.removeFromList(thought);
     return id;
   }
 
@@ -72,5 +68,13 @@ export class ThoughtService {
       return this.persistedFile.toThought(file, repository);
     }
     return undefined;
+  }
+
+  removeFromList(file: Thought) {
+    const index = this._thoughts.findIndex(thought => thought.id === file.id);
+    if (index >= 0) {
+      this._thoughts.splice(index, 1);
+    }
+    this.notifyChanges();
   }
 }

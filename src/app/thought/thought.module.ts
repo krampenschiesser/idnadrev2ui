@@ -40,7 +40,7 @@ const routes: Routes = [
     MessageModule,
     MessagesModule,
     BlockUIModule,
-    CheckboxModule
+    CheckboxModule,
   ],
   declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent],
   exports:[ThoughtPreviewComponent]

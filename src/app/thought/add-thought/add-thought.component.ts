@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Tag } from '../../dto/Tag';
 import Thought from '../../dto/Thought';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { ThoughtService } from '../thought.service';
 import * as moment from 'moment';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-add-thought',
@@ -27,7 +27,7 @@ export class AddThoughtComponent implements OnInit {
   thoughtInEdit = new Thought('');
   creating = false;
 
-  constructor(private route: ActivatedRoute, private thoughtService: ThoughtService) {
+  constructor(private route: ActivatedRoute, private thoughtService: ThoughtService, private messageService: MessageService) {
   }
 
   ngOnInit() {
@@ -72,10 +72,10 @@ export class AddThoughtComponent implements OnInit {
         this.creating = false;
         this.thoughtInEdit = new Thought('');
         this.form.patchValue(this.thoughtInEdit);
+        this.messageService.add({severity: 'success', summary: 'Successfully created thought ' + this.thoughtInEdit.name});
       }).catch(() => {
         this.creating = false;
-        this.thoughtInEdit = new Thought('');
-        this.form.patchValue(this.thoughtInEdit);
+        this.messageService.add({severity: 'error', summary: 'Failed to create thought ' + this.thoughtInEdit.name});
       });
     }
   }

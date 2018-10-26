@@ -24,15 +24,14 @@ export class RepositoryService {
   }
 
   async waitLoadAllRepositoriesOnce(): Promise<void> {
-    if(this._repositories.length==0) {
+    if (this._repositories.length === 0) {
       await this.loadAllRepositories();
     }
   }
 
   async loadAllRepositories(): Promise<void> {
     let persistedRepos = await this.dexie.getAllRepos();
-    let existingIds = new Set<RepositoryId>(this._repositories.map(r => r.id));
-    let repos = persistedRepos.map(r => this.persistedFile.toRepository(r)).filter(r => r !== undefined && !existingIds.has(r.id));
+    let repos = persistedRepos.map(r => this.persistedFile.toRepository(r)).filter(r => r !== undefined);
     repos = await Promise.all(repos.map(async r => {
       let item = window.sessionStorage.getItem(r.id);
       if (item && !r.token) {
@@ -40,6 +39,8 @@ export class RepositoryService {
       }
       return r;
     }));
+    let existingIds = new Set<RepositoryId>(this._repositories.map(r => r.id));
+    repos = repos.filter(r => !existingIds.has(r.id));
     this._repositories = this._repositories.concat(repos);
     this.notifyChanges();
   }
