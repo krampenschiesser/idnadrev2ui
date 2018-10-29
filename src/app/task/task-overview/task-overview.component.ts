@@ -88,6 +88,10 @@ export class TaskOverviewComponent implements OnInit {
     return node;
   }
 
+  addTask() {
+    this.router.navigate(['/task/add']);
+  }
+
   showPreview(task: Task) {
     this.router.navigate(['/task/' + task.id]);
   }
