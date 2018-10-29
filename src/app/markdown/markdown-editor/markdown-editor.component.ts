@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import * as CodeMirror from 'codemirror';
 import { Subject } from 'rxjs';
@@ -11,8 +11,10 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 })
 export class MarkdownEditorComponent implements OnInit {
   @Input() parentFormControl: AbstractControl;
+  @Input() text?: string;
   current = '';
   @ViewChild('textArea') textArea: ElementRef;
+  @Output() onTextChange = new EventEmitter<string>();
 
   codeMirror: CodeMirror.EditorFromTextArea;
   changes = new Subject<string>();
@@ -33,21 +35,30 @@ export class MarkdownEditorComponent implements OnInit {
     if (this.parentFormControl) {
       this.current = this.parentFormControl.value;
       this.codeMirror.setValue(this.current);
+      this.parentFormControl.valueChanges.subscribe(value => {
+        let str: string = value;
+        if (value !== this.current) {
+          this.codeMirror.setValue(str);
+        }
+      });
+    }else if(this.text){
+      this.current = this.text
+      this.codeMirror.setValue(this.current);
     }
-    this.parentFormControl.valueChanges.subscribe(value => {
-      let str: string = value;
-      if (value !== this.current) {
-        this.codeMirror.setValue(str);
-      }
-    });
 
     this.changes.pipe(
       debounceTime(10),
       distinctUntilChanged()).subscribe(value => {
-        this.current = value;
-        if (this.parentFormControl) {
-          this.parentFormControl.patchValue(value);
-        }
+      this.current = value;
+      if (this.parentFormControl) {
+        this.parentFormControl.patchValue(value);
+      }else {
+        this.onTextChange.emit(value);
+      }
     });
+  }
+
+  foucs(){
+    this.codeMirror.focus();
   }
 }

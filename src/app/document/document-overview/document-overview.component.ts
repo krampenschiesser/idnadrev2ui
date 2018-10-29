@@ -22,7 +22,7 @@ export class DocumentOverviewComponent implements OnInit {
   tableRows = 20;
   activeFilter?: IdnadrevFileFilter;
 
-  constructor(private router: Router, private docService: DocumentService, private thoughtService: ThoughtService) {
+  constructor(private router: Router, private docService: DocumentService) {
   }
 
   async ngOnInit() {
@@ -62,7 +62,7 @@ export class DocumentOverviewComponent implements OnInit {
     if (this.selectedFile instanceof Thought) {
       this.router.navigate(['/thought/' + this.selectedFile.id]);
     } else if (this.selectedFile instanceof Task) {
-      this.router.navigate(['/task/' + this.selectedFile.id]);
+      this.router.navigate(['/task/edit/' + this.selectedFile.id]);
     } else if (this.selectedFile instanceof BinaryFile) {
       // this.router.navigate(['/thought/' + this.selectedThought.id]);
     } else if (this.selectedFile instanceof Document) {

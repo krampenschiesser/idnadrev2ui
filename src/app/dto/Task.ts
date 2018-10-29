@@ -249,4 +249,11 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     }
     return false;
   }
+
+  addChild(t: Task) {
+    if (!this.children) {
+      this.children = [];
+    }
+    this.children.push(t);
+  }
 }

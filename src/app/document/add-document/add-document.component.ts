@@ -55,7 +55,7 @@ export class AddDocumentComponent implements OnInit {
     let tags = value.tags;
     let repositoryId = value.repository;
     if (this.docInEdit && this.form.valid) {
-      this.docInEdit.name = name;
+      this.docInEdit.text = name;
       this.docInEdit.content = content;
       this.docInEdit.tags = tags;
       this.docInEdit.repository = repositoryId;

@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+  <div class="p-grid">
+    <div class="p-col">
+      <span class="ui-float-label">
+         <input autofocus (keyup.escape)="form.get('name').patchValue(undefined)" id="searchName" type="text" pInputText formControlName="name"/>
+         <label for="searchName">Search for name</label>
+       </span>
+    </div>
+    <div class="p-col">
+      <app-tag-input label="Search for tags" [parentFormControl]="form.get('tags')" ></app-tag-input>
+    </div>
+    <div class="p-col">
+      <span class="ui-float-label">
+        <input (keyup.escape)="form.get('content').patchValue(undefined)" id="searchContent" type="text" pInputText formControlName="content"/>
+        <label for="searchContent">Search for content</label>
+       </span>
+    </div>
+    <div class="p-col">
+      <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
+    </div>
+  </div>
+</form>

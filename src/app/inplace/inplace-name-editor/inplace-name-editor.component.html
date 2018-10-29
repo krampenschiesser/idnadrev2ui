@@ -1,0 +1,8 @@
+<div *ngIf="!showEditor" (click)="onShowEditor()" class="DisplayElement">
+  <h1>{{name}}</h1>
+</div>
+<div *ngIf="showEditor">
+  <input #nameEdit type="text" [(value)]="editedName" pInputText (keyup.enter)="saveNameChange(nameEdit.value)">
+  <button pButton type="button" (click)="saveNameChange(nameEdit.value)" icon="fa fa-save" class="ui-button-success"></button>
+  <button pButton type="button" (click)="showEditor=false" icon="fa fa-times" ></button>
+</div>

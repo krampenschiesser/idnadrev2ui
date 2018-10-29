@@ -1,0 +1,9 @@
+<div *ngIf="!showEditor">
+  <app-markdown-viewer [markdown]="text"></app-markdown-viewer>
+  <button pButton type="button" (click)="onShowEditor()" icon="fa fa-edit" ></button>
+</div>
+<div *ngIf="showEditor">
+  <app-markdown-editor #editor [text]="textToEdit" (onTextChange)="onCodeMirrorChange($event)"></app-markdown-editor>
+  <button pButton type="button" (click)="saveTextChange()" icon="fa fa-save" class="ui-button-success"></button>
+  <button pButton type="button" (click)="showEditor=false" icon="fa fa-times" ></button>
+</div>

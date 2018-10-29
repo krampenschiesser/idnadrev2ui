@@ -62,4 +62,18 @@ export class TagInputComponent implements OnInit {
   onSelect(text: string) {
     this.updateChanges();
   }
+
+  onKeyUp(event: any) {
+    if(event.key && event.key === 'Escape') {
+      this.reset();
+    }
+  }
+  reset(){
+    this.tags=[];
+    this.selectedTags.emit([]);
+    if (this.parentFormControl) {
+      this.parentFormControl.patchValue(undefined);
+    }
+  }
+
 }

@@ -1,3 +1,56 @@
-<p>
-  task-overview works!
-</p>
+<div class="p-grid">
+  <div class="p-col">
+    <h1>Tasks</h1>
+  </div>
+  <div class="p-col-fixed" style="width: 7em">
+    <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new document" style="width: 5em; height: 2.5em; margin-top: 27px" (click)="this.addDoc()"></button>
+  </div>
+</div>
+
+<div class="p-grid">
+  <div class="p-col">
+    <app-task-filter (filter)="onFilter($event)"></app-task-filter>
+
+    <p-treeTable sortField="updated" [sortOrder]="-1" [value]="nodes">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Updated</th>
+          <th>Name</th>
+          <th>Tags</th>
+          <th>Repository</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr>
+          <td (click)="this.showPreview(rowData)">
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            {{rowData.updated | date: "short"}}
+          </td>
+          <td (click)="this.showPreview(rowData)">
+            {{rowData.name}}
+          </td>
+          <td (click)="this.showPreview(rowData)">
+            <app-tagview [tags]="rowData.tags"></app-tagview>
+          </td>
+          <td (click)="this.showPreview(rowData)">
+            {{rowData.repository | repositoryName}}
+          </td>
+          <td>
+            <div class="p-grid">
+              <div class="p-col">
+                <button pButton type="button" icon="fa fa-check" (click)="finish(rowData)" class="ui-button-success"></button>
+              </div>
+              <div class="p-col">
+                <button pButton type="button" icon="fa fa-edit" (click)="edit(rowData)"></button>
+              </div>
+              <div class="p-col">
+                <button pButton type="button" icon="fa fa-trash" (click)="delete(rowData)" class="ui-button-danger"></button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+  </div>
+</div>
