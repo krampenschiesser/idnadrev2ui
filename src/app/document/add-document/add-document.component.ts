@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import Thought from '../../dto/Thought';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { ThoughtService } from '../../thought/thought.service';
 import { switchMap } from 'rxjs/operators';
-import * as moment from 'moment';
 import Document from "../../dto/Document";
 import { DocumentService } from '../document.service';
 import { MessageService } from 'primeng/api';
@@ -55,7 +52,7 @@ export class AddDocumentComponent implements OnInit {
     let tags = value.tags;
     let repositoryId = value.repository;
     if (this.docInEdit && this.form.valid) {
-      this.docInEdit.text = name;
+      this.docInEdit.name = name;
       this.docInEdit.content = content;
       this.docInEdit.tags = tags;
       this.docInEdit.repository = repositoryId;

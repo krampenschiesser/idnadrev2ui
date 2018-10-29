@@ -18,6 +18,7 @@
           <th>Name</th>
           <th>Tags</th>
           <th>Repository</th>
+          <th>State</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -35,6 +36,9 @@
           </td>
           <td (click)="this.showPreview(rowData)">
             {{rowData.repository | repositoryName}}
+          </td>
+          <td  (click)="this.showPreview(rowData)">
+
           </td>
           <td>
             <div class="p-grid">

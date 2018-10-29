@@ -31,6 +31,8 @@ export function generateTasks(repo: RepositoryId): Task[] {
   t3.details.delegation= new DelegationState();
   t3.details.delegation.current= new Delegation("somebody");
 
+  t1.references = [t2.id];
+
 
   t6.details.finished = new Date();
 

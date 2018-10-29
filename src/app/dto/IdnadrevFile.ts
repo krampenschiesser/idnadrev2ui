@@ -9,11 +9,11 @@
  * except according to those terms.
  */
 
-import { v4 as uuid } from 'uuid';
-import { FileType } from './FileType';
-import { Tag } from './Tag';
-import { FileId } from './FileId';
-import { RepositoryId } from './RepositoryId';
+import {v4 as uuid} from 'uuid';
+import {FileId} from './FileId';
+import {FileType} from './FileType';
+import {RepositoryId} from './RepositoryId';
+import {Tag} from './Tag';
 
 export default abstract class IdnadrevFile<Details, Content> {
   repository: RepositoryId;
@@ -30,6 +30,7 @@ export default abstract class IdnadrevFile<Details, Content> {
 
   details: Details;
   content: Content;
+  references: FileId[]
 
   constructor(name: string, fileType: FileType) {
     this.id = uuid();
@@ -38,6 +39,7 @@ export default abstract class IdnadrevFile<Details, Content> {
     this.updated = this.created;
     this.version = 0;
     this.tags = [];
+    this.references = [];
     this.fileType = fileType;
   }
 
