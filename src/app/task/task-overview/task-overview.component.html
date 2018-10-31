@@ -11,7 +11,7 @@
   <div class="p-col">
     <app-task-filter (filter)="onFilter($event)"></app-task-filter>
 
-    <p-treeTable sortField="updated" [sortOrder]="-1" [value]="nodes">
+    <p-treeTable sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true">
       <ng-template pTemplate="header">
         <tr>
           <th>Updated</th>
@@ -38,7 +38,7 @@
             {{rowData.repository | repositoryName}}
           </td>
           <td  (click)="this.showPreview(rowData)">
-
+            {{rowData.details.state}}
           </td>
           <td>
             <div class="p-grid">

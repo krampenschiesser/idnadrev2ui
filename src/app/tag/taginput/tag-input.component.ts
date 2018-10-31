@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Tag } from '../../dto/Tag';
 import { TagService } from '../tag.service';
 import { AbstractControl } from '@angular/forms';
@@ -30,6 +30,7 @@ export class TagInputComponent implements OnInit {
     });
   }
 
+
   @Input()
   set originalTags(tags: Tag[]) {
     this.tags = tags.map(t => t.name);
@@ -39,7 +40,7 @@ export class TagInputComponent implements OnInit {
     const prefix = event.query;
     console.log('prefix', prefix);
     if (prefix === '' || prefix.trim() === '') {
-      console.log('setting all tags',this.allTags);
+      console.log('setting all tags', this.allTags);
       this.results = this.allTags.slice();
     } else {
       this.results = this.allTags.filter(tag => tag.toLocaleLowerCase().indexOf(prefix.toLocaleLowerCase()) >= 0);
@@ -64,12 +65,13 @@ export class TagInputComponent implements OnInit {
   }
 
   onKeyUp(event: any) {
-    if(event.key && event.key === 'Escape') {
+    if (event.key && event.key === 'Escape') {
       this.reset();
     }
   }
-  reset(){
-    this.tags=[];
+
+  reset() {
+    this.tags = [];
     this.selectedTags.emit([]);
     if (this.parentFormControl) {
       this.parentFormControl.patchValue(undefined);

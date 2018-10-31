@@ -15,13 +15,6 @@ import { FileId } from './FileId';
 import { Tag } from './Tag';
 import * as moment from 'moment';
 
-export enum TaskState {
-  None = 'None',
-  Later = 'Later',
-  Delegated = 'Delegated',
-  Asap = 'Asap'
-}
-
 export class WorkUnit {
   start: Date;
   end?: Date;
@@ -94,11 +87,12 @@ export class Scheduling {
 }
 
 export class TaskDetails {
-  state: TaskState = TaskState.None;
+  state?: string;
   parent?: FileId;
   estimatedTime?: Seconds;
   delegation: DelegationState = new DelegationState();
   schedule?: Scheduling;
+  earliestStartDate?: Date
   workUnits: WorkUnit[] = [];
   finished?: Date;
   action: boolean;

@@ -4,3 +4,21 @@ body {
     color: #dedede;
     font-family: "Open Sans", "Helvetica Neue", sans-serif;
 }
+
+.FloatLabelInput {
+    padding-top: 1.2em;
+}
+
+
+.FormInput {
+    /*width: 22.5em !important;*/
+    width: 250px  !important;
+}
+.FormInputTag {
+    /*width: 22.5em !important;*/
+    width: 236px  !important;
+}
+.FormInputWithDropDown {
+    /*width: 20.5em !important;*/
+    width: 217px  !important;
+}

@@ -26,17 +26,21 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit() {
     this.repoService.loadAllRepositories();
-    this.repoService.repositories.subscribe(repos => this.repositories = repos);
+    this.repoService.repositories.subscribe(repos => {
+      repos.sort((a, b) => a.name.localeCompare(b.name));
+      this.repositories = repos;
+
+    });
   }
 
   openRepo(pw: string) {
     this.repoService.openRepository(this.repoToLogin.id, pw).then(() => {
-      this.messageService.add({key: 'loginMsgs',severity: 'success', summary: 'Successfully logged into ' + this.repoToLogin.name});
+      this.messageService.add({key: 'loginMsgs', severity: 'success', summary: 'Successfully logged into ' + this.repoToLogin.name});
       this.repoToLogin = undefined;
       this.showLoginDialog = false;
       this.pwField.nativeElement.value = '';
     }).catch(() => {
-      this.messageService.add({key: 'loginMsgs',severity: 'error', summary: 'Login to ' + this.repoToLogin.name + ' failed'});
+      this.messageService.add({key: 'loginMsgs', severity: 'error', summary: 'Login to ' + this.repoToLogin.name + ' failed'});
       this.repoToLogin = undefined;
       this.showLoginDialog = false;
       this.pwField.nativeElement.value = '';
@@ -54,6 +58,6 @@ export class OverviewComponent implements OnInit {
 
   logoutRepo(repo: Repository) {
     this.repoService.logout(repo.id);
-    this.messageService.add({key: 'loginMsgs',severity: 'success', summary: 'Logged out of ' + repo.name});
+    this.messageService.add({key: 'loginMsgs', severity: 'success', summary: 'Logged out of ' + repo.name});
   }
 }

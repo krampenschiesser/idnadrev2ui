@@ -18,7 +18,9 @@ export default class Repository {
   tagIndex?: TagIndex;
   nameIndex?: AllValueIndex<string>;
   finishedTaskIndex?: AllValueIndex<boolean>;
+  taskStateIndex?: AllValueIndex<string>;
   deletedIndex?: AllValueIndex<boolean>;
+  delegationIndex?: AllValueIndex<string>;
 
   constructor(name: string, pw?: string) {
     this.name = name;
@@ -41,6 +43,8 @@ export default class Repository {
       this.nameIndex = new AllValueIndex<string>(this.id, 'name');
       this.finishedTaskIndex = new AllValueIndex<boolean>(this.id, 'isFinished', FileType.Task);
       this.deletedIndex = new AllValueIndex<boolean>(this.id, 'isDeleted');
+      this.taskStateIndex = new AllValueIndex<string>(this.id, 'details.state', FileType.Task);
+      this.delegationIndex = new AllValueIndex<string>(this.id, 'details.delegation.current', FileType.Task);
     }
   }
 
@@ -55,6 +59,10 @@ export default class Repository {
           this.nameIndex = index;
         } else if (index.field === 'isDeleted') {
           this.deletedIndex = index;
+        }else if (index.field === 'details.state') {
+          this.taskStateIndex = index;
+        }else if (index.field === 'details.delegation.current') {
+          this.delegationIndex = index;
         }
       }
     }
@@ -126,12 +134,12 @@ export default class Repository {
   }
 
   get indexesUndefined(): (Index | undefined)[] {
-    return [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
+    return [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex, this.taskStateIndex,this.delegationIndex];
   }
 
   get indexes(): Index[] {
     let retval = [];
-    let all = [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex];
+    let all = [this.tagIndex, this.nameIndex, this.finishedTaskIndex, this.deletedIndex, this.taskStateIndex,this.delegationIndex];
     for (let index of all) {
       if (!index) {
         throw 'index not initialized, access not allowed';
@@ -170,6 +178,19 @@ export default class Repository {
     return this.deletedIndex;
   }
 
+  get getTaskStateIndex(): AllValueIndex<string> {
+    if (!this.taskStateIndex) {
+      throw 'task state index not defined';
+    }
+    return this.taskStateIndex;
+  }
+  get getDelegationIndex(): AllValueIndex<string> {
+    if (!this.delegationIndex) {
+      throw 'task delegation index not defined';
+    }
+    return this.delegationIndex;
+  }
+
   logout() {
     sessionStorage.removeItem(this.id);
     this.token = undefined;
@@ -177,5 +198,7 @@ export default class Repository {
     this.nameIndex = undefined;
     this.finishedTaskIndex = undefined;
     this.deletedIndex = undefined;
+    this.taskStateIndex = undefined;
+    this.delegationIndex = undefined;
   }
 }

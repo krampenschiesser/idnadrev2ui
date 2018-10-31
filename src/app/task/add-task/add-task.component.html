@@ -1,3 +1,97 @@
-<p>
-  add-task works!
-</p>
+<h1>Add task</h1>
+
+
+<p-blockUI [blocked]="creating"></p-blockUI>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="p-grid">
+    <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+              <input #name id="float-name" type="text" class="FormInput" pInputText formControlName="name">
+              <label for="float-name">Name</label>
+       </span>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col FloatLabelInput">
+      <app-tag-input label="Tags" [parentFormControl]="form.get('tags')" [originalTags]="form.get('tags').value"></app-tag-input>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="Tags invalid" *ngIf="!form.controls['tags'].valid&&form.controls['tags'].dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid" formGroupName="details">
+    <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+         <p-autoComplete inputStyleClass="FormInputWithDropDown" id="float-state" formControlName="state" [suggestions]="taskStates" (completeMethod)="searchStates($event)" [dropdown]="true"></p-autoComplete>
+         <label for="float-state">State</label>
+       </span>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="State is required" *ngIf="!form.controls.details.controls.state.valid&&form.controls.details.controls.state.dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid" formGroupName="details">
+    <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+         <input id="estimatedTime" class="FormInput" pInputText type="number" min="1" formControlName="estimatedTime">
+         <label for="estimatedTime">Estimated time in minutes</label>
+       </span>
+    </div>
+  </div>
+  <div class="p-grid" formGroupName="details">
+    <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+         <p-checkbox id="action" formControlName="action" [binary]="true"></p-checkbox>
+         <label for="action" style="padding-left: 1.5em">Actionable</label>
+       </span>
+    </div>
+  </div>
+
+  <div class="p-grid">
+    <div class="p-col FloatLabelInput">
+      <app-repository-selector label="Repository" [parentFormControl]="form.get('repository')"></app-repository-selector>
+    </div>
+    <div class="p-col">
+      <p-message severity="error" text="Repository is required" *ngIf="!form.controls['repository'].valid&&form.controls['repository'].dirty"></p-message>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col FloatLabelInput">
+      <app-markdown-editor [parentFormControl]="form.get('content')"></app-markdown-editor>
+    </div>
+  </div>
+
+
+  <p-accordion [multiple]="true">
+    <p-accordionTab header="Details">
+
+    </p-accordionTab>
+    <p-accordionTab header="Scheduling">
+      <div class="p-grid" formGroupName="details">
+        <div class="p-col FloatLabelInput">
+         <span class="ui-float-label">
+           <p-calendar id="earliestStartDate" formControlName="earliestStartDate"></p-calendar>
+           <label for="earliestStartDate">Earliest start date</label>
+         </span>
+        </div>
+        <div class="p-col">
+          <p-message severity="error" text="Start date needs to be in the future" *ngIf="!form.controls.details.controls.earliestStartDate.valid&&form.controls.details.controls.earliestStartDate.dirty"></p-message>
+        </div>
+      </div>
+
+    </p-accordionTab>
+    <p-accordionTab header="Work Units">
+
+    </p-accordionTab>
+  </p-accordion>
+
+
+  <div class="p-grid">
+    <div class="p-col">
+      <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+    </div>
+  </div>
+</form>

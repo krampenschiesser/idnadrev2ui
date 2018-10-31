@@ -5,13 +5,15 @@ import {RouterModule, Routes} from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
 import {
-  BlockUIModule,
+  AccordionModule,
+  AutoCompleteModule,
+  BlockUIModule, CalendarModule,
   CheckboxModule,
   DialogModule,
   DropdownModule,
   InputTextModule,
   MessageModule,
-  MessagesModule,
+  MessagesModule, TabViewModule,
   TooltipModule, TreeTableModule
 } from 'primeng/primeng';
 import {TableModule} from 'primeng/table';
@@ -26,9 +28,9 @@ import { TaskViewComponent } from './task-view/task-view.component';
 import { InplaceModule } from '../inplace/inplace.module';
 
 const routes: Routes = [
-  {path: 'task/:id', component: TaskViewComponent},
   {path: 'task/edit/:id', component: AddTaskComponent},
   {path: 'task/add', component: AddTaskComponent},
+  {path: 'task/:id', component: TaskViewComponent},
   {path: 'task', component: TaskOverviewComponent},
 ];
 
@@ -53,7 +55,10 @@ const routes: Routes = [
     CheckboxModule,
     DropdownModule,
     TreeTableModule,
-    InplaceModule
+    InplaceModule,
+    CalendarModule,
+    AutoCompleteModule,
+    AccordionModule,
   ],
   declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent],
   exports: [TaskPreviewComponent],

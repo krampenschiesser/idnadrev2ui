@@ -15,6 +15,8 @@ import { FileId } from '../dto/FileId';
 export class TaskService {
   public tasks = new BehaviorSubject<Map<FileId, Task>>(new Map<FileId, Task>());
   private _tasks = new Map<FileId, Task>();
+  private _allStates = [];
+  private _allDelegations = [];
 
   constructor(private dexie: DexieService, private persistedFile: PersistedFileService, private repositoryService: RepositoryService) {
   }
@@ -35,6 +37,33 @@ export class TaskService {
     return tasks;
   }
 
+  async loadAllTaskStates() {
+    this._allStates.splice(0)
+    await this.repositoryService.waitLoadAllRepositoriesOnce();
+    this.repositoryService.openRepositories.map(r => r.getTaskStateIndex.getAllValues()).forEach(given => {
+      for (let tag of Array.from(given)) {
+        if (tag) {
+          if (this._allStates.findIndex(t => t.toLocaleLowerCase() === tag.toLocaleLowerCase()) == -1) {
+            this._allStates.push(tag);
+          }
+        }
+      }
+    });
+  }
+
+  async loadAllTaskDelegations() {
+    this._allDelegations.splice(0)
+    await this.repositoryService.waitLoadAllRepositoriesOnce();
+    this.repositoryService.openRepositories.map(r => r.getDelegationIndex.getAllValues()).forEach(given => {
+      for (let delegation of Array.from(given)) {
+        if (delegation) {
+          if (this._allDelegations.findIndex(t => t.toLocaleLowerCase() === delegation.toLocaleLowerCase()) == -1) {
+            this._allDelegations.push(delegation);
+          }
+        }
+      }
+    });
+  }
 
   notifyChanges() {
     let map = new Map(this._tasks.entries());
@@ -87,5 +116,13 @@ export class TaskService {
     await this.store(task);
     this.notifyChanges();
     return task.id;
+  }
+
+  get states(): string[] {
+    return this._allStates.slice();
+  }
+
+  get delegations(): string[] {
+    return this._allDelegations.slice();
   }
 }

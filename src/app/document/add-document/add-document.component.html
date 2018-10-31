@@ -3,7 +3,7 @@
 <p-blockUI [blocked]="creating"></p-blockUI>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="p-grid">
-    <div class="p-col">
+    <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
               <input #name id="float-name" type="text" size="30" pInputText formControlName="name">
               <label for="float-name">Name</label>
@@ -14,12 +14,12 @@
     </div>
   </div>
   <div class="p-grid">
-    <div class="p-col">
+    <div class="p-col FloatLabelInput">
       <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="tagsControl.value"></app-tag-input>
     </div>
   </div>
   <div class="p-grid">
-    <div class="p-col">
+    <div class="p-col FloatLabelInput">
       <app-repository-selector label="Repository" [parentFormControl]="form.get('repository')"></app-repository-selector>
     </div>
     <div class="p-col">
