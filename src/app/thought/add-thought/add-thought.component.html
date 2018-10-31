@@ -5,7 +5,7 @@
   <div class="p-grid">
     <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
-              <input #name id="float-name" type="text" size="30" pInputText formControlName="name">
+              <input #name id="float-name" type="text" class="FormInput" pInputText formControlName="name">
               <label for="float-name">Name</label>
        </span>
     </div>
@@ -16,7 +16,7 @@
   <div class="p-grid">
     <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
-              <input #name id="float-postpone" type="number" size="50" pInputText formControlName="postpone" style="width: 267px">
+              <input #name id="float-postpone" type="number" class="FormInput" pInputText formControlName="postpone" style="width: 267px">
               <label for="float-postpone">Postpone {{form.get('postpone').value || 'N'}} days</label>
        </span>
     </div>
