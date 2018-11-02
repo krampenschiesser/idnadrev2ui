@@ -4,4 +4,7 @@ export enum FileType {
   Thought = 'Thought',
   Image = 'Image',
   Binary = 'Binary',
+  Contact = 'Contact',
+  List = 'List',
+  Template = 'Template',
 }

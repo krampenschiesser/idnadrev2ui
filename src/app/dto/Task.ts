@@ -41,12 +41,12 @@ export class WorkUnit {
 
 export class Delegation {
   delegationStarted: Date;
-  to: string;
+  to: FileId;//fileId of Contact
 
 
-  constructor(to?: string, delegationStarted?: Date) {
+  constructor(to: FileId, delegationStarted?: Date) {
     this.delegationStarted = delegationStarted ? delegationStarted : new Date();
-    this.to = to ? to : '';
+    this.to = to;
   }
 }
 
@@ -67,12 +67,7 @@ export class DelegationState {
 export class ProposedDateTime {
   proposedDateTime: Date;
   proposedDateOnly: boolean = true;
-}
-
-export class ProposedWeekDayYear {
-  proposedYear: number = moment().year();
-  proposedWeek: number = moment().isoWeek();
-  proposedWeekDay?: number;
+  proposedWeekOnly: boolean = true;
 }
 
 export class FixedScheduling {
@@ -82,7 +77,6 @@ export class FixedScheduling {
 
 export class Scheduling {
   fixedScheduling?: FixedScheduling;
-  proposedWeekDayYear?: ProposedWeekDayYear;
   proposedDate?: ProposedDateTime;
 }
 
@@ -160,28 +154,12 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     if (schedule) {
       let fixedScheduling = schedule.fixedScheduling;
       let proposedDate = schedule.proposedDate;
-      let proposedWeekDayYear = schedule.proposedWeekDayYear;
       if (fixedScheduling) {
         let start = moment(fixedScheduling.scheduledDateTime);
         return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]') && !!this.details.estimatedTime;
       } else if (proposedDate) {
         let start = moment(proposedDate.proposedDateTime);
         return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]');
-      } else if (proposedWeekDayYear) {
-        let start = moment().year(proposedWeekDayYear.proposedYear).week(proposedWeekDayYear.proposedWeek).hour(0).minute(0).second(0).millisecond(0);
-        if (proposedWeekDayYear.proposedWeekDay) {
-          start.weekday(proposedWeekDayYear.proposedWeekDay);
-          return start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]');
-        } else {
-          let days = lastOfWeek.dayOfYear() - firstOfWeek.dayOfYear();
-          start.weekday(0);
-          for (let d = 0; d < days; d++) {
-            start.add(1, 'day');
-            if (start.isBetween(firstOfWeek, lastOfWeek, undefined, '[]')) {
-              return true;
-            }
-          }
-        }
       }
     }
     return false;
@@ -192,7 +170,6 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     if (schedule) {
       let fixedScheduling = schedule.fixedScheduling;
       let proposedDate = schedule.proposedDate;
-      let proposedWeekDayYear = schedule.proposedWeekDayYear;
       let estimatedTime = this.details.estimatedTime;
       if (fixedScheduling) {
         let start = moment(fixedScheduling.scheduledDateTime);
@@ -201,18 +178,6 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
       } else if (proposedDate) {
         let start = moment(proposedDate.proposedDateTime);
         let end = start.add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
-        return [start, end];
-      } else if (proposedWeekDayYear) {
-        let start = moment().year(proposedWeekDayYear.proposedYear).week(proposedWeekDayYear.proposedWeek).hour(0).minute(0).second(0).millisecond(0);
-        let end;
-        if (proposedWeekDayYear.proposedWeekDay) {
-          start.weekday(proposedWeekDayYear.proposedWeekDay);
-          end = start.clone().add(estimatedTime ? estimatedTime : 15 * 60, 'seconds');
-        } else {
-          start.weekday(0);
-          end = start.clone().add(6, 'days');
-          end.hour(23).minute(59).second(59).millisecond(999);
-        }
         return [start, end];
       }
     }
@@ -223,11 +188,8 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
     let schedule = this.details.schedule;
     if (schedule) {
       let proposedDate = schedule.proposedDate;
-      let proposedWeekDayYear = schedule.proposedWeekDayYear;
       if (proposedDate) {
         return proposedDate.proposedDateOnly;
-      } else if (proposedWeekDayYear) {
-        return true;
       }
     }
     return false;
@@ -236,8 +198,8 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
   isWholeWeek(): boolean {
     let schedule = this.details.schedule;
     if (schedule) {
-      let proposedWeekDayYear = schedule.proposedWeekDayYear;
-      if (proposedWeekDayYear) {
+      let proposed = schedule.proposedDate;
+      if (proposed.proposedWeekOnly) {
         return true;
       }
     }

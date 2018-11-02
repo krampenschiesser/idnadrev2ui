@@ -32,12 +32,14 @@
     <div class="p-col">
       <p-message severity="error" text="State is required" *ngIf="!form.controls.details.controls.state.valid&&form.controls.details.controls.state.dirty"></p-message>
     </div>
+    f
   </div>
   <div class="p-grid" formGroupName="details">
     <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
-         <input id="estimatedTime" class="FormInput" pInputText type="number" min="1" formControlName="estimatedTime">
-         <label for="estimatedTime">Estimated time in minutes</label>
+         <input id="estimatedTime" class="FormInputWithDropDown" pInputText type="number" min="1" formControlName="estimatedTime">
+         <button pButton type="button" icon="fa fa-times" (click)="form.patchValue({details: {estimatedTime: undefined}})"></button>
+         <label for="estimatedTime">Estimated time in min.</label>
        </span>
     </div>
   </div>
@@ -68,17 +70,88 @@
   <p-accordion [multiple]="true">
     <p-accordionTab header="Details">
 
+      <div class="p-grid" formGroupName="details">
+        <div class="p-col FloatLabelInput">
+         <span class="ui-float-label">
+           <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="finishedTime" formControlName="finished" [defaultDate]="getDefaultDate()" [showTime]="true"></p-calendar>
+           <button pButton type="button" icon="fa fa-times" style="margin-left: 35px" (click)="form.patchValue({details: {finished: undefined}})"></button>
+           <label for="finishedTime" style="padding-left: 1.5em">Finish time</label>
+           <fa-icon *ngIf="form.controls.details.controls.finished.value" style="color: #34A835; padding-left: 10px" size='2x' [icon]="finishedIcon"></fa-icon>
+         </span>
+        </div>
+      </div>
+
+      <h1>Delegation</h1>
+      <h1>Parent</h1>
     </p-accordionTab>
+
     <p-accordionTab header="Scheduling">
       <div class="p-grid" formGroupName="details">
         <div class="p-col FloatLabelInput">
          <span class="ui-float-label">
-           <p-calendar id="earliestStartDate" formControlName="earliestStartDate"></p-calendar>
+           <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="earliestStartDate" formControlName="earliestStartDate"></p-calendar>
+           <button pButton type="button" style="margin-left: 35px" icon="fa fa-times" (click)="form.patchValue({details: {earliestStartDate: undefined}})"></button>
            <label for="earliestStartDate">Earliest start date</label>
          </span>
         </div>
         <div class="p-col">
           <p-message severity="error" text="Start date needs to be in the future" *ngIf="!form.controls.details.controls.earliestStartDate.valid&&form.controls.details.controls.earliestStartDate.dirty"></p-message>
+        </div>
+      </div>
+
+      <br/>
+
+      <div>
+        <p-selectButton [options]="scheduleValues" optionLabel="label" formControlName="schedulingSelection"></p-selectButton>
+        <button pButton type="button" icon="fa fa-times" (click)="form.patchValue({schedulingSelection: undefined})"></button>
+      </div>
+
+      <div formGroupName="details">
+        <div formGroupName="schedule">
+          <div *ngIf="fixed" formGroupName="fixedScheduling">
+            <div class="p-grid">
+              <div class="p-col FloatLabelInput">
+             <span class="ui-float-label">
+               <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="scheduledDateTime" formControlName="scheduledDateTime" [stepMinute]="15" [defaultDate]="getDefaultDate()" [showTime]="!form.controls.details.controls.schedule.controls.fixedScheduling.controls.scheduledDateOnly.value"></p-calendar>
+               <label for="scheduledDateTime">Scheduled date + time</label>
+             </span>
+              </div>
+            </div>
+            <div class="p-grid">
+              <div class="p-col FloatLabelInput">
+             <span class="ui-float-label">
+               <p-checkbox id="scheduledDateOnly" formControlName="scheduledDateOnly" [binary]="true"></p-checkbox>
+               <label for="scheduledDateOnly" style="padding-left: 1.5em">Date only</label>
+             </span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="proposedDate" formGroupName="proposedDate">
+            <div class="p-grid">
+              <div class="p-col FloatLabelInput">
+             <span class="ui-float-label">
+               <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="proposedDateTime" formControlName="proposedDateTime" [stepMinute]="15" [defaultDate]="getDefaultDate()" [showTime]="!form.controls.details.controls.schedule.controls.proposedDate.controls.proposedDateOnly.value && !form.controls.details.controls.schedule.controls.proposedDate.controls.proposedWeekOnly.value"></p-calendar>
+               <label for="proposedDateTime">Proposed date + time</label>
+             </span>
+              </div>
+            </div>
+            <div class="p-grid">
+              <div class="p-col FloatLabelInput">
+             <span class="ui-float-label">
+               <p-checkbox id="proposedDateOnly" formControlName="proposedDateOnly" [disabled]="form.controls.details.controls.schedule.controls.proposedDate.controls.proposedWeekOnly.value" [binary]="true"></p-checkbox>
+               <label for="proposedDateOnly" style="padding-left: 1.5em">Date only</label>
+             </span>
+              </div>
+            </div>
+            <div class="p-grid">
+              <div class="p-col FloatLabelInput">
+             <span class="ui-float-label">
+               <p-checkbox id="proposedWeekOnly" formControlName="proposedWeekOnly" [disabled]="form.controls.details.controls.schedule.controls.proposedDate.controls.proposedDateOnly.value" [binary]="true"></p-checkbox>
+               <label for="proposedWeekOnly" style="padding-left: 1.5em">Week only</label>
+             </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

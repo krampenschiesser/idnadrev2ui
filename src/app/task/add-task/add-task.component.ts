@@ -5,9 +5,15 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DocumentService } from '../../document/document.service';
 import { MessageService } from 'primeng/api';
 import { switchMap } from 'rxjs/operators';
-import Task, { FixedScheduling, ProposedDateTime, ProposedWeekDayYear } from '../../dto/Task';
+import Task, { FixedScheduling, ProposedDateTime } from '../../dto/Task';
 import { TaskService } from '../task.service';
 import * as moment from 'moment';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
+export enum SchedulingEdit {
+  FIXED,
+  PROPOSED_DATE,
+}
 
 @Component({
   selector: 'app-add-task',
@@ -17,11 +23,13 @@ import * as moment from 'moment';
 export class AddTaskComponent implements OnInit {
 
   form = new FormGroup({
+    schedulingSelection: new FormControl(),
     name: new FormControl('', [Validators.required]),
     tags: new FormControl([]),
     repository: new FormControl(undefined, [Validators.required]),
     content: new FormControl(''),
     details: new FormGroup({
+      parent: new FormControl(),
       estimatedTime: new FormControl(),
       state: new FormControl(),
       action: new FormControl(false),
@@ -37,14 +45,10 @@ export class AddTaskComponent implements OnInit {
           scheduledDateTime: new FormControl(),
           scheduledDateOnly: new FormControl(false),
         }),
-        proposedWeekDayYear: new FormGroup({
-          proposedYear: new FormControl(moment().year()),
-          proposedWeek: new FormControl(moment().isoWeek()),
-          proposedWeekDay: new FormControl(),
-        }),
         proposedDate: new FormGroup({
           proposedDateTime: new FormControl(),
           proposedDateOnly: new FormControl(true),
+          proposedWeekOnly: new FormControl(),
         }),
       }),
     }),
@@ -53,6 +57,11 @@ export class AddTaskComponent implements OnInit {
   taskInEdit = new Task('');
   creating = false;
   taskStates = ['Asap', 'Later'];
+
+  scheduleValues = [{label: 'Fixed schedule', value: SchedulingEdit.FIXED}, {label: 'Proposed date/week', value: SchedulingEdit.PROPOSED_DATE}];
+  fixed = false;
+  proposedDate = false;
+  finishedIcon = faCheck;
 
   constructor(private route: ActivatedRoute, private taskService: TaskService, private messageService: MessageService) {
   }
@@ -67,6 +76,11 @@ export class AddTaskComponent implements OnInit {
       if (task) {
         this.taskInEdit = task;
         this.form.patchValue(this.taskInEdit);
+        if (task.details.schedule.fixedScheduling) {
+          this.form.patchValue({schedulingSelection: {value: SchedulingEdit.FIXED}});
+        } else if (task.details.schedule.proposedDate) {
+          this.form.patchValue({schedulingSelection: {value: SchedulingEdit.PROPOSED_DATE}});
+        }
       }
     });
 
@@ -77,10 +91,28 @@ export class AddTaskComponent implements OnInit {
   }
 
   applyFormChanges(value: any) {
+    if (value.schedulingSelection) {
+      this.fixed = value.schedulingSelection.value === SchedulingEdit.FIXED;
+      this.proposedDate = value.schedulingSelection.value === SchedulingEdit.PROPOSED_DATE;
+      if(this.fixed) {
+        value.details.schedule.proposedDate = undefined;
+      }else if(this.proposedDate) {
+        value.details.schedule.fixedScheduling = undefined;
+      } else {
+        value.details.schedule.fixedScheduling= undefined;
+        value.details.schedule.proposedDate = undefined;
+      }
+    } else {
+      this.fixed = false;
+      this.proposedDate = false;
+      value.details.schedule.fixedScheduling= undefined;
+      value.details.schedule.proposedDate = undefined;
+    }
+    // value.schedulingSelection = undefined;
 
-    if (value.details.estimatedTime&& !value.details.action) {
+    if (value.details.estimatedTime && !value.details.action) {
       value.details.action = true;
-      console.log('patching')
+      console.log('patching');
       this.form.patchValue({details: {action: true}});
     }
     // let name = value.name;
@@ -146,6 +178,10 @@ export class AddTaskComponent implements OnInit {
     }
     let result = possibleValues.filter(s => s.toLocaleLowerCase().includes(prefix.toLocaleLowerCase()));
     this.taskStates = result;
+  }
+
+  getDefaultDate(): Date {
+    return moment().set('hour', 8).set('minute', 0).set('second', 0).toDate();
   }
 }
 

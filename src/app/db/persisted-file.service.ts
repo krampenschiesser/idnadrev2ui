@@ -8,6 +8,9 @@ import Document from '../dto/Document';
 import BinaryFile from '../dto/BinaryFile';
 import Index from './Index';
 import { indexFromJson } from './IndexFromJson';
+import Contact from '../dto/Contact';
+import Template from '../dto/Template';
+import List from '../dto/List';
 
 @Injectable({
   providedIn: 'root'
@@ -92,7 +95,37 @@ export class PersistedFileService {
     return doc;
   }
 
-  async toBinaryFile(persisted: PersistedBinaryFile, repo: Repository): Promise<BinaryFile > {
+  async toTemplate(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Template> {
+    let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+    let parse = JSON.parse(decrypt);
+    let doc = new Template(parse.name, parse.tags);
+    Object.assign(doc, parse);
+    this.fileDates(doc);
+    return doc;
+  }
+
+  async toList(persisted: PersistedIdnadrevFile, repo: Repository): Promise<List> {
+    let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+    let parse = JSON.parse(decrypt);
+    let doc = new List(parse.name, parse.tags);
+    Object.assign(doc, parse);
+    this.fileDates(doc);
+    return doc;
+  }
+
+  async toContact(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Contact> {
+    let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+    let parse = JSON.parse(decrypt);
+    let doc = new Contact(parse.name, parse.tags);
+    Object.assign(doc, parse);
+    if (doc.details.birthday && typeof doc.details.birthday === 'string') {
+      doc.details.birthday = new Date(doc.details.birthday);
+    }
+    this.fileDates(doc);
+    return doc;
+  }
+
+  async toBinaryFile(persisted: PersistedBinaryFile, repo: Repository): Promise<BinaryFile> {
     let decryptJson = await repo.decryptToText(persisted.data, persisted.nonce);
     let decryptContent = await repo.decrypt(persisted.dataBinary, persisted.nonceBinary);
     let parse = JSON.parse(decryptJson);
@@ -113,7 +146,7 @@ export class PersistedFileService {
   }
 
 
-  async toIndex(persisted: PersistedIndex , repo: Repository): Promise<Index > {
+  async toIndex(persisted: PersistedIndex, repo: Repository): Promise<Index> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let idx = indexFromJson(persisted.type, decrypt);
     return idx;

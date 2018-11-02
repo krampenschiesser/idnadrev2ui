@@ -13,7 +13,7 @@ import {
   DropdownModule,
   InputTextModule,
   MessageModule,
-  MessagesModule, TabViewModule,
+  MessagesModule, SelectButtonModule, TabViewModule,
   TooltipModule, TreeTableModule
 } from 'primeng/primeng';
 import {TableModule} from 'primeng/table';
@@ -26,6 +26,7 @@ import {TaskPreviewComponent} from './task-preview/task-preview.component';
 import { TaskFilterComponent } from './task-filter/task-filter.component';
 import { TaskViewComponent } from './task-view/task-view.component';
 import { InplaceModule } from '../inplace/inplace.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -59,6 +60,8 @@ const routes: Routes = [
     CalendarModule,
     AutoCompleteModule,
     AccordionModule,
+    SelectButtonModule,
+    FontAwesomeModule
   ],
   declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent],
   exports: [TaskPreviewComponent],

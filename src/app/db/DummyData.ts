@@ -2,13 +2,16 @@ import * as moment from 'moment';
 import BinaryFile from '../dto/BinaryFile';
 import Repository from '../dto/Repository';
 import { Tag } from '../dto/Tag';
-import Task, { Delegation, DelegationState, FixedScheduling, ProposedDateTime, ProposedWeekDayYear, Scheduling,  WorkUnit } from '../dto/Task';
+import Task, { Delegation, DelegationState, FixedScheduling, ProposedDateTime, Scheduling, WorkUnit } from '../dto/Task';
 import Thought from '../dto/Thought';
 import { RepositoryId } from '../dto/RepositoryId';
 import { fromHex } from '../crypto/CryptoHelper';
+import Contact from '../dto/Contact';
+import Template from '../dto/Template';
+import List from '../dto/List';
 
 export function generateRepositories(): Repository[] {
-    return [new Repository('test', 'test'), new Repository('test2', 'test2')];
+  return [new Repository('test', 'test'), new Repository('test2', 'test2')];
 }
 
 export function generateThoughts(repo: RepositoryId): Thought[] {
@@ -18,17 +21,37 @@ export function generateThoughts(repo: RepositoryId): Thought[] {
   return [t1, t2, t3];
 }
 
-export function generateTasks(repo: RepositoryId): Task[] {
+export function generateContacts(repo: RepositoryId): Contact[] {
+  let c1 = new Contact('John Doe').withRepository(repo);
+  c1.details.emails = ['john.doe@gmail.com'];
+  let c2 = new Contact('John Doe').withRepository(repo);
+  c2.content = [{label: 'testField', value: 'Hello world'}];
+  return [c1, c2];
+}
+
+export function generateTemplates(repo: RepositoryId): Template[] {
+  let t1 = new Template('test template').withRepository(repo);
+  t1.content = '# hello\n\n## world\n\n* 1\n* 2\n\nBla **Blubb**';
+  return [t1];
+}
+
+export function generateList(tasks: Task[], repo: RepositoryId): List[] {
+  let list = new List('testList').withRepository(repo);
+  list.content = tasks.map(t => t.id);
+  return [list];
+}
+
+export function generateTasks(repo: RepositoryId, contacts: Contact[]): Task[] {
   let t1 = new Task('Take safety break', [new Tag('tag1'), new Tag('tag2')]).withContent('Oh **yeah**').withRepository(repo);
   let t2 = new Task('Make barbequeue', [new Tag('grilling')]).withContent('I am hungry!!!').withRepository(repo);
   let t3 = new Task('Go to store', [new Tag('grilling')]).withContent('slow **traffic**').withRepository(repo);
   let t4 = new Task('Buy steak', [new Tag('beef')]).withContent('# I am hungry!!!').withRepository(repo);
   let t5 = new Task('Buy beer', [new Tag('drinks')]).withContent('I am thirsty!!!').withRepository(repo);
   let t6 = new Task('Finished', [new Tag('finished')]).withContent('A finished task...').withRepository(repo);
-  t5.details.state='Asap';
-  t4.details.state='Later';
-  t3.details.delegation= new DelegationState();
-  t3.details.delegation.current= new Delegation("somebody");
+  t5.details.state = 'Asap';
+  t4.details.state = 'Later';
+  t3.details.delegation = new DelegationState();
+  t3.details.delegation.current = new Delegation(contacts[0].id);
 
   t1.references = [t2.id];
 
@@ -68,15 +91,14 @@ export function generateTasks(repo: RepositoryId): Task[] {
       sched.proposedDate.proposedDateTime = moment().add(i + 1, 'day').toDate();
       sched.proposedDate.proposedDateOnly = true;
     } else {
-      sched.proposedWeekDayYear = new ProposedWeekDayYear();
-      sched.proposedWeekDayYear.proposedYear = moment().year();
-      sched.proposedWeekDayYear.proposedWeek = moment().week();
+      sched.proposedDate = new ProposedDateTime();
+      sched.proposedDate.proposedDateTime = moment().add(i + 1, 'day').toDate();
+      sched.proposedDate.proposedWeekOnly = true;
       // if (i / 2 > 3) {
       //   sched.proposedWeekDayYear.proposedWeekDay = moment().week();
       // }
     }
     task.details.schedule = sched;
-
     retval.push(task);
   }
   return retval;
