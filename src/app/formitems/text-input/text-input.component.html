@@ -1,0 +1,11 @@
+<div class="p-grid">
+  <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+              <input #name [id]="'float'+label" [type]="number ? 'number' : 'text'" [(ngModel)]="input" class="FormInput" pInputText (blur)="onTouched()">
+              <label [for]="'float'+label">{{label}}</label>
+       </span>
+  </div>
+  <div class="p-col">
+    <p-message severity="error" [text]="validationError" *ngIf="invalid"></p-message>
+  </div>
+</div>

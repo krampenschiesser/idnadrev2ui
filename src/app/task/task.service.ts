@@ -3,11 +3,9 @@ import Task from '../dto/Task';
 import { BehaviorSubject } from 'rxjs';
 import { DexieService } from '../db/dexie.service';
 import { PersistedFileService } from '../db/persisted-file.service';
-import { RepositoryService } from '../repository/repository.service';
 import { FileType } from '../dto/FileType';
-import Document from '../dto/Document';
-import Thought from '../dto/Thought';
 import { FileId } from '../dto/FileId';
+import { RepositoryService } from '../service/repository.service';
 
 @Injectable({
   providedIn: 'root'

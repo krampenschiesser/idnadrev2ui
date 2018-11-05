@@ -24,8 +24,9 @@ export function generateThoughts(repo: RepositoryId): Thought[] {
 export function generateContacts(repo: RepositoryId): Contact[] {
   let c1 = new Contact('John Doe').withRepository(repo);
   c1.details.emails = ['john.doe@gmail.com'];
-  let c2 = new Contact('John Doe').withRepository(repo);
+  let c2 = new Contact('Jane Doe').withRepository(repo);
   c2.content = [{label: 'testField', value: 'Hello world'}];
+  c2.details.phones=['+49281937681']
   return [c1, c2];
 }
 

@@ -22,3 +22,6 @@ body {
     /*width: 20.5em !important;*/
     width: 217px  !important;
 }
+.RightAligned {
+    text-align: right;
+}

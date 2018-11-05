@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Tag } from '../dto/Tag';
-import { RepositoryService } from '../repository/repository.service';
 import { BehaviorSubject } from 'rxjs';
-import Repository from '../dto/Repository';
-import { addToViewTree } from '@angular/core/src/render3/instructions';
+import { RepositoryService } from '../service/repository.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +14,7 @@ export class TagService {
   }
 
   async reload() {
-    await this.repoService.loadAllRepositories();
+    await this.repoService.waitLoadAllRepositoriesOnce();
     this.repoService.openRepositories.map(r => r.getTagIndex.getAllValues()).forEach(given => {
       for (let tag of Array.from(given)) {
         if (tag) {

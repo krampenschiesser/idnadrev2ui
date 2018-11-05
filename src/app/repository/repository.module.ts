@@ -11,7 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RepositoryNamePipe } from './repository-name.pipe';
-import { RepositorySelectorComponent } from './repository-selector/repository-selector.component';
+import { FormitemsModule } from '../formitems/formitems.module';
 
 const routes: Routes = [
   {path: 'repo', component: OverviewComponent},
@@ -35,10 +35,11 @@ const routes: Routes = [
     ProgressSpinnerModule,
     BlockUIModule,
     AutoCompleteModule,
-    FormsModule
+    FormsModule,
+    FormitemsModule
   ],
-  declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe, RepositorySelectorComponent],
-  exports:[RepositoryNamePipe,RepositorySelectorComponent]
+  declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe],
+  exports:[RepositoryNamePipe]
 })
 export class RepositoryModule {
 }

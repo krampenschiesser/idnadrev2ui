@@ -2,41 +2,11 @@
 
 <p-blockUI [blocked]="creating"></p-blockUI>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-       <span class="ui-float-label">
-              <input #name id="float-name" type="text" class="FormInput" pInputText formControlName="name">
-              <label for="float-name">Name</label>
-       </span>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
-    </div>
-  </div>
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-       <span class="ui-float-label">
-              <input #name id="float-postpone" type="number" class="FormInput" pInputText formControlName="postpone" style="width: 267px">
-              <label for="float-postpone">Postpone {{form.get('postpone').value || 'N'}} days</label>
-       </span>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Must be a number of days >=0" *ngIf="!form.controls['postpone'].valid&&form.controls['postpone'].dirty"></p-message>
-    </div>
-  </div>
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-      <app-tag-input label="Tags" [parentFormControl]="tagsControl" [originalTags]="tagsControl.value"></app-tag-input>
-    </div>
-  </div>
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-      <app-repository-selector label="Repository" [parentFormControl]="form.get('repository')"></app-repository-selector>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Repository is required" *ngIf="!form.controls['repository'].valid&&form.controls['repository'].dirty"></p-message>
-    </div>
-  </div>
+
+  <app-text-input formControlName="name" label="Name" [invalid]="!form.controls['name'].valid&&form.controls['name'].dirty" validationError="Name is required"></app-text-input>
+  <app-text-input formControlName="postpone" label="Postpone {{form.get('postpone').value || 'N'}} days"  [number]="true" [invalid]="!form.controls['postpone'].valid&&form.controls['postpone'].dirty" validationError="Must be a number of days >=0"></app-text-input>
+  <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
+  <app-repository-input formControlName="repository"></app-repository-input>
   <div class="p-grid">
     <div class="p-col">
       <app-markdown-editor [parentFormControl]="contentControl"></app-markdown-editor>

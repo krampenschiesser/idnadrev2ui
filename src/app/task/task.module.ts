@@ -27,6 +27,7 @@ import { TaskFilterComponent } from './task-filter/task-filter.component';
 import { TaskViewComponent } from './task-view/task-view.component';
 import { InplaceModule } from '../inplace/inplace.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FormitemsModule } from '../formitems/formitems.module';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -61,7 +62,8 @@ const routes: Routes = [
     AutoCompleteModule,
     AccordionModule,
     SelectButtonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    FormitemsModule
   ],
   declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent],
   exports: [TaskPreviewComponent],

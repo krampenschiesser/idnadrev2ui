@@ -1,0 +1,62 @@
+<div class="p-grid">
+  <div class="p-col">
+    <h1>Contacts</h1>
+  </div>
+  <div class="p-col-fixed" style="width: 7em">
+    <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new thought" style="width: 5em; height: 2.5em; margin-top: 27px" (click)="addContact()"></button>
+  </div>
+</div>
+
+<div class="p-grid">
+  <div class="p-col">
+    <app-idnadrev-file-filter (filter)="onFilter($event)"></app-idnadrev-file-filter>
+    <p-table [value]="contacts" [rowHover]="true" [autoLayout]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="padding: 0.571em;" [style.width]="selection.length > 0 ? '7em': '5em'">
+            <div *ngIf="selection.length >0">
+              <button pButton icon="fa fa-trash" pTooltip="Delete all selected" class="ui-button-danger" (click)="deleteSelected()"></button>
+              <button style="margin-left: 5px" pButton icon="fa fa-times" pTooltip="Clear selection" (click)="selection = []"></button>
+            </div>
+          </th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Tags</th>
+          <th [width]="105">Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-contact let-rowIndex="rowIndex">
+        <tr (mouseenter)="setHoverRow(rowIndex)" (mouseleave)="setHoverRow(undefined)">
+          <td>
+            <div *ngIf="!isSelected(contact) && !isRowHovered(rowIndex)" [style.paddingLeft]="selection.length > 0 ? '1em' : undefined">
+              <fa-layers [fixedWidth]="true">
+                <fa-icon [icon]="circleIcon" size="3x" [style.color]="getIconStyle(rowIndex)"></fa-icon>
+                <fa-layers-text content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{contact.initial}}" style="color: white; font-weight: bolder"></fa-layers-text>
+              </fa-layers>
+            </div>
+            <div *ngIf="isSelected(contact)|| isRowHovered(rowIndex)" [style.paddingLeft]="selection.length > 0 ? '1.9em' : '0.9em'">
+              <p-checkbox [value]="contact" [(ngModel)]="selection"></p-checkbox>
+            </div>
+          </td>
+          <td (click)="showPreview(contact)">{{contact.name}}</td>
+          <td (click)="showPreview(contact)">{{contact.email}}</td>
+          <td (click)="showPreview(contact)">{{contact.phone}}</td>
+          <td (click)="showPreview(contact)">
+            <app-tagview [tags]="contact.tags"></app-tagview>
+          </td>
+          <td>
+            <div class="p-grid">
+              <div class="p-col ActionButton">
+                <button pButton type="button" icon="fa fa-edit" pTooltip="Edit" (click)="this.edit(contact)"></button>
+              </div>
+              <div class="p-col ActionButton">
+                <button pButton type="button" icon="fa fa-trash" pTooltip="Delete" class="ui-button-danger" (click)="this.delete()"></button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

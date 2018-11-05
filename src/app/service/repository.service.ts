@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import Repository from '../dto/Repository';
 import { RepositoryId } from '../dto/RepositoryId';
-import { RepositoryToken } from '../dto/RepositoryToken';
 import { DexieService } from '../db/dexie.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { PersistedFileService } from '../db/persisted-file.service';
 import Index from '../db/Index';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

@@ -3,16 +3,15 @@ import { BehaviorSubject } from 'rxjs';
 import Thought from '../dto/Thought';
 import { DexieService } from '../db/dexie.service';
 import { PersistedFileService } from '../db/persisted-file.service';
-import { RepositoryService } from '../repository/repository.service';
 import { FileType } from '../dto/FileType';
 import Document from '../dto/Document';
-import * as moment from 'moment';
 import IdnadrevFile from '../dto/IdnadrevFile';
 import Task from '../dto/Task';
 import BinaryFile from '../dto/BinaryFile';
 import { PersistedBinaryFile } from '../db/PersistedFiles';
 import { ThoughtService } from '../thought/thought.service';
 import { TaskService } from '../task/task.service';
+import { RepositoryService } from '../service/repository.service';
 
 @Injectable({
   providedIn: 'root'

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { RepositoryService } from './repository.service';
+import { RepositoryService } from '../service/repository.service';
 
 @Pipe({
   name: 'repositoryName'

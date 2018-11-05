@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IdnadrevFilePreviewComponent } from './idnadrev-file-preview/idnadrev-file-preview.component';
 import { IdnadrevFileFilterComponent } from './idnadrev-file-filter/idnadrev-file-filter.component';
 import { FileTypePipe } from './file-type.pipe';
+import { FormitemsModule } from '../formitems/formitems.module';
 
 const routes: Routes = [
   {path: 'doc/:id', component: AddDocumentComponent},
@@ -44,8 +45,10 @@ const routes: Routes = [
     CheckboxModule,
     DropdownModule,
     TaskModule,
-    ThoughtModule
+    ThoughtModule,
+    FormitemsModule
   ],
-  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe]
+  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe],
+  exports: [IdnadrevFileFilterComponent]
 })
 export class DocumentModule { }

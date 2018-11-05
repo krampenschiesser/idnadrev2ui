@@ -130,4 +130,8 @@ export class DexieService extends Dexie {
   loadIndexes(repositoryId: RepositoryId): Promise<PersistedIndex[]> {
     return this.indexes.where('repositoryId').equals(repositoryId).toArray();
   }
+
+  deleteData() {
+    return Promise.all([this.files.clear(), this.indexes.clear(), this.repositories.clear()]);
+  }
 }

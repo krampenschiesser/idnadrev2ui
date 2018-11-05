@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import Thought from '../../dto/Thought';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { ThoughtService } from '../thought.service';
 import * as moment from 'moment';
 import { MessageService } from 'primeng/api';
+import { post } from 'selenium-webdriver/http';
 
 @Component({
   selector: 'app-add-thought',
@@ -16,7 +17,7 @@ export class AddThoughtComponent implements OnInit {
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
     tags: new FormControl([]),
-    postpone: new FormControl(),
+    postpone: new FormControl(undefined, [postponeValidator()]),
     repository: new FormControl(undefined, [Validators.required]),
     content: new FormControl(''),
   });
@@ -79,4 +80,16 @@ export class AddThoughtComponent implements OnInit {
       });
     }
   }
+}
+
+function postponeValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    let postpone = control.value;
+    if (postpone && typeof postpone === 'number') {
+      if (postpone < 1) {
+        return {'postpone': {value: control.value}};
+      }
+    }
+    return null;
+  };
 }

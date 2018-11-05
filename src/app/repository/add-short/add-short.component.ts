@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { RepositoryService } from '../repository.service';
+import { RepositoryService } from '../../service/repository.service';
 
 @Component({
   selector: 'app-add-repo-short',

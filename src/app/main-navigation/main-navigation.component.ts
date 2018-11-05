@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faDatabase, faBook, faClipboardList, faInbox, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faDatabase, faBook, faClipboardList, faInbox, faHome, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-main-navigation',
@@ -12,6 +12,7 @@ export class MainNavigationComponent implements OnInit {
   tasksIcon = faClipboardList;
   inboxIcon = faInbox;
   homeIcon = faHome;
+  usersIcon = faUsers;
 
   constructor() {
   }

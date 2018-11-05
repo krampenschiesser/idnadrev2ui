@@ -14,6 +14,7 @@ import { TagModule } from '../tag/tag.module';
 import { BlockUIModule, CheckboxModule, DialogModule, InputTextModule, MessageModule, MessagesModule, TooltipModule } from 'primeng/primeng';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThoughtFilterComponent } from './thought-filter/thought-filter.component';
+import { FormitemsModule } from '../formitems/formitems.module';
 
 const routes: Routes = [
   {path: 'thought/process', component: ThoughtProcessComponent},
@@ -41,6 +42,7 @@ const routes: Routes = [
     MessagesModule,
     BlockUIModule,
     CheckboxModule,
+    FormitemsModule,
   ],
   declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent],
   exports:[ThoughtPreviewComponent]

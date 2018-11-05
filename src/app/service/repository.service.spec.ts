@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RepositoryService } from './repository.service';
 import { DexieService } from '../db/dexie.service';
 import { PersistedFileService } from '../db/persisted-file.service';
 import Repository from '../dto/Repository';
 import * as waitUntil from 'async-wait-until';
 import { isAvailable } from 'rasm-crypt';
+import { RepositoryService } from './repository.service';
 
 describe('RepositoryService', () => {
   beforeAll(async () => {

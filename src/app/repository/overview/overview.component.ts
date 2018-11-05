@@ -1,8 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { RepositoryService } from '../repository.service';
-import Repository from '../../dto/Repository';
-import { RepositoryId } from '../../dto/RepositoryId';
 import { MessageService } from 'primeng/api';
+import Repository from '../../dto/Repository';
+import { RepositoryService } from '../../service/repository.service';
 
 
 @Component({

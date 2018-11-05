@@ -16,6 +16,7 @@ import { ToastModule } from 'primeng/toast';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ThoughtModule } from './thought/thought.module';
 import { DocumentModule } from './document/document.module';
+import { ContactModule } from './contact/contact.module';
 
 const appRoutes: Routes = [
   // { path: 'repo',   component: OverviewComponent}, // <-- delete this line
@@ -32,6 +33,7 @@ const appRoutes: Routes = [
     RepositoryModule,
     ThoughtModule,
     DocumentModule,
+    ContactModule,
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(

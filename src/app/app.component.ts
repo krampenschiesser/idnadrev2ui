@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { RepositoryService } from './repository/repository.service';
 import { DexieService } from './db/dexie.service';
 import * as waitUntil from 'async-wait-until';
 import { generateBinaryFiles, generateContacts, generateList, generateRepositories, generateTasks, generateTemplates, generateThoughts } from './db/DummyData';
 import { isAvailable } from 'rasm-crypt';
+import { MessageService } from 'primeng/api';
 
 
 @Component({
@@ -13,10 +13,8 @@ import { isAvailable } from 'rasm-crypt';
 })
 export class AppComponent {
   sideBarVisible = false;
-  dexie: DexieService;
 
-  constructor(dexie: DexieService) {
-    this.dexie = dexie;
+  constructor(private dexie: DexieService) {
   }
 
   async createDummyData() {
@@ -37,10 +35,15 @@ export class AppComponent {
       await Promise.all(generateTemplates(repo.id).map(t => this.dexie.store(t, repo)));
       // generateManyTasks().forEach(t => this.store(t));
       console.log('done creating dummy data');
+   alert('created dummy data')
     } catch (e) {
       console.log('Could not create dummy data', e);
       throw e;
     }
+  }
 
+  async clear() {
+    await this.dexie.deleteData();
+    alert('deleted db');
   }
 }

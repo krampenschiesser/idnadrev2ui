@@ -14,14 +14,7 @@
       <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
     </div>
   </div>
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-      <app-tag-input label="Tags" [parentFormControl]="form.get('tags')" [originalTags]="form.get('tags').value"></app-tag-input>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Tags invalid" *ngIf="!form.controls['tags'].valid&&form.controls['tags'].dirty"></p-message>
-    </div>
-  </div>
+  <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
   <div class="p-grid" formGroupName="details">
     <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
@@ -52,14 +45,7 @@
     </div>
   </div>
 
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-      <app-repository-selector label="Repository" [parentFormControl]="form.get('repository')"></app-repository-selector>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Repository is required" *ngIf="!form.controls['repository'].valid&&form.controls['repository'].dirty"></p-message>
-    </div>
-  </div>
+  <app-repository-selector formControlName="repository"></app-repository-selector>
   <div class="p-grid">
     <div class="p-col FloatLabelInput">
       <app-markdown-editor [parentFormControl]="form.get('content')"></app-markdown-editor>
