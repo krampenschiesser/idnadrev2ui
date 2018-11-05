@@ -3,17 +3,7 @@
 
 <p-blockUI [blocked]="creating"></p-blockUI>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-       <span class="ui-float-label">
-              <input #name id="float-name" type="text" class="FormInput" pInputText formControlName="name">
-              <label for="float-name">Name</label>
-       </span>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
-    </div>
-  </div>
+  <app-text-input formControlName="name" label="Name" [invalid]="!form.controls['name'].valid&&form.controls['name'].dirty" validationError="Name is required"></app-text-input>
   <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
   <div class="p-grid" formGroupName="details">
     <div class="p-col FloatLabelInput">
@@ -25,13 +15,12 @@
     <div class="p-col">
       <p-message severity="error" text="State is required" *ngIf="!form.controls.details.controls.state.valid&&form.controls.details.controls.state.dirty"></p-message>
     </div>
-    f
   </div>
   <div class="p-grid" formGroupName="details">
     <div class="p-col FloatLabelInput">
        <span class="ui-float-label">
          <input id="estimatedTime" class="FormInputWithDropDown" pInputText type="number" min="1" formControlName="estimatedTime">
-         <button pButton type="button" icon="fa fa-times" (click)="form.patchValue({details: {estimatedTime: undefined}})"></button>
+         <app-reset-field-button formControlName="estimatedTime"></app-reset-field-button>
          <label for="estimatedTime">Estimated time in min.</label>
        </span>
     </div>
@@ -76,7 +65,7 @@
         <div class="p-col FloatLabelInput">
          <span class="ui-float-label">
            <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="earliestStartDate" formControlName="earliestStartDate"></p-calendar>
-           <button pButton type="button" style="margin-left: 35px" icon="fa fa-times" (click)="form.patchValue({details: {earliestStartDate: undefined}})"></button>
+           <app-reset-field-button formControlName="earliestStartDate"></app-reset-field-button>
            <label for="earliestStartDate">Earliest start date</label>
          </span>
         </div>
@@ -89,7 +78,7 @@
 
       <div>
         <p-selectButton [options]="scheduleValues" optionLabel="label" formControlName="schedulingSelection"></p-selectButton>
-        <button pButton type="button" icon="fa fa-times" (click)="form.patchValue({schedulingSelection: undefined})"></button>
+        <app-reset-field-button formControlName="schedulingSelection"></app-reset-field-button>
       </div>
 
       <div formGroupName="details">

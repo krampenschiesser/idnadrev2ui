@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import IdnadrevFileFilter, { filterFiles } from '../../filter/IdnadrevFileFilter';
-import { ContactService } from '../contact.service';
+import { ContactService } from '../../service/contact.service';
 import Contact from '../../dto/Contact';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 

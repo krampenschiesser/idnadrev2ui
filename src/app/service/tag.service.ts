@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Tag } from '../dto/Tag';
 import { BehaviorSubject } from 'rxjs';
-import { RepositoryService } from '../service/repository.service';
+import { RepositoryService } from './repository.service';
 
 @Injectable({
   providedIn: 'root'

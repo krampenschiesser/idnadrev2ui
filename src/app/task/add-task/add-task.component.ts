@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import Document from '../../dto/Document';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { DocumentService } from '../../document/document.service';
+import { DocumentService } from '../../service/document.service';
 import { MessageService } from 'primeng/api';
 import { switchMap } from 'rxjs/operators';
 import Task, { FixedScheduling, ProposedDateTime } from '../../dto/Task';
-import { TaskService } from '../task.service';
+import { TaskService } from '../../service/task.service';
 import * as moment from 'moment';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 

@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import Task from '../../dto/Task';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { TaskService } from '../../task/task.service';
+import { TaskService } from '../../service/task.service';
 import { switchMap } from 'rxjs/operators';
-import { ContactService } from '../contact.service';
+import { ContactService } from '../../service/contact.service';
 import Contact from '../../dto/Contact';
 
 @Component({

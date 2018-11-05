@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ThoughtService } from '../thought.service';
+import { ThoughtService } from '../../service/thought.service';
 import Thought from '../../dto/Thought';
 import { Router } from '@angular/router';
 import { ThoughtFilter } from '../ThoughtFilter';

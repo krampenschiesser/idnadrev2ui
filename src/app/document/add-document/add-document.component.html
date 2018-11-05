@@ -2,17 +2,7 @@
 
 <p-blockUI [blocked]="creating"></p-blockUI>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="p-grid">
-    <div class="p-col FloatLabelInput">
-       <span class="ui-float-label">
-              <input #name id="float-name" type="text" class="FormInput" pInputText formControlName="name">
-              <label for="float-name">Name</label>
-       </span>
-    </div>
-    <div class="p-col">
-      <p-message severity="error" text="Name is required" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
-    </div>
-  </div>
+  <app-text-input formControlName="name" label="Name" [invalid]="!form.controls['name'].valid&&form.controls['name'].dirty" validationError="Name is required"></app-text-input>
   <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
   <app-repository-input formControlName="repository"></app-repository-input>
   <div class="p-grid">

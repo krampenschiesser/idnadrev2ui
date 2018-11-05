@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn,
 import Thought from '../../dto/Thought';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
-import { ThoughtService } from '../thought.service';
+import { ThoughtService } from '../../service/thought.service';
 import * as moment from 'moment';
 import { MessageService } from 'primeng/api';
 import { post } from 'selenium-webdriver/http';

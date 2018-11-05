@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import Document from "../../dto/Document";
-import { DocumentService } from '../document.service';
+import { DocumentService } from '../../service/document.service';
 import { MessageService } from 'primeng/api';
 
 @Component({

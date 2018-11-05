@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Contact from '../../dto/Contact';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ContactService } from '../contact.service';
+import { ContactService } from '../../service/contact.service';
 import { switchMap } from 'rxjs/operators';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 

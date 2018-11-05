@@ -5,7 +5,7 @@ import { DexieService } from '../db/dexie.service';
 import { PersistedFileService } from '../db/persisted-file.service';
 import { FileType } from '../dto/FileType';
 import { FileId } from '../dto/FileId';
-import { RepositoryService } from '../service/repository.service';
+import { RepositoryService } from './repository.service';
 
 @Injectable({
   providedIn: 'root'

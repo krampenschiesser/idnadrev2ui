@@ -9,9 +9,9 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import Task from '../dto/Task';
 import BinaryFile from '../dto/BinaryFile';
 import { PersistedBinaryFile } from '../db/PersistedFiles';
-import { ThoughtService } from '../thought/thought.service';
-import { TaskService } from '../task/task.service';
-import { RepositoryService } from '../service/repository.service';
+import { ThoughtService } from './thought.service';
+import { TaskService } from './task.service';
+import { RepositoryService } from './repository.service';
 
 @Injectable({
   providedIn: 'root'

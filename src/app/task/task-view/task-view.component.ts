@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Task from '../../dto/Task';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { TaskService } from '../task.service';
+import { TaskService } from '../../service/task.service';
 import { switchMap } from 'rxjs/operators';
 
 @Component({

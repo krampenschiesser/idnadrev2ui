@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { TextInputComponent } from './text-input/text-input.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
-import { AutoCompleteModule, InputTextModule, MessagesModule } from 'primeng/primeng';
+import {AutoCompleteModule, ButtonModule, InputTextModule, MessagesModule} from 'primeng/primeng';
 import { RepositoryInputComponent } from './repository-input/repository-input.component';
 import { DateInputComponent } from './date-input/date-input.component';
 import { RepositorySelectorComponent } from './repository-selector/repository-selector.component';
 import { TagInputFormItemComponent } from './tag-input-form-item/tag-input-form-item.component';
 import { TagModule } from '../tag/tag.module';
+import { ResetFieldButtonComponent } from './reset-field-button/reset-field-button.component';
 
 @NgModule({
   imports: [
@@ -19,10 +20,11 @@ import { TagModule } from '../tag/tag.module';
     MessagesModule,
     InputTextModule,
     AutoCompleteModule,
-    TagModule
+    TagModule,
+    ButtonModule
   ],
-  declarations: [TextInputComponent, RepositoryInputComponent, DateInputComponent, RepositorySelectorComponent, TagInputFormItemComponent],
-  exports: [TextInputComponent, RepositoryInputComponent, DateInputComponent,RepositorySelectorComponent,TagInputFormItemComponent]
+  declarations: [TextInputComponent, RepositoryInputComponent, DateInputComponent, RepositorySelectorComponent, TagInputFormItemComponent, ResetFieldButtonComponent],
+  exports: [TextInputComponent, RepositoryInputComponent, DateInputComponent,RepositorySelectorComponent,TagInputFormItemComponent,ResetFieldButtonComponent]
 })
 export class FormitemsModule {
 }

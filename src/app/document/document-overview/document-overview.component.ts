@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import IdnadrevFile from '../../dto/IdnadrevFile';
 import IdnadrevFileFilter, { filterFiles } from '../../filter/IdnadrevFileFilter';
-import { DocumentService } from '../document.service';
+import { DocumentService } from '../../service/document.service';
 import Thought from '../../dto/Thought';
 import Task from '../../dto/Task';
 import BinaryFile from '../../dto/BinaryFile';
 import Document from '../../dto/Document';
-import { ThoughtService } from '../../thought/thought.service';
+import { ThoughtService } from '../../service/thought.service';
 
 @Component({
   selector: 'app-document-overview',
