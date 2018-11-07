@@ -11,21 +11,17 @@ import { filterFiles } from '../../filter/IdnadrevFileFilter';
   styleUrls: ['./thought-overview.component.css']
 })
 export class ThoughtOverviewComponent implements OnInit {
-  private thoughtService: ThoughtService;
   thoughts: Thought[];
   allThoughts: Thought[];
   selectedThought?: Thought;
-  private router: Router;
   showPostponeDialog = false;
 
-  constructor(thoughtService: ThoughtService, router: Router) {
-    this.thoughtService = thoughtService;
-    this.router = router;
+  constructor(private thoughtService: ThoughtService, private router: Router) {
   }
 
   async ngOnInit() {
-    await this.thoughtService.loadAllThoughts();
-    this.thoughtService.thoughts.subscribe(thoughts => {
+    await this.thoughtService.loadAll();
+    this.thoughtService.files.subscribe(thoughts => {
       this.allThoughts = thoughts;
       this.thoughts = thoughts.filter(t => !t.isPostPoned);
       if (!this.selectedThought && this.thoughts.length > 0) {

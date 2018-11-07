@@ -23,8 +23,8 @@ export class ContactOverviewComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await this.contactService.loadAllContacts();
-    this.contactService.contacts.subscribe(contacts => {
+    await this.contactService.loadAll();
+    this.contactService.files.subscribe(contacts => {
       this.allContacts = contacts;
       this.contacts = contacts;
     });

@@ -12,12 +12,10 @@ import { RepositoryService } from './repository.service';
   providedIn: 'root'
 })
 export class ThoughtService extends BaseService<Thought>{
-
-
-  constructor(repositoryService, dexie: DexieService, persistedFile: PersistedFileService) {
+  constructor(repositoryService: RepositoryService, dexie: DexieService, persistedFile: PersistedFileService) {
     super(repositoryService, dexie, persistedFile, (from, repo, service) => {
       return service.toThought(from, repo);
-    });
+    },FileType.Thought);
   }
 
   async postpone(thought: Thought, days: number): Promise<string> {

@@ -35,7 +35,7 @@ export class AddThoughtComponent implements OnInit {
     this.form.patchValue(this.thoughtInEdit);
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
-        this.thoughtService.getThought(params.get('id')))
+        this.thoughtService.get(params.get('id')))
     ).subscribe(thought => {
       if (thought) {
         this.thoughtInEdit = thought;

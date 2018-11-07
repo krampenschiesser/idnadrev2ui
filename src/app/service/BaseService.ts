@@ -10,7 +10,7 @@ export default class BaseService<T extends IdnadrevFile<any, any>> {
   public files = new BehaviorSubject<T[]>([]);
   private _files: T[] = [];
 
-  constructor(protected repositoryService, protected dexie: DexieService, protected persistedFile: PersistedFileService, protected conversion: (from: PersistedIdnadrevFile, repo: Repository, service: PersistedFileService) => Promise<T>) {
+  constructor(protected repositoryService, protected dexie: DexieService, protected persistedFile: PersistedFileService, protected conversion: (from: PersistedIdnadrevFile, repo: Repository, service: PersistedFileService) => Promise<T>,protected fileType: FileType) {
   }
 
 
@@ -20,7 +20,7 @@ export default class BaseService<T extends IdnadrevFile<any, any>> {
 
     let files: T[] = [];
     for (let repo of openRepositories) {
-      let persisted = await this.dexie.getAllNonDeleted(repo.id, FileType.Contact);
+      let persisted = await this.dexie.getAllNonDeleted(repo.id, this.fileType);
       files = files.concat(await Promise.all(persisted.map(p => this.conversion(p, repo, this.persistedFile))));
     }
     this._files = files;

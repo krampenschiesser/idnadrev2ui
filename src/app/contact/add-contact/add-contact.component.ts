@@ -43,7 +43,7 @@ export class AddContactComponent implements OnInit {
     this.form.patchValue(this.contact);
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
-        this.contactService.getContact(params.get('id')))
+        this.contactService.get(params.get('id')))
     ).subscribe(task => {
       if (task) {
         this.contact = task;
