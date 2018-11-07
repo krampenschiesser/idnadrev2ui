@@ -3,7 +3,7 @@
   <div class="p-col FloatLabelInput">
     <app-repository-selector label="Repository" [ngModel]="repository" (ngModelChange)="setRepository($event)" label="Repository"></app-repository-selector>
   </div>
-  <div class="p-col">
+  <div class="p-col" *ngIf="!repository">
     <p-message severity="error" text="Repository is required" *ngIf="!repository"></p-message>
   </div>
 </div>

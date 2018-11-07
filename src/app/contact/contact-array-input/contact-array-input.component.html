@@ -1,0 +1,19 @@
+<div [formGroup]="root">
+  <div [formGroupName]="groupName">
+    <div [formArrayName]="arrayName">
+      <div *ngFor="let address of array.controls; let i=index">
+        <div class="ks-grid">
+          <div class="ks-col">
+            <app-text-input [label]="label" [formControlName]="i"></app-text-input>
+          </div>
+          <div class="ks-col" *ngIf="array.length > 1">
+            <button pButton type="button" icon="fa fa-times" (click)="array.removeAt(i)"></button>
+          </div>
+          <div class="ks-col">
+            <button *ngIf="i==array.controls.length-1" pButton type="button" icon="fa fa-plus"  (click)="onAdd()"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

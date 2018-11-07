@@ -51,7 +51,7 @@ export class TagInputComponent implements OnInit, ControlValueAccessor {
       this.results = this.allTags.slice();
     } else {
       this.results = this.allTags.filter(tag => tag.name.toLocaleLowerCase().indexOf(prefix.toLocaleLowerCase()) >= 0);
-      this.results.push(prefix);
+      this.results.push(new Tag(prefix));
     }
   }
 

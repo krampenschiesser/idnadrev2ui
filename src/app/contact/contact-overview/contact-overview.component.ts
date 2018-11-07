@@ -96,10 +96,8 @@ export class ContactOverviewComponent implements OnInit {
 
   isRowHovered(rowIndex: number) {
     if (this.hoverRow !== undefined && this.hoverRow === rowIndex) {
-      console.log('row hovered');
       return true;
     } else {
-      console.log('row not hovered');
       return false;
     }
   }

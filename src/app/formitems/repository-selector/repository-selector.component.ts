@@ -39,7 +39,6 @@ export class RepositorySelectorComponent implements OnInit, ControlValueAccessor
 
     this.repoService.repositories.subscribe(next => {
       this.all = next.filter(r => r.isOpen());
-
       if (this.selectFirst && next.filter(n => n.isOpen()).length > 0) {
         this.selectedRepo = next.filter(n => n.isOpen())[0];
         this.onChange(this.selectedRepo.id);
@@ -73,7 +72,12 @@ export class RepositorySelectorComponent implements OnInit, ControlValueAccessor
       await this.repoService.waitLoadAllRepositoriesOnce();
       this.selectedRepo = this.repoService.getRepository(obj);
     } else {
-      this.selectedRepo = undefined;
+      if (this.all.filter(n => n.isOpen()).length > 0) {
+        this.selectedRepo = this.all.filter(n => n.isOpen())[0];
+        this.onChange(this.selectedRepo.id);
+      } else {
+        this.selectedRepo = undefined;
+      }
     }
   }
 

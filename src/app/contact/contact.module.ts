@@ -14,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MarkdownModule } from '../markdown/markdown.module';
 import { RepositoryModule } from '../repository/repository.module';
 import { FormitemsModule } from '../formitems/formitems.module';
+import { ContactArrayInputComponent } from './contact-array-input/contact-array-input.component';
 
 const routes: Routes = [
   {path: 'contact/edit/:id', component: AddContactComponent},
@@ -43,7 +44,7 @@ const routes: Routes = [
     RepositoryModule,
     FormitemsModule
   ],
-  declarations: [ContactOverviewComponent, AddContactComponent, ViewContactComponent]
+  declarations: [ContactOverviewComponent, AddContactComponent, ViewContactComponent,  ContactArrayInputComponent]
 })
 export class ContactModule {
 }

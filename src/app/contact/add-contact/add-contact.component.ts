@@ -78,19 +78,4 @@ export class AddContactComponent implements OnInit {
   get details() {
     return this.form.controls.details as FormGroup;
   }
-
-  addPhoneNumber() {
-    let content = this.details.controls.phones as FormArray;
-    content.push(new FormControl());
-  }
-
-  addEmail() {
-    let content = this.details.controls.emails as FormArray;
-    content.push(new FormControl());
-  }
-
-  addAddress() {
-    let content = this.details.controls.adresses as FormArray;
-    content.push(new FormControl());
-  }
 }

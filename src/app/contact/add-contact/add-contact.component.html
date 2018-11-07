@@ -1,15 +1,50 @@
-<h1>Add document</h1>
-
 <p-blockUI [blocked]="creating"></p-blockUI>
+
+<h1>Add contact</h1>
+
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div formGroupName="details">
-    <app-text-input formControlName="firstName" label="First Name" [invalid]="!form.controls.details.controls.firstName.valid && form.controls.details.controls.firstName.dirty" validationError="First name is required"></app-text-input>
-  </div>
-  <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
-  <app-repository-input formControlName="repository"></app-repository-input>
-  <div class="p-grid">
-    <div class="p-col">
-      <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+  <div class="ks-grid" formGroupName="details">
+    <div class="ks-col">
+      <app-text-input formControlName="firstName" label="First Name" [invalid]="!form.controls.details.controls.firstName.valid && form.controls.details.controls.firstName.dirty" validationError="First name is required"></app-text-input>
     </div>
+    <div class="ks-col">
+      <app-text-input formControlName="lastName" label="Last Name" [invalid]="!form.controls.details.controls.lastName.valid && form.controls.details.controls.lastName.dirty" validationError="Last name is required"></app-text-input>
+    </div>
+  </div>
+
+  <div class="ks-grid">
+    <div class="ks-col">
+      <app-repository-input formControlName="repository"></app-repository-input>
+    </div>
+    <div class="ks-col">
+      <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
+    </div>
+  </div>
+
+  <app-contact-array-input [root]="form" groupName="details" arrayName="phones" label="Phone" [array]="this.details.controls.phones"></app-contact-array-input>
+  <app-contact-array-input [root]="form" groupName="details" arrayName="emails" label="Email" [array]="this.details.controls.emails"></app-contact-array-input>
+  <app-contact-array-input [root]="form" groupName="details" arrayName="addresses" label="Address" [array]="this.details.controls.addresses"></app-contact-array-input>
+  <div formArrayName="content">
+    <div *ngFor="let address of form.controls.content.controls; let i=index">
+      <div class="ks-grid" [formGroupName]="i">
+        <div class="ks-col">
+          <app-text-input label="Label" formControlName="label"></app-text-input>
+        </div>
+        <div class="ks-col">
+          <app-text-input label="Value" formControlName="value"></app-text-input>
+        </div>
+        <div class="ks-col" *ngIf="form.controls.content.length > 1">
+          <button pButton type="button" icon="fa fa-times" (click)="form.controls.content.removeAt(i)"></button>
+        </div>
+        <div class="ks-col">
+          <button *ngIf="i==form.controls.content.length-1" pButton type="button" icon="fa fa-plus" (click)="addCustomField()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="p-col">
+    <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+  </div>
+  <div class="p-grid">
   </div>
 </form>

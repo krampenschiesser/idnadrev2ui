@@ -5,7 +5,7 @@
               <label [for]="'float'+label">{{label}}</label>
        </span>
   </div>
-  <div class="p-col">
+  <div class="p-col" *ngIf="invalid">
     <p-message severity="error" [text]="validationError" *ngIf="invalid"></p-message>
   </div>
 </div>

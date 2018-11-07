@@ -27,8 +27,8 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-contact let-rowIndex="rowIndex">
-        <tr (mouseenter)="setHoverRow(rowIndex)" (mouseleave)="setHoverRow(undefined)">
-          <td>
+        <tr>
+          <td (mouseenter)="setHoverRow(rowIndex)" (mouseleave)="setHoverRow(undefined)">
             <div *ngIf="!isSelected(contact) && !isRowHovered(rowIndex)" [style.paddingLeft]="selection.length > 0 ? '1em' : undefined">
               <fa-layers [fixedWidth]="true">
                 <fa-icon [icon]="circleIcon" size="3x" [style.color]="getIconStyle(rowIndex)"></fa-icon>
