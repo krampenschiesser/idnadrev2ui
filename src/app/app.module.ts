@@ -46,7 +46,7 @@ const appRoutes: Routes = [
     ButtonModule,
     CardModule,
     ToastModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [MessageService],
   bootstrap: [AppComponent],

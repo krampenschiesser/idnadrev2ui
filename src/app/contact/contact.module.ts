@@ -42,7 +42,7 @@ const routes: Routes = [
     MessageModule,
     MessagesModule,
     RepositoryModule,
-    FormitemsModule
+    FormitemsModule,
   ],
   declarations: [ContactOverviewComponent, AddContactComponent, ViewContactComponent,  ContactArrayInputComponent]
 })

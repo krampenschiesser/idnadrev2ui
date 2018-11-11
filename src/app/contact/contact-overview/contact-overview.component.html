@@ -20,9 +20,9 @@
             </div>
           </th>
           <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Tags</th>
+          <th *ngIf="display.lg">Email</th>
+          <th *ngIf="display.md">Phone</th>
+          <th *ngIf="display.sm">Tags</th>
           <th [width]="105">Action</th>
         </tr>
       </ng-template>
@@ -40,9 +40,9 @@
             </div>
           </td>
           <td (click)="showPreview(contact)">{{contact.name}}</td>
-          <td (click)="showPreview(contact)">{{contact.email}}</td>
-          <td (click)="showPreview(contact)">{{contact.phone}}</td>
-          <td (click)="showPreview(contact)">
+          <td *ngIf="display.lg" (click)="showPreview(contact)">{{contact.email}}</td>
+          <td *ngIf="display.md" (click)="showPreview(contact)">{{contact.phone}}</td>
+          <td *ngIf="display.sm" (click)="showPreview(contact)">
             <app-tagview [tags]="contact.tags"></app-tagview>
           </td>
           <td>

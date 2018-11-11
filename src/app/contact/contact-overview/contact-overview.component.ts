@@ -4,6 +4,7 @@ import IdnadrevFileFilter, { filterFiles } from '../../filter/IdnadrevFileFilter
 import { ContactService } from '../../service/contact.service';
 import Contact from '../../dto/Contact';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-contact-overview',
@@ -13,13 +14,11 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons';
 export class ContactOverviewComponent implements OnInit {
   contacts: Contact[];
   allContacts: Contact[];
-  private router: Router;
   selection: Contact[] = [];
   circleIcon = faCircle;
   hoverRow?: number;
 
-  constructor(private contactService: ContactService, router: Router) {
-    this.router = router;
+  constructor(private contactService: ContactService, private router: Router, public display: DisplayService) {
   }
 
   async ngOnInit() {

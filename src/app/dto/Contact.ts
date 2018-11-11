@@ -35,7 +35,7 @@ export default class Contact extends IdnadrevFile<ContactDetails, CustomField[]>
     }
   }
 
-  get phoneNumber() {
+  get phone() {
     if (this.details.phones.length === 0) {
       return '';
     } else {
