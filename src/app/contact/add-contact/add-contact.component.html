@@ -1,6 +1,7 @@
 <p-blockUI [blocked]="creating"></p-blockUI>
 
-<h1>Add contact</h1>
+<app-page-title title="Add contact">
+</app-page-title>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="ks-grid" formGroupName="details">

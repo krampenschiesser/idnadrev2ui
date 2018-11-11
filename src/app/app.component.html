@@ -1,24 +1,7 @@
 <p-toast></p-toast>
-<p-sidebar [(visible)]="sideBarVisible">
-  <h1 style="font-weight:normal">Navigation</h1>
-  Content
-</p-sidebar>
+
+<router-outlet></router-outlet>
 
 
-<div class="p-grid">
-  <div class="p-col-fixed NavBar">
-    <p-card>
-      <div class="NavContent">
-        <app-main-navigation></app-main-navigation>
-      </div>
-    </p-card>
-  </div>
-  <div class="p-col" style="padding-left: 1.25em;">
-    <router-outlet></router-outlet>
-  </div>
-</div>
-
-
-<button type="text" (click)="sideBarVisible = !sideBarVisible" pButton icon="pi pi-plus" label="Show"></button>
 <button type="text" (click)="this.createDummyData()" pButton icon="pi pi-plus" label="Create dummy data"></button>
 <button type="text" (click)="this.clear()" pButton icon="fa fa-trash" label="Clear"></button>

@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RepositoryNamePipe } from './repository-name.pipe';
 import { FormitemsModule } from '../formitems/formitems.module';
+import { PageModule } from '../page/page.module';
 
 const routes: Routes = [
   {path: 'repo', component: OverviewComponent},
@@ -36,7 +37,8 @@ const routes: Routes = [
     BlockUIModule,
     AutoCompleteModule,
     FormsModule,
-    FormitemsModule
+    FormitemsModule,
+    PageModule,
   ],
   declarations: [OverviewComponent,  EditComponent, AddShortComponent, RepositoryNamePipe],
   exports:[RepositoryNamePipe]

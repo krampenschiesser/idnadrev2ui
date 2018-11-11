@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { faDatabase, faBook, faClipboardList, faInbox, faHome, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -13,6 +13,7 @@ export class MainNavigationComponent implements OnInit {
   inboxIcon = faInbox;
   homeIcon = faHome;
   usersIcon = faUsers;
+  @Output() onClick = new EventEmitter<void>();
 
   constructor() {
   }

@@ -18,6 +18,7 @@ import { IdnadrevFilePreviewComponent } from './idnadrev-file-preview/idnadrev-f
 import { IdnadrevFileFilterComponent } from './idnadrev-file-filter/idnadrev-file-filter.component';
 import { FileTypePipe } from './file-type.pipe';
 import { FormitemsModule } from '../formitems/formitems.module';
+import { PageModule } from '../page/page.module';
 
 const routes: Routes = [
   {path: 'doc/:id', component: AddDocumentComponent},
@@ -46,7 +47,8 @@ const routes: Routes = [
     DropdownModule,
     TaskModule,
     ThoughtModule,
-    FormitemsModule
+    FormitemsModule,
+    PageModule,
   ],
   declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe],
   exports: [IdnadrevFileFilterComponent]

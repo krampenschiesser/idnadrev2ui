@@ -8,7 +8,6 @@ import { SidebarModule, DialogModule, ButtonModule, MessageService, InputTextMod
 import { CardModule } from 'primeng/card';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { MainNavigationComponent } from './main-navigation/main-navigation.component';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -27,7 +26,6 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    MainNavigationComponent,
   ],
   imports: [
     RepositoryModule,

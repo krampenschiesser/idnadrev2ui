@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/api';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  sideBarVisible = false;
+  sideBarVisible = true;
 
   constructor(private dexie: DexieService) {
   }

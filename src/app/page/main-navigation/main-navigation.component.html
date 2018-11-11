@@ -1,0 +1,33 @@
+<div>
+  <a routerLink="/home" routerLinkActive="NavLinkActive" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="homeIcon" class="fa-3x"></fa-icon>
+    <span class="title">Home</span>
+    <br/>
+  </a>
+  <a routerLink="/thought" routerLinkActive="NavLinkActive" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="inboxIcon" class="fa-3x"></fa-icon>
+    <span class="title">Thoughts</span>
+    <br/>
+  </a>
+  <a routerLink="/task" routerLinkActive="active" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="tasksIcon" class="fa-3x"></fa-icon>
+    <span class="title">Tasks</span>
+    <br/>
+  </a>
+  <a routerLink="/doc" routerLinkActive="active" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="docsIcon" class="fa-3x"></fa-icon>
+    <span class="title">Documents</span>
+    <br/>
+  </a>
+  <a routerLink="/contact" routerLinkActive="active" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="usersIcon" class="fa-3x"></fa-icon>
+    <span class="title">Contacts</span>
+    <br/>
+  </a>
+  <a routerLink="/repo" routerLinkActive="active" class="NavLink" (click)="onClick.emit()">
+    <fa-icon [icon]="reposIcon" class="fa-3x"></fa-icon>
+    <span class="title">Repositories</span>
+    <br/>
+  </a>
+
+</div>

@@ -1,0 +1,20 @@
+.NavLink {
+    color: dimgrey;
+    cursor: pointer;
+}
+.NavLink:hover {
+    color: lightgrey;
+}
+
+.NavLinkActive {
+    cursor: pointer;
+    color: lightseagreen;
+}
+
+.title {
+    position: absolute;
+    left: 3.5em;
+    padding-top: 0.5em;
+    font-size: 24px;
+    font-weight: bold;
+}

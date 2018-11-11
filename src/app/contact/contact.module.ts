@@ -15,6 +15,7 @@ import { MarkdownModule } from '../markdown/markdown.module';
 import { RepositoryModule } from '../repository/repository.module';
 import { FormitemsModule } from '../formitems/formitems.module';
 import { ContactArrayInputComponent } from './contact-array-input/contact-array-input.component';
+import { PageModule } from '../page/page.module';
 
 const routes: Routes = [
   {path: 'contact/edit/:id', component: AddContactComponent},
@@ -43,6 +44,7 @@ const routes: Routes = [
     MessagesModule,
     RepositoryModule,
     FormitemsModule,
+    PageModule,
   ],
   declarations: [ContactOverviewComponent, AddContactComponent, ViewContactComponent,  ContactArrayInputComponent]
 })
