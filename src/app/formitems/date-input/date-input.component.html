@@ -1,3 +1,11 @@
-<p>
-  date-input works!
-</p>
+<div class="p-grid">
+  <div class="p-col FloatLabelInput">
+       <span class="ui-float-label">
+         <p-calendar [id]="'float'+label" [(ngModel)]="input" class="FormInput" [showTime]="showTime" (onBlur)="onTouched()"></p-calendar>
+         <label [for]="'float'+label">{{label}}</label>
+       </span>
+  </div>
+  <div class="p-col" *ngIf="invalid">
+    <p-message severity="error" [text]="validationError" *ngIf="invalid"></p-message>
+  </div>
+</div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TextInputComponent } from './text-input/text-input.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
-import {AutoCompleteModule, ButtonModule, InputTextModule, MessagesModule} from 'primeng/primeng';
+import { AutoCompleteModule, ButtonModule, CalendarModule, InputTextModule, MessagesModule } from 'primeng/primeng';
 import { RepositoryInputComponent } from './repository-input/repository-input.component';
 import { DateInputComponent } from './date-input/date-input.component';
 import { RepositorySelectorComponent } from './repository-selector/repository-selector.component';
@@ -21,7 +21,8 @@ import { ResetFieldButtonComponent } from './reset-field-button/reset-field-butt
     InputTextModule,
     AutoCompleteModule,
     TagModule,
-    ButtonModule
+    ButtonModule,
+    CalendarModule
   ],
   declarations: [TextInputComponent, RepositoryInputComponent, DateInputComponent, RepositorySelectorComponent, TagInputFormItemComponent, ResetFieldButtonComponent],
   exports: [TextInputComponent, RepositoryInputComponent, DateInputComponent,RepositorySelectorComponent,TagInputFormItemComponent,ResetFieldButtonComponent]

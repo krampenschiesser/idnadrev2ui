@@ -96,6 +96,7 @@ export class TagInputComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(obj: any): void {
-    this.selectedTags = obj;
+    console.log("new tags",obj)
+    this.tags = obj;
   }
 }

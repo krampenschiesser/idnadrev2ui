@@ -10,6 +10,9 @@
     <div class="ks-col">
       <app-text-input formControlName="lastName" label="Last Name" [invalid]="!form.controls.details.controls.lastName.valid && form.controls.details.controls.lastName.dirty" validationError="Last name is required"></app-text-input>
     </div>
+    <div class="ks-col">
+      <app-text-input formControlName="middleName" label="Middle Name"></app-text-input>
+    </div>
   </div>
 
   <div class="ks-grid">
@@ -42,9 +45,22 @@
       </div>
     </div>
   </div>
-  <div class="p-col">
-    <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+  <div class="ks-grid" formGroupName="details">
+    <div class="ks-col">
+      <app-text-input formControlName="company" label="Company"></app-text-input>
+    </div>
+    <div class="ks-col">
+      <app-text-input formControlName="jobTitle" label="Jobtitle"></app-text-input>
+    </div>
   </div>
-  <div class="p-grid">
+  <div class="ks-grid" formGroupName="details">
+    <div class="ks-col">
+      <app-date-input formControlName="birthday" label="Birthday"></app-date-input>
+    </div>
+  </div>
+  <div class="ks-grid" formGroupName="details">
+    <div class="ks-col">
+      <button pButton type="button" label="Submit" (click)="onSubmit()" class="ui-button-info" [disabled]="!form.valid"></button>
+    </div>
   </div>
 </form>
