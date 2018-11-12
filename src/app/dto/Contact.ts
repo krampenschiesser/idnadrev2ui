@@ -50,6 +50,13 @@ export default class Contact extends IdnadrevFile<ContactDetails, CustomField[]>
       return this.details.emails[0];
     }
   }
+  get address() {
+    if (this.details.addresses.length === 0) {
+      return '';
+    } else {
+      return this.details.addresses[0];
+    }
+  }
 
   get initial() {
     let initial = '';

@@ -41,4 +41,7 @@ export class ViewContactComponent implements OnInit {
     }
   }
 
+  toGmapsLink(address: string): string {
+    return 'https://maps.google.com/?q=' + encodeURIComponent(address);
+  }
 }

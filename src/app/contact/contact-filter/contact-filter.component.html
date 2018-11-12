@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+  <div class="ks-grid">
+    <div class="ks-col">
+      <span class="ui-float-label">
+         <input #searchName id="searchName" type="text" pInputText formControlName="name" (keyup.esc)="form.patchValue({'name':undefined})"/>
+         <label for="searchName">Search for name</label>
+       </span>
+    </div>
+    <div class="ks-col">
+      <app-tag-input label="Search for tags" formControlName="tags"></app-tag-input>
+    </div>
+    <div class="ks-col">
+      <span class="ui-float-label">
+        <input id="searchAny" type="text" pInputText formControlName="anyField" (keyup.esc)="form.patchValue({'anyField':undefined})"/>
+        <label for="searchAny">Search everywhere</label>
+       </span>
+    </div>
+    <div class="ks-col">
+      <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
+    </div>
+  </div>
+</form>

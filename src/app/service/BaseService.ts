@@ -1,16 +1,16 @@
-import {BehaviorSubject} from "rxjs";
-import {DexieService} from "../db/dexie.service";
-import {PersistedFileService} from "../db/persisted-file.service";
-import {PersistedIdnadrevFile} from "../db/PersistedFiles";
-import {FileType} from "../dto/FileType";
-import IdnadrevFile from "../dto/IdnadrevFile";
-import Repository from "../dto/Repository";
+import { BehaviorSubject } from 'rxjs';
+import { DexieService } from '../db/dexie.service';
+import { PersistedFileService } from '../db/persisted-file.service';
+import { PersistedIdnadrevFile } from '../db/PersistedFiles';
+import { FileType } from '../dto/FileType';
+import IdnadrevFile from '../dto/IdnadrevFile';
+import Repository from '../dto/Repository';
 
 export default class BaseService<T extends IdnadrevFile<any, any>> {
   public files = new BehaviorSubject<T[]>([]);
   private _files: T[] = [];
 
-  constructor(protected repositoryService, protected dexie: DexieService, protected persistedFile: PersistedFileService, protected conversion: (from: PersistedIdnadrevFile, repo: Repository, service: PersistedFileService) => Promise<T>,protected fileType: FileType) {
+  constructor(protected repositoryService, protected dexie: DexieService, protected persistedFile: PersistedFileService, protected conversion: (from: PersistedIdnadrevFile, repo: Repository, service: PersistedFileService) => Promise<T>, protected fileType: FileType) {
   }
 
 
@@ -40,8 +40,17 @@ export default class BaseService<T extends IdnadrevFile<any, any>> {
   async delete(file: T): Promise<string> {
     file.deleted = new Date();
     const id = await this.store(file);
-    this.removeFromList(file);
+    this.removeFromListAndNotify(file);
     return id;
+  }
+
+  async deleteAll(files: T[]): Promise<void> {
+    for (const file of files) {
+      file.deleted = new Date();
+      const id = await this.store(file);
+      this.removeFromList(file);
+    }
+    this.notifyChanges();
   }
 
   async get(id: string): Promise<T | undefined> {
@@ -54,11 +63,15 @@ export default class BaseService<T extends IdnadrevFile<any, any>> {
     return undefined;
   }
 
+  removeFromListAndNotify(file: T) {
+    this.removeFromList(file);
+    this.notifyChanges();
+  }
+
   removeFromList(file: T) {
     const index = this._files.findIndex(contact => contact.id === file.id);
     if (index >= 0) {
       this._files.splice(index, 1);
     }
-    this.notifyChanges();
   }
 }

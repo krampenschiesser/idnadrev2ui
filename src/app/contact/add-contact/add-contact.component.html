@@ -9,10 +9,10 @@
       <app-text-input formControlName="firstName" label="First Name" [invalid]="!form.controls.details.controls.firstName.valid && form.controls.details.controls.firstName.dirty" validationError="First name is required"></app-text-input>
     </div>
     <div class="ks-col">
-      <app-text-input formControlName="lastName" label="Last Name" [invalid]="!form.controls.details.controls.lastName.valid && form.controls.details.controls.lastName.dirty" validationError="Last name is required"></app-text-input>
+      <app-text-input formControlName="middleName" label="Middle Name"></app-text-input>
     </div>
     <div class="ks-col">
-      <app-text-input formControlName="middleName" label="Middle Name"></app-text-input>
+      <app-text-input formControlName="lastName" label="Last Name" [invalid]="!form.controls.details.controls.lastName.valid && form.controls.details.controls.lastName.dirty" validationError="Last name is required"></app-text-input>
     </div>
   </div>
 

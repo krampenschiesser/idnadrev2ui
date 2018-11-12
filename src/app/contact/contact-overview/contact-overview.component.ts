@@ -5,6 +5,7 @@ import { ContactService } from '../../service/contact.service';
 import Contact from '../../dto/Contact';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { DisplayService } from '../../service/display.service';
+import ContactFilter from '../contact-filter/ContactFilter';
 
 @Component({
   selector: 'app-contact-overview',
@@ -29,33 +30,43 @@ export class ContactOverviewComponent implements OnInit {
     });
   }
 
-  onFilter(filter: IdnadrevFileFilter) {
-    let lowerCaseCOntent = filter.content.toLocaleLowerCase();
-    const checkProperty = (property) => {
-      let str: string = property;
-      if (str.toLocaleLowerCase().includes(lowerCaseCOntent)) {
-        return true;
-      } else {
-        return false;
-      }
-    };
+  onFilter(filter: ContactFilter) {
+    let checkProperty = undefined;
+    if (filter.anyField) {
+
+      let lowerCaseCOntent = filter.anyField.toLocaleLowerCase();
+      checkProperty = (property) => {
+        let str: string = property;
+        if (str.toLocaleLowerCase().includes(lowerCaseCOntent)) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+    }
 
     this.contacts = filterFiles(this.allContacts, filter, t => {
-      for (let property in t.details) {
-        if (typeof t.details[property] === 'string') {
-          if (checkProperty(t.details[property])) {
-            return true;
-          }
-        } else if (Array.isArray(t.details[property])) {
-          let array = t.details[property];
-          for (let element in array) {
-            if (typeof element === 'string' && checkProperty(element)) {
+      if (checkProperty) {
+        for (let property in t.details) {
+          if (typeof t.details[property] === 'string') {
+            console.log('checking ',property)
+            if (checkProperty(t.details[property])) {
               return true;
+            }
+          } else if (Array.isArray(t.details[property])) {
+            let array = t.details[property];
+            for (let element of array) {
+            console.log('checking array ',property, 'elemet: ',element)
+              if (typeof element === 'string' && checkProperty(element)) {
+                return true;
+              }
             }
           }
         }
+        return false;
+      } else {
+        return true;
       }
-      return false;
     });
   }
 
@@ -106,6 +117,7 @@ export class ContactOverviewComponent implements OnInit {
   }
 
   deleteSelected() {
-
+    this.contactService.deleteAll(this.selection);
+    this.selection = [];
   }
 }

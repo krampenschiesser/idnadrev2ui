@@ -5,7 +5,7 @@
 
 <div class="p-grid">
   <div class="p-col">
-    <app-idnadrev-file-filter (filter)="onFilter($event)"></app-idnadrev-file-filter>
+    <app-contact-filter (filter)="onFilter($event)"></app-contact-filter>
     <p-table [value]="contacts" [rowHover]="true" [autoLayout]="true">
       <ng-template pTemplate="header">
         <tr>
@@ -16,9 +16,10 @@
             </div>
           </th>
           <th>Name</th>
-          <th *ngIf="display.lg">Email</th>
-          <th *ngIf="display.md">Phone</th>
           <th *ngIf="display.sm">Tags</th>
+          <th *ngIf="display.md">Phone</th>
+          <th *ngIf="display.md">Email</th>
+          <th *ngIf="display.lg">Address</th>
           <th [width]="105">Action</th>
         </tr>
       </ng-template>
@@ -36,11 +37,12 @@
             </div>
           </td>
           <td (click)="showPreview(contact)">{{contact.name}}</td>
-          <td *ngIf="display.lg" (click)="showPreview(contact)">{{contact.email}}</td>
-          <td *ngIf="display.md" (click)="showPreview(contact)">{{contact.phone}}</td>
           <td *ngIf="display.sm" (click)="showPreview(contact)">
             <app-tagview [tags]="contact.tags"></app-tagview>
           </td>
+          <td *ngIf="display.md" (click)="showPreview(contact)">{{contact.phone}}</td>
+          <td *ngIf="display.md" (click)="showPreview(contact)">{{contact.email}}</td>
+          <td *ngIf="display.lg" (click)="showPreview(contact)">{{contact.address}}</td>
           <td>
             <div class="p-grid">
               <div class="p-col ActionButton">

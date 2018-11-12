@@ -1,49 +1,82 @@
 <app-page-title title="{{contactToShow?.name}}">
+  <button pButton icon="fa fa-edit" (click)="onEdit()"></button>
+  <button pButton style="margin-left: 5px" icon="fa fa-trash" (click)="onDelete()" class="ui-button-danger"></button>
 </app-page-title>
 
 <div *ngIf="contactToShow">
   <p-card>
-    <p-header>
-      <div class="p-grid">
-        <div class="p-col-11">
-          <h1>
-            {{contactToShow.name}}
-          </h1>
+    <div>
+      <div class="ks-grid">
+        <div class="ks-col ContactCol RightAligned">
+          <i class="fas fa-id-card fa-lg"></i>
         </div>
-        <div class="p-col-1">
-          <button pButton icon="fa fa-edit" (click)="onEdit()"></button>
-          <button pButton style="margin-left: 5px" icon="fa fa-trash" (click)="onDelete()" class="ui-button-danger"></button>
+        <div class="ks-col">
+          {{contactToShow.details.firstName}}
+        </div>
+        <div class="ks-col" *ngIf="contactToShow.details.middleName">
+          {{contactToShow.details.middleName}}
+        </div>
+        <div class="ks-col" *ngIf="contactToShow.details.lastName">
+          {{contactToShow.details.lastName}}
         </div>
       </div>
-    </p-header>
-    <div>
-      <div class="p-grid" *ngFor="let email of contactToShow.details.emails">
-        <div class="p-col-1 RightAligned">
+      <br/>
+      <div class="ks-grid" *ngFor="let email of contactToShow.details.emails">
+        <div class="ks-col ContactCol RightAligned">
           <i class="fas fa-envelope fa-lg"></i>
         </div>
-        <div class="p-col-11">
-          {{email}}
+        <div class="ks-col">
+          <a [href]="'mailto:'+email" target="_blank">{{email}}</a>
         </div>
       </div>
-      <div class="p-grid" *ngFor="let phone of contactToShow.details.phones">
-        <div class="p-col-1 RightAligned">
+      <br *ngIf="contactToShow.details.emails?.length>0"/>
+      <div class="ks-grid" *ngFor="let phone of contactToShow.details.phones">
+        <div class="ks-col ContactCol RightAligned">
           <i class="fas fa-phone fa-lg"></i>
         </div>
-        <div class="p-col-11">
-          {{phone}}
+        <div class="ks-col">
+          <a [href]="'tel:'+phone" target="_blank">{{phone}}</a>
         </div>
       </div>
-      <div class="p-grid" *ngFor="let custom of contactToShow.content">
-        <div class="p-col-1 RightAligned">
+      <br *ngIf="contactToShow.details.phones?.length>0"/>
+      <div class="ks-grid" *ngFor="let address of contactToShow.details.addresses">
+        <div class="ks-col ContactCol RightAligned">
+          <i class="fas fa-map-marker fa-lg"></i>
+        </div>
+        <div class="ks-col">
+          <a [href]="toGmapsLink(address)" target="_blank">{{address}}</a>
+        </div>
+      </div>
+      <br *ngIf="contactToShow.details.addresses?.length>0"/>
+      <div class="ks-grid" *ngIf="contactToShow.details.company">
+        <div class="ks-col ContactCol RightAligned">
+          <i class="fas fa-building fa-lg"></i>
+        </div>
+        <div class="ks-col">
+          {{contactToShow.details.company}}
+        </div>
+        <div class="ks-col">
+          {{contactToShow.details.jobTitle}}
+        </div>
+      </div>
+      <br *ngIf="contactToShow.details.company"/>
+      <div class="ks-grid" *ngIf="contactToShow.details.birthday">
+        <div class="ks-col ContactCol RightAligned">
+          <i class="fas fa-birthday-cake  fa-lg"></i>
+        </div>
+        <div class="ks-col">
+          {{contactToShow.details.birthday | date}}
+        </div>
+      </div>
+      <br *ngIf="contactToShow.details.birthday"/>
+      <div class="ks-grid" *ngFor="let custom of contactToShow.content">
+        <div class="ks-col ContactCol RightAligned">
           {{custom.label}}
         </div>
-        <div class="p-col-11">
+        <div class="ks-col">
           {{custom.value}}
         </div>
       </div>
     </div>
-    <p-footer>
-
-    </p-footer>
   </p-card>
 </div>
