@@ -9,6 +9,7 @@ import Task from '../../dto/Task';
 import TaskFilter from '../TaskFilter';
 import { FileId } from '../../dto/FileId';
 import { MessageService, TreeNode } from 'primeng/api';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-task-overview',
@@ -23,7 +24,7 @@ export class TaskOverviewComponent implements OnInit {
   tableRows = 20;
   activeFilter?: TaskFilter;
 
-  constructor(private router: Router, private taskService: TaskService, private messageService: MessageService) {
+  constructor(private router: Router, private taskService: TaskService, private messageService: MessageService, public display: DisplayService) {
   }
 
 

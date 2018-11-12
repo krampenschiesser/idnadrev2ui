@@ -4,6 +4,7 @@ import Thought from '../../dto/Thought';
 import { Router } from '@angular/router';
 import { ThoughtFilter } from '../ThoughtFilter';
 import { filterFiles } from '../../filter/IdnadrevFileFilter';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-thought-overview',
@@ -16,7 +17,7 @@ export class ThoughtOverviewComponent implements OnInit {
   selectedThought?: Thought;
   showPostponeDialog = false;
 
-  constructor(private thoughtService: ThoughtService, private router: Router) {
+  constructor(private thoughtService: ThoughtService, private router: Router, private display: DisplayService) {
   }
 
   async ngOnInit() {
@@ -33,13 +34,17 @@ export class ThoughtOverviewComponent implements OnInit {
   }
 
   onFilter(filter: ThoughtFilter) {
-    this.thoughts = filterFiles(this.allThoughts,filter,t=>{
+    this.thoughts = filterFiles(this.allThoughts, filter, t => {
       if (filter.postponed) {
         return t.isPostPoned;
       } else {
         return !t.isPostPoned;
       }
     });
+  }
+
+  showView(thought: Thought) {
+    this.router.navigate(['/thought/' + this.selectedThought.id]);
   }
 
   showPreview(thought: Thought) {
@@ -64,7 +69,7 @@ export class ThoughtOverviewComponent implements OnInit {
   }
 
   edit() {
-    this.router.navigate(['/thought/' + this.selectedThought.id]);
+    this.router.navigate(['/thought/edit/' + this.selectedThought.id]);
   }
 
   thoughtToDoc() {

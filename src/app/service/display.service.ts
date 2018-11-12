@@ -6,14 +6,6 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class DisplayService {
-  // xs = new BehaviorSubject<boolean>(false);
-  // sm = new BehaviorSubject<boolean>(false);
-  // md = new BehaviorSubject<boolean>(false);
-  // lg = new BehaviorSubject<boolean>(false);
-  // xl = new BehaviorSubject<boolean>(false);
-  // xxl = new BehaviorSubject<boolean>(false);
-  // landscape = new BehaviorSubject<boolean>(false);
-  // portrait = new BehaviorSubject<boolean>(false);
 
   xs = false;
   noXs = false;
@@ -22,8 +14,6 @@ export class DisplayService {
   lg = false;
   xl = false;
   xxl = false;
-  landscape = false;
-  portrait = false;
   width = 0;
   height = 0;
 
@@ -35,24 +25,41 @@ export class DisplayService {
     this.onResize();
   }
 
+  get size(): String {
+    if (this.xxl) {
+      return 'xxl';
+    }
+    if (this.xl) {
+      return 'xl';
+    }
+    if (this.lg) {
+      return 'lg';
+    }
+    if (this.md) {
+      return 'md';
+    }
+    if (this.sm) {
+      return 'sm';
+    }
+    if (this.xs) {
+      return 'xs';
+    }
+    return 'unknown: ' + this.width;
+  }
+
   onResize() {
     this.width = window.innerWidth;
-    console.log(this.width);
     this.height = window.innerHeight;
-    let landscape = window.innerWidth >= window.innerHeight;
-    this.landscape = landscape;
-    this.portrait = !landscape;
-    if (landscape) {
-      if (window.innerWidth < 576) {
-        // this.xs.next(true);
-        this.xs = true;
-      } else {
-        this.xs = true;
-        this.noXs = true;
-      }
+    if (window.innerWidth < 576) {
+      // this.xs.next(true);
+      this.xs = true;
+      console.log('xs');
+    } else {
+      console.log('xs');
+      this.xs = true;
+      this.noXs = true;
     }
     if (window.innerWidth >= 576) {
-      // this.sm.next(true);
       this.sm = true;
       console.log('sm');
     } else {
@@ -61,7 +68,6 @@ export class DisplayService {
     }
 
     if (window.innerWidth >= 768) {
-      // this.md.next(true);
       this.md = true;
       console.log('md');
     } else {
@@ -69,7 +75,6 @@ export class DisplayService {
       this.md = false;
     }
     if (window.innerWidth >= 992) {
-      // this.lg.next(true);
       this.lg = true;
       console.log('lg');
     } else {
@@ -77,13 +82,11 @@ export class DisplayService {
       this.lg = false;
     }
     if (window.innerWidth >= 1200) {
-      // this.xl.next(true);
       this.xl = true;
     } else {
       this.xl = false;
     }
     if (window.innerWidth >= 1600) {
-      // this.xxl.next(true);
       this.xxl = true;
     } else {
       this.xxl = false;

@@ -4,6 +4,7 @@ import * as waitUntil from 'async-wait-until';
 import { generateBinaryFiles, generateContacts, generateList, generateRepositories, generateTasks, generateTemplates, generateThoughts } from './db/DummyData';
 import { isAvailable } from 'rasm-crypt';
 import { MessageService } from 'primeng/api';
+import { DisplayService } from './service/display.service';
 
 
 @Component({
@@ -14,7 +15,7 @@ import { MessageService } from 'primeng/api';
 export class AppComponent {
   sideBarVisible = true;
 
-  constructor(private dexie: DexieService) {
+  constructor(private dexie: DexieService, public display: DisplayService) {
   }
 
   async createDummyData() {

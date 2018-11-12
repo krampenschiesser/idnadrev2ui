@@ -6,14 +6,14 @@
   <div class="p-col">
     <app-task-filter (filter)="onFilter($event)"></app-task-filter>
 
-    <p-treeTable sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true">
+    <p-treeTable [autoLayout]="true" sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true">
       <ng-template pTemplate="header">
         <tr>
-          <th>Updated</th>
           <th>Name</th>
-          <th>Tags</th>
-          <th>Repository</th>
-          <th>State</th>
+          <th *ngIf="display.sm">Tags</th>
+          <th *ngIf="display.lg">Repository</th>
+          <th *ngIf="display.sm">State</th>
+          <th *ngIf="display.md">Updated</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -21,21 +21,21 @@
         <tr>
           <td (click)="this.showPreview(rowData)">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            {{rowData.updated | date: "short"}}
-          </td>
-          <td (click)="this.showPreview(rowData)">
             {{rowData.name}}
           </td>
-          <td (click)="this.showPreview(rowData)">
+          <td *ngIf="display.sm" (click)="this.showPreview(rowData)">
             <app-tagview [tags]="rowData.tags"></app-tagview>
           </td>
-          <td (click)="this.showPreview(rowData)">
+          <td *ngIf="display.lg" (click)="this.showPreview(rowData)">
             {{rowData.repository | repositoryName}}
           </td>
-          <td (click)="this.showPreview(rowData)">
+          <td  *ngIf="display.sm" (click)="this.showPreview(rowData)">
             {{rowData.details.state}}
           </td>
-          <td>
+          <td *ngIf="display.md" (click)="this.showPreview(rowData)">
+            {{rowData.updated | date: "short"}}
+          </td>
+          <td [width]="display.xs ? 70 : undefined">
             <div class="p-grid">
               <div class="p-col">
                 <button pButton type="button" icon="fa fa-check" (click)="finish(rowData)" class="ui-button-success"></button>

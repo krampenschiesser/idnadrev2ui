@@ -6,7 +6,7 @@
 <div class="p-grid">
   <div class="p-col">
     <app-idnadrev-file-filter (filter)="onFilter($event)"></app-idnadrev-file-filter>
-    <p-table [value]="files" [rowHover]="true" [paginator]="true" [rows]="tableRows">
+    <p-table [autoLayout]="true" [value]="files" [rowHover]="true" [paginator]="true" [rows]="tableRows">
       <ng-template pTemplate="header">
         <tr>
           <th>Created</th>
@@ -17,15 +17,15 @@
       </ng-template>
       <ng-template pTemplate="body" let-file>
         <tr (mouseover)="this.showPreview(file)">
-          <td>{{file.updated | date: "short"}}</td>
-          <td>{{file.name}}</td>
-          <td>{{file.fileType}}</td>
-          <td>{{file.repository | repositoryName}}</td>
+          <td (click)="showView(file)">{{file.updated | date: "short"}}</td>
+          <td (click)="showView(file)">{{file.name}}</td>
+          <td (click)="showView(file)">{{file.fileType}}</td>
+          <td (click)="showView(file)">{{file.repository | repositoryName}}</td>
         </tr>
       </ng-template>
     </p-table>
   </div>
-  <div class="p-col PaddingTop">
+  <div class="p-col PaddingTop" *ngIf="display.xxl">
     <app-idnadrev-file-preview (onEdit)="onEdit()" (onDelete)="onDelete()" *ngIf="selectedFile" [file]="selectedFile"></app-idnadrev-file-preview>
   </div>
 </div>

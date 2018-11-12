@@ -16,11 +16,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThoughtFilterComponent } from './thought-filter/thought-filter.component';
 import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
+import { ThoughtViewComponent } from './thought-view/thought-view.component';
 
 const routes: Routes = [
   {path: 'thought/process', component: ThoughtProcessComponent},
-  {path: 'thought/:id', component: AddThoughtComponent},
+  {path: 'thought/edit/:id', component: AddThoughtComponent},
   {path: 'thought/add', component: AddThoughtComponent},
+  {path: 'thought/:id', component: ThoughtViewComponent},
   {path: 'thought', component: ThoughtOverviewComponent},
 ];
 
@@ -46,7 +48,7 @@ const routes: Routes = [
     FormitemsModule,
     PageModule,
   ],
-  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent],
+  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent, ThoughtViewComponent],
   exports:[ThoughtPreviewComponent]
 })
 export class ThoughtModule { }

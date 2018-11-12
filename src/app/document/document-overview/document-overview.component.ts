@@ -8,6 +8,7 @@ import Task from '../../dto/Task';
 import BinaryFile from '../../dto/BinaryFile';
 import Document from '../../dto/Document';
 import { ThoughtService } from '../../service/thought.service';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-document-overview',
@@ -22,7 +23,7 @@ export class DocumentOverviewComponent implements OnInit {
   tableRows = 20;
   activeFilter?: IdnadrevFileFilter;
 
-  constructor(private router: Router, private docService: DocumentService) {
+  constructor(private router: Router, private docService: DocumentService, public display: DisplayService) {
   }
 
   async ngOnInit() {
@@ -58,15 +59,27 @@ export class DocumentOverviewComponent implements OnInit {
     this.selectedFile = file;
   }
 
-  onEdit() {
+  showView(file: IdnadrevFile<any, any>) {
     if (this.selectedFile instanceof Thought) {
       this.router.navigate(['/thought/' + this.selectedFile.id]);
+    } else if (this.selectedFile instanceof Task) {
+      this.router.navigate(['/task/' + this.selectedFile.id]);
+    } else if (this.selectedFile instanceof BinaryFile) {
+      // this.router.navigate(['/thought/' + this.selectedThought.id]);
+    } else if (this.selectedFile instanceof Document) {
+      this.router.navigate(['/doc/' + this.selectedFile.id]);
+    }
+  }
+
+  onEdit() {
+    if (this.selectedFile instanceof Thought) {
+      this.router.navigate(['/thought/edit/' + this.selectedFile.id]);
     } else if (this.selectedFile instanceof Task) {
       this.router.navigate(['/task/edit/' + this.selectedFile.id]);
     } else if (this.selectedFile instanceof BinaryFile) {
       // this.router.navigate(['/thought/' + this.selectedThought.id]);
     } else if (this.selectedFile instanceof Document) {
-      this.router.navigate(['/doc/' + this.selectedFile.id]);
+      this.router.navigate(['/doc/edit/' + this.selectedFile.id]);
     }
   }
 

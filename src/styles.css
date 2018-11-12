@@ -41,6 +41,7 @@ body {
 
 .ks-col {
     flex-grow: 0;
+    padding-bottom: 0.5em;
     padding-right: 1em;
 }
 

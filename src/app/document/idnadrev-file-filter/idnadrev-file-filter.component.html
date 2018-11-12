@@ -1,26 +1,25 @@
 <form [formGroup]="form">
-  <div class="p-grid">
-    <div class="p-col">
+  <div class="ks-grid">
+    <div class="ks-col">
       <span class="ui-float-label">
          <input id="searchName" type="text" pInputText formControlName="name"/>
          <label for="searchName">Search for name</label>
        </span>
     </div>
-    <div class="p-col">
+    <div class="ks-col">
       <app-tag-input label="Search for tags" formControlName="tags"></app-tag-input>
     </div>
-    <div class="p-col">
+    <div class="ks-col">
       <span class="ui-float-label">
         <input id="searchContent" type="text" pInputText formControlName="content"/>
         <label for="searchContent">Search for content</label>
        </span>
     </div>
-    <div class="p-col">
-        <p-dropdown id="typeSelection" [options]="types" optionLabel="label" placeholder="Select type" formControlName="type" [showClear]="true">
-
-        </p-dropdown>
+    <div class="ks-col">
+      <p-dropdown id="typeSelection" [options]="types" optionLabel="label" placeholder="Select type" formControlName="type" [showClear]="true">
+      </p-dropdown>
     </div>
-    <div class="p-col">
+    <div class="ks-col">
       <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
     </div>
   </div>
