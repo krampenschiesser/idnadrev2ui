@@ -60,7 +60,7 @@ export class ContactOverviewComponent implements OnInit {
   }
 
   showPreview(contact: Contact) {
-    this.router.navigate(['/contact/' + contact.id]);
+    this.router.navigate([('/contact/' + contact.id)]);
   }
 
   addContact() {
@@ -73,7 +73,7 @@ export class ContactOverviewComponent implements OnInit {
   }
 
   edit(contact: Contact) {
-    this.router.navigate(['/contact/edit' + contact.id]);
+    this.router.navigate(['/contact/edit/' + contact.id]);
   }
 
   getIconStyle(index: number): string {

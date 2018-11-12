@@ -20,8 +20,8 @@ import { PageModule } from '../page/page.module';
 const routes: Routes = [
   {path: 'contact/edit/:id', component: AddContactComponent},
   {path: 'contact/add', component: AddContactComponent},
-  {path: 'contact', component: ContactOverviewComponent},
   {path: 'contact/:id', component: ViewContactComponent},
+  {path: 'contact', component: ContactOverviewComponent},
 ];
 
 @NgModule({

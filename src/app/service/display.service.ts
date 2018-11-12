@@ -16,6 +16,7 @@ export class DisplayService {
   // portrait = new BehaviorSubject<boolean>(false);
 
   xs = false;
+  noXs = false;
   sm = false;
   md = false;
   lg = false;
@@ -47,6 +48,7 @@ export class DisplayService {
         this.xs = true;
       } else {
         this.xs = true;
+        this.noXs = true;
       }
     }
     if (window.innerWidth >= 576) {

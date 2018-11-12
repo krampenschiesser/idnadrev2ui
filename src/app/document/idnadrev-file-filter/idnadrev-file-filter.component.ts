@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ThoughtFilter } from '../../thought/ThoughtFilter';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
