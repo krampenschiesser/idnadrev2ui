@@ -1,0 +1,25 @@
+<div *ngIf="docToShow">
+  <app-page-title [title]="docToShow.name">
+    <div class="ks-grid">
+      <div class="ks-col">
+        <button pButton type="button" icon="fa fa-edit" pTooltip="Edit" (click)="this.onEdit()"></button>
+      </div>
+      <div class="ks-col">
+        <button pButton type="button" icon="fa fa-trash" pTooltip="Delete" class="ui-button-danger" (click)="this.onDelete()"></button>
+      </div>
+    </div>
+  </app-page-title>
+  <p-card>
+    <app-markdown-viewer [markdown]="docToShow.content"></app-markdown-viewer>
+    <p-footer>
+      <div class="p-grid">
+        <div class="p-col-6" style="padding: 1px">
+          <app-tagview [tags]="docToShow.tags"></app-tagview>
+        </div>
+        <div class="p-col-6">
+          <span>{{docToShow.updated | date: "short"}}</span>
+        </div>
+      </div>
+    </p-footer>
+  </p-card>
+</div>
