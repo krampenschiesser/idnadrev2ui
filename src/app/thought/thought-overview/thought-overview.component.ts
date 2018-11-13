@@ -15,9 +15,8 @@ export class ThoughtOverviewComponent implements OnInit {
   thoughts: Thought[];
   allThoughts: Thought[];
   selectedThought?: Thought;
-  showPostponeDialog = false;
 
-  constructor(private thoughtService: ThoughtService, private router: Router, private display: DisplayService) {
+  constructor(private thoughtService: ThoughtService, private router: Router, public display: DisplayService) {
   }
 
   async ngOnInit() {
@@ -55,28 +54,7 @@ export class ThoughtOverviewComponent implements OnInit {
     this.router.navigate(['/thought/add']);
   }
 
-  async postpone(days: number) {
-    await this.thoughtService.postpone(this.selectedThought, days).catch(e => {
-      this.showPostponeDialog = false;
-      throw e;
-    });
-    this.showPostponeDialog = false;
-  }
+  noop() {
 
-  delete() {
-    this.thoughtService.delete(this.selectedThought);
-
-  }
-
-  edit() {
-    this.router.navigate(['/thought/edit/' + this.selectedThought.id]);
-  }
-
-  thoughtToDoc() {
-    this.router.navigate(['/doc/fromThought', {fromThoughtId: this.selectedThought.id}]);
-  }
-
-  thoughtToTask() {
-    this.router.navigate(['/task/fromThought', {fromThoughtId: this.selectedThought.id}]);
   }
 }

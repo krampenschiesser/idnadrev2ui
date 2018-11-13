@@ -2,58 +2,31 @@
     <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new thought" style="width: 5em; height: 2.5em" (click)="this.addThought()"></button>
 </app-page-title>
 
-
-<p-dialog
-  [positionTop]="100" [focusOnShow]="true" [modal]="true" header="Postpone thought {{selectedThought?.name}}"
-  [(visible)]="showPostponeDialog">
-
-
-  <input #time type="text" pInputText value="7"/>
-  <button pButton type="button" label="Postpone" (click)="this.postpone(time.value)">
-  </button>
-</p-dialog>
-
 <div class="p-grid">
   <div class="p-col">
     <app-thought-filter (filter)="onFilter($event)"></app-thought-filter>
-    <p-table [value]="thoughts" [rowHover]="true">
+    <p-table [autoLayout]="display.sm" [value]="thoughts" [rowHover]="true">
       <ng-template pTemplate="header">
         <tr>
-          <th *ngIf="display.md">Created</th>
           <th>Name</th>
+          <th *ngIf="display.md">Created</th>
           <th *ngIf="display.md">Repository</th>
-          <th>Action</th>
+          <th style="max-width: 161px">Action</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-thought>
         <tr (mouseover)="this.showPreview(thought)">
-          <td *ngIf="display.md" (click)="this.showView(thought)">{{thought.updated | date: "short"}}</td>
           <td (click)="this.showView(thought)">{{thought.name}}</td>
+          <td *ngIf="display.md" (click)="this.showView(thought)">{{thought.updated | date: "short"}}</td>
           <td *ngIf="display.md" (click)="this.showView(thought)">{{thought.repository | repositoryName}}</td>
-          <td>
-            <div class="p-grid">
-              <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-edit" pTooltip="Edit" (click)="this.edit()"></button>
-              </div>
-              <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-clipboard-list" pTooltip="To Task" class="ui-button-success" (click)="this.thoughtToTask()"></button>
-              </div>
-              <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-book" pTooltip="To Document" class="ui-button-info" (click)="this.thoughtToDoc()"></button>
-              </div>
-              <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-hourglass-start" pTooltip="Postpone" class="ui-button-secondary" (click)="showPostponeDialog =true"></button>
-              </div>
-              <div class="p-col ActionButton">
-                <button pButton type="button" icon="fa fa-trash" pTooltip="Delete" class="ui-button-danger" (click)="this.delete()"></button>
-              </div>
-            </div>
+          <td style="max-width: 161px">
+            <app-thought-buttons [callback]="noop" [thought]="thought"></app-thought-buttons>
           </td>
         </tr>
       </ng-template>
     </p-table>
   </div>
-  <div class="p-col PaddingTop" *ngIf="display.xxl">
-    <app-thought-preview *ngIf="selectedThought" [thought]="selectedThought" (onEdit)="edit()" (onDelete)="this.delete($event)" (onDocument)="this.thoughtToDoc()" (onTask)="this.thoughtToTask()" (onPostpone)="showPostponeDialog=true"></app-thought-preview>
+  <div class="p-col PaddingTop" *ngIf="display.xl">
+    <app-thought-preview *ngIf="selectedThought" [thought]="selectedThought"></app-thought-preview>
   </div>
 </div>

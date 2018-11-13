@@ -8,18 +8,31 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 export class DisplayService {
 
   xs = false;
-  noXs = false;
+  xsObservable = new BehaviorSubject<boolean>(false);
+  xsOnly = false;
+  xsOnlyObservable = new BehaviorSubject<boolean>(false);
   sm = false;
+  smObservable = new BehaviorSubject<boolean>(false);
   md = false;
+  mdObservable = new BehaviorSubject<boolean>(false);
   lg = false;
+  lgObservable = new BehaviorSubject<boolean>(false);
   xl = false;
+  xlObservable = new BehaviorSubject<boolean>(false);
   xxl = false;
+  xxlObservable = new BehaviorSubject<boolean>(false);
   width = 0;
+  widthObservable = new BehaviorSubject<number>(0);
   height = 0;
+  heightObservable = new BehaviorSubject<number>(0);
 
   constructor() {
     let observable = fromEvent(window, 'resize');
     observable.pipe(debounceTime(100)).subscribe(e => {
+      this.onResize();
+    });
+    let orientationChange = fromEvent(window,'orientationchange');
+    orientationChange.pipe(debounceTime(100)).subscribe(e => {
       this.onResize();
     });
     this.onResize();
@@ -50,46 +63,55 @@ export class DisplayService {
   onResize() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    this.widthObservable.next(this.width);
+    this.heightObservable.next(this.height);
     if (window.innerWidth < 576) {
       // this.xs.next(true);
       this.xs = true;
-      console.log('xs');
+      this.xsOnly = true;
+      this.xsObservable.next(true);
+      this.xsOnlyObservable.next(true);
     } else {
-      console.log('xs');
       this.xs = true;
-      this.noXs = true;
+      this.xsOnly = false;
+      this.xsObservable.next(false);
+      this.xsOnlyObservable.next(false);
     }
     if (window.innerWidth >= 576) {
       this.sm = true;
-      console.log('sm');
+      this.smObservable.next(true);
+
     } else {
-      console.log('no sm');
       this.sm = false;
+      this.smObservable.next(false);
     }
 
     if (window.innerWidth >= 768) {
       this.md = true;
-      console.log('md');
+      this.mdObservable.next(true);
     } else {
-      console.log('no md');
       this.md = false;
+      this.mdObservable.next(false);
     }
     if (window.innerWidth >= 992) {
       this.lg = true;
-      console.log('lg');
+      this.lgObservable.next(true);
     } else {
-      console.log('no lg');
       this.lg = false;
+      this.lgObservable.next(false);
     }
     if (window.innerWidth >= 1200) {
       this.xl = true;
+      this.xlObservable.next(true);
     } else {
       this.xl = false;
+      this.xlObservable.next(false);
     }
     if (window.innerWidth >= 1600) {
-      this.xxl = true;
+      this.xxlObservable.next(true);
     } else {
       this.xxl = false;
+      this.xxlObservable.next(false);
     }
   }
 }

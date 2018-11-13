@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import Contact from '../../dto/Contact';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ContactService } from '../../service/contact.service';
 import { switchMap } from 'rxjs/operators';
 import Thought from '../../dto/Thought';
 import { ThoughtService } from '../../service/thought.service';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-thought-view',
@@ -13,8 +12,9 @@ import { ThoughtService } from '../../service/thought.service';
 })
 export class ThoughtViewComponent implements OnInit {
   thoughtToShow?: Thought;
+  showLabels = false;
 
-  constructor(private route: ActivatedRoute, private thoughtService: ThoughtService, private router: Router) {
+  constructor(private route: ActivatedRoute, private thoughtService: ThoughtService, private router: Router, public display: DisplayService) {
   }
 
   ngOnInit() {
@@ -26,19 +26,14 @@ export class ThoughtViewComponent implements OnInit {
         this.thoughtToShow = task;
       }
     });
+    this.display.lgObservable.subscribe(large => {
+      if (large) {
+        this.showLabels = true;
+      } else {
+        this.showLabels = false;
+      }
+    });
   }
 
-  onEdit() {
-    if (this.thoughtToShow) {
-      this.router.navigate(['/thought/edit/' + this.thoughtToShow.id]);
-    }
-  }
-
-  onDelete() {
-    if (this.thoughtToShow) {
-      this.thoughtService.delete(this.thoughtToShow);
-      this.router.navigate(['/thought']);
-    }
-  }
 
 }

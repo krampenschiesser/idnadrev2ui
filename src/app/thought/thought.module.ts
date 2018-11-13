@@ -17,6 +17,7 @@ import { ThoughtFilterComponent } from './thought-filter/thought-filter.componen
 import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
 import { ThoughtViewComponent } from './thought-view/thought-view.component';
+import { ThoughtButtonsComponent } from './thought-buttons/thought-buttons.component';
 
 const routes: Routes = [
   {path: 'thought/process', component: ThoughtProcessComponent},
@@ -48,7 +49,7 @@ const routes: Routes = [
     FormitemsModule,
     PageModule,
   ],
-  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent, ThoughtViewComponent],
+  declarations: [AddThoughtComponent, ThoughtOverviewComponent, ThoughtProcessComponent, ThoughtPreviewComponent, ThoughtFilterComponent, ThoughtViewComponent, ThoughtButtonsComponent],
   exports:[ThoughtPreviewComponent]
 })
 export class ThoughtModule { }

@@ -24,6 +24,7 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 const routes: Routes = [
   {path: 'doc/edit/:id', component: AddDocumentComponent},
   {path: 'doc/add', component: AddDocumentComponent},
+  {path: 'doc/:id', component: DocumentViewComponent},
   {path: 'doc', component: DocumentOverviewComponent},
 ];
 @NgModule({

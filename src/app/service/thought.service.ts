@@ -21,6 +21,8 @@ export class ThoughtService extends BaseService<Thought>{
   async postpone(thought: Thought, days: number): Promise<string> {
     thought.details.showAgainAfter = moment().add(days, 'd').toDate();
     const id = await this.store(thought);
+    this.removeFromList(thought);
+    this.notifyChanges()
     return id;
   }
 }

@@ -1,3 +1,23 @@
 <div *ngIf="thoughtToShow">
-  <app-thought-preview [thought]="thoughtToShow"></app-thought-preview>
+  <app-page-title [title]="thoughtToShow.name">
+    <app-thought-buttons [thought]="thoughtToShow" [showLabels]="showLabels" *ngIf="display.sm"></app-thought-buttons>
+  </app-page-title>
+  <p-card>
+    <app-markdown-viewer [markdown]="thoughtToShow.content"></app-markdown-viewer>
+    <p-footer>
+      <div class="p-grid">
+        <div class="p-col-6" style="padding: 1px">
+          <app-tagview [tags]="thoughtToShow.tags"></app-tagview>
+        </div>
+        <div class="p-col-6">
+          <span>{{thoughtToShow.updated | date: "short"}}</span>
+        </div>
+      </div>
+    </p-footer>
+  </p-card>
+  <div *ngIf="display.xsOnly" style="padding-top: 0.5em">
+    <p-card>
+        <app-thought-buttons [thought]="thoughtToShow"></app-thought-buttons>
+    </p-card>
+  </div>
 </div>
