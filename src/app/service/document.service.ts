@@ -83,7 +83,7 @@ export class DocumentService {
     if (file instanceof Thought) {
       this.thoughtService.removeFromListAndNotify(file);
     } else if (file instanceof Task) {
-      this.taskService.removeFromList(file);
+      this.taskService.removeFromListAndNotify(file);
     }
     return id;
   }

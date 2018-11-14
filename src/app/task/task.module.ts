@@ -8,7 +8,7 @@ import {
   AccordionModule,
   AutoCompleteModule,
   BlockUIModule, CalendarModule,
-  CheckboxModule,
+  CheckboxModule, ConfirmationService, ConfirmDialogModule,
   DialogModule,
   DropdownModule,
   InputTextModule,
@@ -29,6 +29,8 @@ import { InplaceModule } from '../inplace/inplace.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
+import { TaskButtonsComponent } from './task-buttons/task-buttons.component';
+import { AddToListPopupComponent } from './add-to-list-popup/add-to-list-popup.component';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -65,9 +67,10 @@ const routes: Routes = [
     SelectButtonModule,
     FontAwesomeModule,
     FormitemsModule,
-    PageModule
+    PageModule,
+    ConfirmDialogModule,
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {

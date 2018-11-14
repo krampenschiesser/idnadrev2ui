@@ -20,9 +20,11 @@ export class TaskOverviewComponent implements OnInit {
   tasks: Task[];
   allTasks: Map<FileId, Task>;
   nodes: TreeNode[];
-
+  selection: Task[] = [];
+  oldSelection?: Task[];
   tableRows = 20;
   activeFilter?: TaskFilter;
+  showListSelection = false;
 
   constructor(private router: Router, private taskService: TaskService, private messageService: MessageService, public display: DisplayService) {
   }
@@ -107,9 +109,59 @@ export class TaskOverviewComponent implements OnInit {
     this.router.navigate(['/task/edit/' + task.id]);
   }
 
+  addToList(task: Task) {
+    this.oldSelection = this.selection.slice();
+    this.selection = [task];
+    this.showListSelection = true;
+  }
+
+  listSelectionDone() {
+    this.showListSelection = false;
+    if (this.oldSelection) {
+      this.selection = this.oldSelection;
+      this.oldSelection = undefined;
+    }
+  }
+
+  addAllToList(tasks: Task[]) {
+
+  }
+
+  deleteAll(tasks: Task[]) {
+    this.taskService.deleteAll(tasks);
+  }
+
+  finishAll(tasks: Task[]) {
+    this.taskService.finishAll(tasks);
+  }
+
+
   finish(task: Task) {
     this.taskService.finishTask(task)//
       .then(() => this.messageService.add({severity: 'success', summary: 'Finished task ' + task.name}))
       .catch(() => this.messageService.add({severity: 'error', summary: 'Could not finish task ' + task.name}));
   }
+
+  get actionWidth() {
+    if (this.display.xsOnly) {
+      return 70;
+    } else if (this.display.md) {
+      return 200;
+    } else if (this.display.sm) {
+      return 105;
+    }
+  }
+
+  get selectActionWidth() {
+    if (this.selection.length > 0) {
+      if (this.display.xsOnly) {
+        return 70;
+      } else if (this.display.sm) {
+        return 105;
+      }
+    } else {
+      return 40;
+    }
+  }
+
 }

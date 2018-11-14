@@ -1,0 +1,9 @@
+<p-blockUI></p-blockUI>
+<p-confirmDialog></p-confirmDialog>
+<p-dialog [modal]="true" header="Select list" [visible]="visible" (visibleChange)="setVisible($event)">
+  <ul>
+    <li (click)="onAddToList(list)" *ngFor="let list of lists">
+      {{list.name}}
+    </li>
+  </ul>
+</p-dialog>

@@ -1,6 +1,7 @@
 <app-page-title title="Tasks">
   <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new task" style="width: 5em; height: 2.5em" (click)="this.addTask()"></button>
 </app-page-title>
+<app-add-to-list-popup [tasks]="selection" (onClose)="listSelectionDone()" [show]="showListSelection"></app-add-to-list-popup>
 
 <div class="p-grid">
   <div class="p-col">
@@ -9,16 +10,35 @@
     <p-treeTable [autoLayout]="true" sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true">
       <ng-template pTemplate="header">
         <tr>
+          <th [width]="selectActionWidth">
+            <div class="ks-grid" *ngIf="selection && selection.length>0">
+              <div class="ks-col">
+                <button pButton icon="fa fa-list" class="ui-button-info" (click)="showListSelection=true"></button>
+              </div>
+              <div class="ks-col" style="padding-right:0">
+                <button pButton icon="fa fa-check" class="ui-button-success"></button>
+              </div>
+              <div class="ks-col">
+                <button pButton icon="fa fa-trash" class="ui-button-danger"></button>
+              </div>
+              <div class="ks-col" style="padding-right: 0;">
+                <button pButton icon="fa fa-times" (click)="selection=[]"></button>
+              </div>
+            </div>
+          </th>
           <th>Name</th>
           <th *ngIf="display.sm">Tags</th>
           <th *ngIf="display.lg">Repository</th>
           <th *ngIf="display.sm">State</th>
           <th *ngIf="display.md">Updated</th>
-          <th>Action</th>
+          <th [width]="actionWidth ? actionWidth : null">Action</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
         <tr>
+          <td>
+            <p-checkbox [value]="rowData" [(ngModel)]="selection"></p-checkbox>
+          </td>
           <td (click)="this.showPreview(rowData)">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             {{rowData.name}}
@@ -29,19 +49,22 @@
           <td *ngIf="display.lg" (click)="this.showPreview(rowData)">
             {{rowData.repository | repositoryName}}
           </td>
-          <td  *ngIf="display.sm" (click)="this.showPreview(rowData)">
+          <td *ngIf="display.sm" (click)="this.showPreview(rowData)">
             {{rowData.details.state}}
           </td>
           <td *ngIf="display.md" (click)="this.showPreview(rowData)">
             {{rowData.updated | date: "short"}}
           </td>
-          <td [width]="display.xs ? 70 : undefined">
+          <td [width]="actionWidth ? actionWidth : null">
             <div class="p-grid">
               <div class="p-col">
                 <button pButton type="button" icon="fa fa-check" (click)="finish(rowData)" class="ui-button-success"></button>
               </div>
               <div class="p-col">
                 <button pButton type="button" icon="fa fa-edit" (click)="edit(rowData)"></button>
+              </div>
+              <div class="p-col">
+                <button pButton type="button" icon="fa fa-list" (click)="addToList(rowData)" class="ui-button-info"></button>
               </div>
               <div class="p-col">
                 <button pButton type="button" icon="fa fa-trash" (click)="delete(rowData)" class="ui-button-danger"></button>

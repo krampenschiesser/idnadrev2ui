@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import Task from '../../dto/Task';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { TaskService } from '../../service/task.service';
 import { switchMap } from 'rxjs/operators';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-task-view',
@@ -12,7 +13,7 @@ import { switchMap } from 'rxjs/operators';
 export class TaskViewComponent implements OnInit {
   taskToShow?: Task;
 
-  constructor(private route: ActivatedRoute, private taskService: TaskService) {
+  constructor(private route: ActivatedRoute, private taskService: TaskService, public display: DisplayService,private router: Router) {
   }
 
   ngOnInit() {
@@ -36,12 +37,8 @@ export class TaskViewComponent implements OnInit {
     this.taskService.store(this.taskToShow);
   }
 
-  onEdit() {
-
-  }
-
-  onDelete() {
-
+  goToOverview() {
+    this.router.navigate(['/task']);
   }
 
 }

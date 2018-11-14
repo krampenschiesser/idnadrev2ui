@@ -1,40 +1,26 @@
 <div *ngIf="taskToShow">
+  <app-page-title [title]="taskToShow.name">
+    <app-task-buttons [task]="taskToShow" [showLabels]="display.lg" *ngIf="display.sm" [onDelete]="gotoOverview"></app-task-buttons>
+  </app-page-title>
   <p-card>
-    <p-header>
-      <div class="p-grid">
-        <div class="p-col-12">
-          <app-inplace-name-editor [name]="taskToShow.name" (newName)="setNewName($event)"> </app-inplace-name-editor>
-        </div>
-        <div class="p-col-12" style="padding-bottom: 2em">
-          <app-tagview [tags]="taskToShow.tags"></app-tagview>
-        </div>
-      </div>
-      <div class="p-grid">
-        <div class="p-col">
-          <button pButton type="button" icon="fa fa-cog" class="ui-button-info" label="Start work"></button>
-        </div>
-        <div class="p-col">
-          <button pButton type="button" icon="fa fa-check" class="ui-button-success" label="Finish"></button>
-
-        </div>
-        <div class="p-col">
-          <button pButton type="button" icon="fa fa-edit" label="Edit"></button>
-
-        </div>
-        <div class="p-col">
-          <button pButton type="button" icon="fa fa-trash" class="ui-button-danger" label="Delete"></button>
-
-        </div>
-        <div class="p-col">
-
-        </div>
-      </div>
-    </p-header>
     <div>
       <app-inplace-content-editor [text]="taskToShow.content" (newText)="setNewContent($event)"></app-inplace-content-editor>
     </div>
     <p-footer>
-
+      <div class="p-grid">
+        <div class="p-col-6" style="padding: 1px">
+          <app-tagview [tags]="taskToShow.tags"></app-tagview>
+        </div>
+        <div class="p-col-6">
+          <span>{{taskToShow.updated | date: "short"}}</span>
+        </div>
+      </div>
     </p-footer>
   </p-card>
+
+  <div *ngIf="display.xsOnly" style="padding-top: 0.5em">
+    <p-card>
+      <app-task-buttons [task]="taskToShow" [onDelete]="gotoOverview"></app-task-buttons>
+    </p-card>
+  </div>
 </div>

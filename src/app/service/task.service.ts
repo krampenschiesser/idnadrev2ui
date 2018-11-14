@@ -36,7 +36,7 @@ export class TaskService {
   }
 
   async loadAllTaskStates() {
-    this._allStates.splice(0)
+    this._allStates.splice(0);
     await this.repositoryService.waitLoadAllRepositoriesOnce();
     this.repositoryService.openRepositories.map(r => r.getTaskStateIndex.getAllValues()).forEach(given => {
       for (let tag of Array.from(given)) {
@@ -50,7 +50,7 @@ export class TaskService {
   }
 
   async loadAllTaskDelegations() {
-    this._allDelegations.splice(0)
+    this._allDelegations.splice(0);
     await this.repositoryService.waitLoadAllRepositoriesOnce();
     this.repositoryService.openRepositories.map(r => r.getDelegationIndex.getAllValues()).forEach(given => {
       for (let delegation of Array.from(given)) {
@@ -76,8 +76,24 @@ export class TaskService {
   async delete(task: Task): Promise<string> {
     task.deleted = new Date();
     const id = await this.store(task);
-    this.removeFromList(task);
+    this.removeFromListAndNotify(task);
     return id;
+  }
+
+  async deleteAll(tasks: Task[]): Promise<string[]> {
+    tasks.forEach(t => t.deleted = new Date());
+
+    let stored = await Promise.all(tasks.map(t => this.store(t)));
+    tasks.forEach(t => this.removeFromList(t));
+    this.notifyChanges();
+    return stored;
+  }
+
+  async finishAll(tasks: Task[]): Promise<string[]> {
+    tasks.forEach(t => t.details.finished = new Date());
+    let stored = await Promise.all(tasks.map(t => this.store(t)));
+    this.notifyChanges();
+    return stored;
   }
 
   async getTask(id: string): Promise<Task | undefined> {
@@ -96,7 +112,12 @@ export class TaskService {
     return undefined;
   }
 
-  removeFromList(file: Task) {
+  removeFromListAndNotify(file: Task) {
+    this.removeFromList(file);
+    this.notifyChanges();
+  }
+
+  private removeFromList(file: Task) {
     Array.from(this._tasks.values()).forEach(t => {
       if (t.children) {
         let index = t.children.indexOf(t);
@@ -106,7 +127,6 @@ export class TaskService {
       }
     });
     this._tasks.delete(file.id);
-    this.notifyChanges();
   }
 
   async finishTask(task: Task): Promise<string> {

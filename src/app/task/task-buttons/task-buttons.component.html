@@ -1,0 +1,18 @@
+<app-add-to-list-popup [show]="showListSelection" (onClose)="showListSelection=false" [tasks]="[task]"></app-add-to-list-popup>
+<div class="ks-grid">
+  <div class="ks-col" style="padding-bottom: 0" >
+    <button pButton type="button" icon="fa fa-cog" class="ui-button-info" [label]="showLabels? 'Start work':null" (click)="onStartWork()"></button>
+  </div>
+  <div class="ks-col" style="padding-bottom: 0" >
+    <button pButton type="button" icon="fa fa-check" class="ui-button-success" [label]="showLabels? 'Finish':null" (click)="onFinish()"></button>
+  </div>
+  <div class="ks-col" style="padding-bottom: 0" >
+    <button pButton type="button" icon="fa fa-edit" [label]="showLabels? 'Edit':null" (click)="onEdit()"></button>
+  </div>
+  <div class="ks-col" style="padding-bottom: 0" >
+    <button pButton type="button" icon="fa fa-list" [label]="showLabels? 'Add to list':null" (click)="showListSelection=true" class="ui-button-info"></button>
+  </div>
+  <div class="ks-col" style="padding-right: 0; padding-bottom: 0">
+    <button pButton type="button" icon="fa fa-trash" class="ui-button-danger" [label]="showLabels? 'Delete':null" (click)="onDelete()"></button>
+  </div>
+</div>
