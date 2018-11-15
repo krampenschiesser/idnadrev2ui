@@ -34,10 +34,10 @@ export class ContactOverviewComponent implements OnInit {
     let checkProperty = undefined;
     if (filter.anyField) {
 
-      let lowerCaseCOntent = filter.anyField.toLocaleLowerCase();
+      let lowerCaseContent = filter.anyField.toLocaleLowerCase();
       checkProperty = (property) => {
         let str: string = property;
-        if (str.toLocaleLowerCase().includes(lowerCaseCOntent)) {
+        if (str.toLocaleLowerCase().includes(lowerCaseContent)) {
           return true;
         } else {
           return false;

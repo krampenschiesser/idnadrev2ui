@@ -13,7 +13,7 @@ import {
   DropdownModule,
   InputTextModule,
   MessageModule,
-  MessagesModule, SelectButtonModule, TabViewModule,
+  MessagesModule, OverlayPanelModule, SelectButtonModule, TabViewModule,
   TooltipModule, TreeTableModule
 } from 'primeng/primeng';
 import {TableModule} from 'primeng/table';
@@ -31,6 +31,13 @@ import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
 import { TaskButtonsComponent } from './task-buttons/task-buttons.component';
 import { AddToListPopupComponent } from './add-to-list-popup/add-to-list-popup.component';
+import { TaskFilterEarliestStartDateComponent } from './task-filter-earliest-start-date/task-filter-earliest-start-date.component';
+import { TaskFilterRemainingTimeComponent } from './task-filter-remaining-time/task-filter-remaining-time.component';
+import { TaskFilterProjectComponent } from './task-filter-project/task-filter-project.component';
+import { TaskFilterActionableComponent } from './task-filter-actionable/task-filter-actionable.component';
+import { TaskFilterFinishedComponent } from './task-filter-finished/task-filter-finished.component';
+import { TaskFilterStateComponent } from './task-filter-state/task-filter-state.component';
+import { FilterModule } from '../filter/filter.module';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -69,8 +76,10 @@ const routes: Routes = [
     FormitemsModule,
     PageModule,
     ConfirmDialogModule,
+    OverlayPanelModule,
+    FilterModule
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, TaskFilterEarliestStartDateComponent, TaskFilterRemainingTimeComponent, TaskFilterProjectComponent, TaskFilterActionableComponent, TaskFilterFinishedComponent, TaskFilterStateComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {

@@ -1,0 +1,7 @@
+
+<div class="ks-col" [formGroup]="form">
+          <span class="ui-float-label">
+            <input (keyup.escape)="form.get('content').patchValue(undefined)" id="searchContent" type="text" pInputText formControlName="content" class="FormInput"/>
+            <label for="searchContent">Search for content</label>
+           </span>
+</div>

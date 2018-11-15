@@ -1,0 +1,6 @@
+<div class="ks-col" [formGroup]="form">
+            <span class="ui-float-label">
+               <input autofocus (keyup.escape)="form.get('remainingTime').patchValue(undefined)" id="remainingTime" type="number" min="1" pInputText formControlName="remainingTime" class="FormInput"/>
+               <label for="remainingTime">Remaining time less then</label>
+             </span>
+</div>

@@ -1,0 +1,6 @@
+<div class="ks-col" [formGroup]="form">
+           <span class="ui-float-label">
+            <p-calendar [selectOtherMonths]="true" [showIcon]="true" id="earliestStartDate" formControlName="earliestStartDate" (keyup.escape)="form.get('earliestStartDate').patchValue(undefined)" class="FormInputWithDropDown"></p-calendar>
+            <label for="earliestStartDate">Earliest start date</label>
+           </span>
+</div>

@@ -1,0 +1,10 @@
+<p-overlayPanel #op>
+  <ng-container [ngTemplateOutlet]="template"></ng-container>
+</p-overlayPanel>
+
+<div *ngIf="display.xsOnly">
+  <button pButton icon="fa fa-ellipsis-v" (click)="op.toggle($event)"></button>
+</div>
+<div *ngIf="display.sm">
+  <ng-container [ngTemplateOutlet]="template"></ng-container>
+</div>

@@ -1,0 +1,7 @@
+
+<div class="ks-col" [formGroup]="form">
+      <span class="ui-float-label">
+         <input autofocus (keyup.escape)="form.get('name').patchValue(undefined)" id="searchName" type="text" pInputText formControlName="name" class="FormInput"/>
+         <label for="searchName">Search for name</label>
+       </span>
+</div>

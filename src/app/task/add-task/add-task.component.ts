@@ -176,7 +176,9 @@ export class AddTaskComponent implements OnInit {
     if (!lowerCaseValues.includes('later')) {
       possibleValues.push('Later');
     }
-    let result = possibleValues.filter(s => s.toLocaleLowerCase().includes(prefix.toLocaleLowerCase()));
+    let result = [];
+    result.push(prefix);
+    possibleValues.filter(s => s.toLocaleLowerCase().includes(prefix.toLocaleLowerCase())).forEach(s=>result.push(s));
     this.taskStates = result;
   }
 

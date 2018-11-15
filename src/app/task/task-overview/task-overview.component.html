@@ -1,3 +1,4 @@
+<p-blockUI [blocked]="blocked"></p-blockUI>
 <app-page-title title="Tasks">
   <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new task" style="width: 5em; height: 2.5em" (click)="this.addTask()"></button>
 </app-page-title>
@@ -16,10 +17,10 @@
                 <button pButton icon="fa fa-list" class="ui-button-info" (click)="showListSelection=true"></button>
               </div>
               <div class="ks-col" style="padding-right:0">
-                <button pButton icon="fa fa-check" class="ui-button-success"></button>
+                <button pButton icon="fa fa-check" class="ui-button-success" (click)="finishAll(selection)"></button>
               </div>
               <div class="ks-col">
-                <button pButton icon="fa fa-trash" class="ui-button-danger"></button>
+                <button pButton icon="fa fa-trash" class="ui-button-danger" (click)="deleteAll(selection)"></button>
               </div>
               <div class="ks-col" style="padding-right: 0;">
                 <button pButton icon="fa fa-times" (click)="selection=[]"></button>

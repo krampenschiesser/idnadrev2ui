@@ -1,0 +1,7 @@
+<div class="ks-col" [formGroup]="form">
+       <span class="ui-float-label">
+         <p-autoComplete inputStyleClass="FormInputWithDropDown" id="float-state" formControlName="state" [suggestions]="taskStates" (completeMethod)="searchStates($event)" [dropdown]="true" (keyup.escape)="form.get('state').patchValue(undefined)">
+         </p-autoComplete>
+         <label for="float-state">Search for state</label>
+       </span>
+</div>

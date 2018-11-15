@@ -6,10 +6,11 @@ import { DocumentService } from '../../service/document.service';
 import { ThoughtService } from '../../service/thought.service';
 import { TaskService } from '../../service/task.service';
 import Task from '../../dto/Task';
-import TaskFilter from '../TaskFilter';
 import { FileId } from '../../dto/FileId';
 import { MessageService, TreeNode } from 'primeng/api';
 import { DisplayService } from '../../service/display.service';
+import TaskFilter from '../task-filter/TaskFilter';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-task-overview',
@@ -23,8 +24,9 @@ export class TaskOverviewComponent implements OnInit {
   selection: Task[] = [];
   oldSelection?: Task[];
   tableRows = 20;
-  activeFilter?: TaskFilter;
+  activeFilter: TaskFilter = {finished: false, tags: []};
   showListSelection = false;
+  blocked = false;
 
   constructor(private router: Router, private taskService: TaskService, private messageService: MessageService, public display: DisplayService) {
   }
@@ -46,7 +48,42 @@ export class TaskOverviewComponent implements OnInit {
   onFilter(filter: TaskFilter) {
     let tasks = new Set();
 
-    filterFiles(Array.from(this.allTasks.values()), filter).forEach(t => tasks.add(t));
+    let taskFilter = (task: Task) => {
+      let valid = true;
+      if (filter.finished) {
+        valid = task.isFinished;
+      } else {
+        valid = !task.isFinished;
+      }
+      if (filter.state) {
+        if (task.state) {
+          valid = valid && filter.state.toLocaleLowerCase() === task.state.toLocaleLowerCase();
+        } else {
+          valid = valid && filter.state.toLocaleLowerCase() === 'none';
+        }
+      }
+      if (filter.actionable) {
+        valid = valid && task.isActionable();
+      }
+      if (filter.project) {
+        valid = valid && task.isProject();
+      }
+      if (filter.earliestStartDate) {
+        valid = valid && moment(task.details.earliestStartDate).isAfter(moment(task.details.earliestStartDate));
+      }
+      if (filter.remainingTime) {
+        let remainingTask = task.getRemainingTime();
+        if (remainingTask) {
+          valid = valid && remainingTask < filter.remainingTime;
+        } else {
+          valid = false;
+        }
+      }
+
+      return valid;
+    };
+
+    filterFiles(Array.from(this.allTasks.values()), filter, taskFilter).forEach(t => tasks.add(t));
 
     const addParent = (parents: Task[], id?: FileId) => {
       if (id) {
@@ -127,16 +164,35 @@ export class TaskOverviewComponent implements OnInit {
 
   }
 
-  deleteAll(tasks: Task[]) {
-    this.taskService.deleteAll(tasks);
+  async deleteAll(tasks: Task[]) {
+    this.blocked = true;
+    this.taskService.deleteAll(tasks)
+      .then(() => {
+        this.messageService.add({severity: 'success', summary: 'Deleted ' + tasks.length + ' tasks '});
+        this.blocked = false;
+      })
+      .catch(() => {
+        this.messageService.add({severity: 'error', summary: 'Could not delete tasks'});
+        this.blocked = false;
+      });
   }
 
   finishAll(tasks: Task[]) {
-    this.taskService.finishAll(tasks);
+    this.blocked = true;
+    this.taskService.finishAll(tasks)
+      .then(() => {
+        this.messageService.add({severity: 'success', summary: 'Finished ' + tasks.length + ' tasks '});
+        this.blocked = false;
+      })
+      .catch(() => {
+        this.messageService.add({severity: 'error', summary: 'Could not finish tasks'});
+        this.blocked = false;
+      });
   }
 
 
   finish(task: Task) {
+    this.blocked = true;
     this.taskService.finishTask(task)//
       .then(() => this.messageService.add({severity: 'success', summary: 'Finished task ' + task.name}))
       .catch(() => this.messageService.add({severity: 'error', summary: 'Could not finish task ' + task.name}));

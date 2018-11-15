@@ -33,7 +33,7 @@ export class WorkUnit {
     return this;
   }
 
-  getDurationInMinutes() {
+  getDurationInMinutes(): number {
     let now = this.end ? this.end : new Date();
     return moment(now).diff(moment(this.start), 'minutes');
   }
@@ -86,7 +86,7 @@ export class TaskDetails {
   estimatedTime?: Seconds;
   delegation: DelegationState = new DelegationState();
   schedule?: Scheduling;
-  earliestStartDate?: Date
+  earliestStartDate?: Date;
   workUnits: WorkUnit[] = [];
   finished?: Date;
   action: boolean;
@@ -130,7 +130,20 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
   }
 
   isActionable(): boolean {
-    return this.details.estimatedTime !== null || this.details.action;
+    return !!this.details.estimatedTime || this.details.action === true;
+  }
+
+  isProject(): boolean {
+    return this.children && this.children.length > 0;
+  }
+
+  getRemainingTime(): number | undefined {
+    if (this.details.estimatedTime) {
+      let totalWorked = 0;
+      this.details.workUnits.map(u => u.getDurationInMinutes()).forEach(v => totalWorked += v);
+      return this.details.estimatedTime = totalWorked;
+    }
+    return undefined;
   }
 
   getScheduledDate(): Date | undefined {
