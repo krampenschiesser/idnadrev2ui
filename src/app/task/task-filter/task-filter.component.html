@@ -1,5 +1,14 @@
 <p-overlayPanel #xsPanel>
-
+  <app-content-filter [form]="form"></app-content-filter>
+  <app-task-filter-state [form]="form"></app-task-filter-state>
+  <app-checkbox-filter [form]="form" label="Finished" name="finished"></app-checkbox-filter>
+  <app-checkbox-filter [form]="form" label="Actionable" name="actionable"></app-checkbox-filter>
+  <app-checkbox-filter [form]="form" label="Project" name="project"></app-checkbox-filter>
+  <app-task-filter-remaining-time [form]="form"></app-task-filter-remaining-time>
+  <app-task-filter-earliest-start-date [form]="form"></app-task-filter-earliest-start-date>
+  <div class="ks-col" style="padding-left: 5px" *ngIf="display.sm">
+    <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
+  </div>
 </p-overlayPanel>
 
 <form [formGroup]="form">
@@ -8,14 +17,17 @@
     <div class="ks-col">
       <app-tag-input label="Search for tags" formControlName="tags"></app-tag-input>
     </div>
-    <app-content-filter [form]="form"></app-content-filter>
-    <app-task-filter-state [form]="form"></app-task-filter-state>
-    <app-task-filter-finished [form]="form"></app-task-filter-finished>
-    <app-task-filter-actionable [form]="form"></app-task-filter-actionable>
-    <app-task-filter-project [form]="form"></app-task-filter-project>
-    <app-task-filter-remaining-time [form]="form"></app-task-filter-remaining-time>
-    <app-task-filter-earliest-start-date [form]="form"></app-task-filter-earliest-start-date>
-    <div class="ks-col" style="padding-left: 5px" *ngIf="display.sm">
+    <div *ngIf="display.xsOnly" class="ks-col" style="padding-right: 0px" >
+      <button pButton type="button" icon="fa fa-ellipsis-v " (click)="xsPanel.toggle($event)"></button>
+    </div>
+    <app-content-filter *ngIf="display.sm" [form]="form"></app-content-filter>
+    <app-task-filter-state *ngIf="display.sm" [form]="form"></app-task-filter-state>
+    <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Finished" name="finished"></app-checkbox-filter>
+    <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Actionable" name="actionable"></app-checkbox-filter>
+    <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Project" name="project"></app-checkbox-filter>
+    <app-task-filter-remaining-time *ngIf="display.sm" [form]="form"></app-task-filter-remaining-time>
+    <app-task-filter-earliest-start-date *ngIf="display.sm" [form]="form"></app-task-filter-earliest-start-date>
+    <div *ngIf="display.sm" class="ks-col" style="padding-left: 5px" >
       <button pButton type="button" icon="fa fa-times-circle" (click)="onReset()"></button>
     </div>
   </div>

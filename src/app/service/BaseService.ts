@@ -8,7 +8,7 @@ import Repository from '../dto/Repository';
 
 export default class BaseService<T extends IdnadrevFile<any, any>> {
   public files = new BehaviorSubject<T[]>([]);
-  private _files: T[] = [];
+  protected _files: T[] = [];
 
   constructor(protected repositoryService, protected dexie: DexieService, protected persistedFile: PersistedFileService, protected conversion: (from: PersistedIdnadrevFile, repo: Repository, service: PersistedFileService) => Promise<T>, protected fileType: FileType) {
   }

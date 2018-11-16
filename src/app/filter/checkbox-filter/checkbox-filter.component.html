@@ -1,0 +1,4 @@
+<div class="ks-col" [formGroup]="form">
+  <p-checkbox #check [id]="name" [binary]="true" [formControlName]="name"></p-checkbox>
+  <label [for]="name" class="CheckBoxLabel" (click)="toggle(!check.checked)">{{label}}</label>
+</div>

@@ -7,4 +7,5 @@ export enum FileType {
   Contact = 'Contact',
   List = 'List',
   Template = 'Template',
+  Generic = 'Generic',
 }

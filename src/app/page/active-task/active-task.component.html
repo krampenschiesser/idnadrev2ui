@@ -1,0 +1,14 @@
+<div style="display: flex">
+  <div *ngIf="task" style="flex-grow: 0">
+    <button pButton icon="fa fa-stop" [pTooltip]="'Stop '+task.name"></button>
+  </div>
+  <div *ngIf="task" style="flex-grow: 0">
+    <button pButton icon="fa fa-check" [pTooltip]="'Finish '+task.name"></button>
+  </div>
+  <div style="flex-grow: 0;">
+    <button pButton icon="fa fa-play" pTooltip="Start working on new task"></button>
+  </div>
+  <div *ngIf="task" >
+    <span [ngStyle]="taskLabelStyle()">asldnhaksdblabsldkbasbleiubflakjsbdlkabsdjabsldbilurbflkabsdlkbsadlbuilfbakdsblbiulbfekabjsdlkvnknpoiugninaslckcjxklgfnhuibflak,.xncliluablepgibilabsdjb</span>
+  </div>
+</div>

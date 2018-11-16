@@ -11,6 +11,7 @@ import { indexFromJson } from './IndexFromJson';
 import Contact from '../dto/Contact';
 import Template from '../dto/Template';
 import List from '../dto/List';
+import Generic from '../dto/Generic';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,15 @@ export class PersistedFileService {
     Object.assign(thought, parse);
     this.fileDates(thought);
     return thought;
+  }
+
+  async toGeneric(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Generic> {
+    let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
+    let parse = JSON.parse(decrypt);
+    let generic = new Generic(parse.name);
+    Object.assign(generic, parse);
+    this.fileDates(generic);
+    return generic;
   }
 
   async toTask(persisted: PersistedIdnadrevFile, repo: Repository): Promise<Task> {

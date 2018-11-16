@@ -1,6 +1,10 @@
 <p-sidebar styleClass="ui-sidebar-sm" [(visible)]="sideBarVisible">
   <app-main-navigation (onClick)="sideBarVisible=false"></app-main-navigation>
 </p-sidebar>
+<div class="ActiveTaskContainer">
+  <app-active-task></app-active-task>
+  <app-promodoro></app-promodoro>
+</div>
 <div class="container">
   <div class="navbutton">
     <button type="text" (click)="sideBarVisible = !sideBarVisible" pButton icon="fa fa-bars"></button>

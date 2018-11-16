@@ -4,6 +4,12 @@
     margin-bottom: 0.5em;
 }
 
+.ActiveTaskContainer {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+
 .navbutton {
     padding-bottom: 0.5em;
     flex-grow: 0;
