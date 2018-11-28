@@ -9,11 +9,11 @@
  * except according to those terms.
  */
 
-import IdnadrevFile from './IdnadrevFile';
-import { FileType } from './FileType';
-import { FileId } from './FileId';
-import { Tag } from './Tag';
 import * as moment from 'moment';
+import {FileId} from './FileId';
+import {FileType} from './FileType';
+import IdnadrevFile from './IdnadrevFile';
+import {Tag} from './Tag';
 
 export class WorkUnit {
   start: Date;
@@ -224,5 +224,9 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
       this.children = [];
     }
     this.children.push(t);
+  }
+
+  isInProgress() {
+    return this.details.workUnits.findIndex(u => u.end === undefined) >= 0;
   }
 }

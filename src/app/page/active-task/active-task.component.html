@@ -1,14 +1,14 @@
 <div style="display: flex">
   <div *ngIf="task" style="flex-grow: 0">
-    <button pButton icon="fa fa-stop" [pTooltip]="'Stop '+task.name"></button>
+    <button pButton icon="fa fa-stop" [pTooltip]="'Stop '+task.name" (click)="onStopWork()"></button>
   </div>
   <div *ngIf="!task" style="flex-grow: 0;">
-    <button pButton icon="fa fa-play" pTooltip="Start working on new task"></button>
+    <button pButton icon="fa fa-play" pTooltip="Start working on new task" (click)="onStartTask()"></button>
   </div>
   <div *ngIf="task" style="flex-grow: 0">
-    <button pButton icon="fa fa-check" [pTooltip]="'Finish '+task.name"></button>
+    <button pButton icon="fa fa-check" [pTooltip]="'Finish '+task.name" (click)="onFinish()"></button>
   </div>
   <div *ngIf="task" >
-    <span [ngStyle]="taskLabelStyle()">asldnhaksdblabsldkbasbleiubflakjsbdlkabsdjabsldbilurbflkabsdlkbsadlbuilfbakdsblbiulbfekabjsdlkvnknpoiugninaslckcjxklgfnhuibflak,.xncliluablepgibilabsdjb</span>
+    <span [ngStyle]="taskLabelStyle()">{{task.name}}</span>
   </div>
 </div>

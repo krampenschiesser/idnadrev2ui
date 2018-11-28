@@ -35,6 +35,7 @@ import { TaskFilterEarliestStartDateComponent } from './task-filter-earliest-sta
 import { TaskFilterRemainingTimeComponent } from './task-filter-remaining-time/task-filter-remaining-time.component';
 import { TaskFilterStateComponent } from './task-filter-state/task-filter-state.component';
 import { FilterModule } from '../filter/filter.module';
+import { TaskSelectionComponent } from './task-selection/task-selection.component';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -76,7 +77,7 @@ const routes: Routes = [
     OverlayPanelModule,
     FilterModule
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, TaskFilterEarliestStartDateComponent, TaskFilterRemainingTimeComponent, TaskFilterStateComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, TaskFilterEarliestStartDateComponent, TaskFilterRemainingTimeComponent, TaskFilterStateComponent, TaskSelectionComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {
