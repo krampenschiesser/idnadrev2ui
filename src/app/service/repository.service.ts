@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import Repository from '../dto/Repository';
-import { RepositoryId } from '../dto/RepositoryId';
-import { DexieService } from '../db/dexie.service';
-import { BehaviorSubject } from 'rxjs';
-import { PersistedFileService } from '../db/persisted-file.service';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+import {DexieService} from '../db/dexie.service';
 import Index from '../db/Index';
+import {PersistedFileService} from '../db/persisted-file.service';
+import Repository from '../dto/Repository';
+import {RepositoryId} from '../dto/RepositoryId';
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +80,9 @@ export class RepositoryService {
       throw 'Repository ' + id + ' not found';
     }
     await found.open(pw);
+    if (found.token) {
+      await this.addIndexes(found);
+    }
     this.notifyChanges();
     return found;
   }
