@@ -31,7 +31,6 @@ export class DexieService extends Dexie {
 
 
   async storeIndex(index: Index, repo: Repository): Promise<string> {
-    console.log('storing index');
     let [encrypted, nonce] = await repo.encrypt(index.toJson());
     let data: PersistedIndex = {
       data: encrypted,
@@ -44,15 +43,12 @@ export class DexieService extends Dexie {
   }
 
   async storeRepository(obj: Repository): Promise<string> {
-    console.log('storing repository', obj.name);
     let data = this.persistedFileService.toPersistedRepo(obj);
     await Promise.all(obj.indexes.map(i => this.storeIndex(i, obj)));
-    console.log('stored repository', obj.name);
     return this.repositories.put(data);
   }
 
   async storeBinaryFile(obj: BinaryFile, repo: Repository) {
-    console.log('storing %o', obj);
     let assign: BinaryFile = Object.assign({}, obj);
     assign.content = Uint8Array.of();
 

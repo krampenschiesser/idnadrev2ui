@@ -19,6 +19,14 @@ export class TaskService {
   constructor(private dexie: DexieService, private persistedFile: PersistedFileService, private repositoryService: RepositoryService) {
   }
 
+  loadAllTasksOnce(): Promise<Task[]> {
+    if(this._tasks.size==0) {
+      return this.loadAllTasks();
+    }else {
+      let tasks1 : Task[] = Array.from(this._tasks.values());
+      return new Promise<Task[]>(r=>r(tasks1));
+    }
+  }
   async loadAllTasks(): Promise<Task[]> {
     await this.repositoryService.waitLoadAllRepositoriesOnce();
     let openRepositories = this.repositoryService.openRepositories;

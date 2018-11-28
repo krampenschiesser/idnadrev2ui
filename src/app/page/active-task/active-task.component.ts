@@ -15,10 +15,11 @@ export class ActiveTaskComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.taskService.loadAllTasksOnce();
     this.taskService.tasks.subscribe(t => {
       let value: Task | undefined = t.values().next().value;
       if (value) {
-        this.task = value;
+        // this.task = value;
       }
     });
   }

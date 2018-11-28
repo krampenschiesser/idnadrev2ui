@@ -18,23 +18,43 @@ export class GenericService extends BaseService<Generic> {
     }, FileType.Generic);
   }
 
+  promodoro?: Promodoro;
+
   async getPromodoro(): Promise<Promodoro> {
     if (this._files.length == 0) {
       await this.loadAll();
     }
     let found = this._files.find(f => f.name === 'promodoro');
     if (found) {
-      return new Promodoro(found);
+      this.promodoro = new Promodoro(found);
+      return this.promodoro;
     } else {
       let promodoro = new Promodoro();
       let generic = promodoro.toGeneric();
-      await this.store(generic);
+      this.storePromodoro(promodoro);
+      this.promodoro = promodoro;
       return promodoro;
     }
   }
 
   storePromodoro(promodoro: Promodoro) {
-    let generic = promodoro.toGeneric();
-    return this.store(generic);
+    let openRepositories = this.repositoryService.openRepositories;
+    if (openRepositories.length > 0) {
+      let generic = promodoro.toGeneric();
+      generic.repository = openRepositories[0].id;
+      return this.store(generic);
+    } else {
+      return new Promise(r => r('-1'));
+    }
+  }
+
+  startPromodoro(promodoro: Promodoro) {
+    promodoro.start();
+    this.storePromodoro(promodoro);
+  }
+
+  stopPromodoro(promodoro: Promodoro) {
+    promodoro.stop();
+    this.storePromodoro(promodoro);
   }
 }

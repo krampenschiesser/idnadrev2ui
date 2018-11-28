@@ -1,8 +1,24 @@
-<div style="display: flex">
+<p-dialog [(visible)]="visible" [modal]="true" header="Configure promodoro timer">
+  <form [formGroup]="form">
+    <app-text-input label="Intervals" number="true" formControlName="intervals" [invalid]="!form.controls['intervals'].valid&&form.controls['intervals'].dirty" validationError="Intervals are required"></app-text-input>
+    <app-text-input label="Worktime" number="true" formControlName="workTime" [invalid]="!form.controls['workTime'].valid&&form.controls['workTime'].dirty" validationError="Worktime is required"></app-text-input>
+    <app-text-input label="Breaktime" number="true" formControlName="breakTime" [invalid]="!form.controls['breakTime'].valid&&form.controls['breakTime'].dirty" validationError="Breaktime is required"></app-text-input>
+    <button [disabled]="form.invalid" pButton label="Start promodoro" (click)="onStart()"></button>
+  </form>
+</p-dialog>
+<div style="display: flex" [pTooltip]="(work? 'Work ' : 'Break') + (done +'/'+max)">
   <div>
-    <button pButton icon="fa fa-stopwatch"></button>
+    <button pButton icon="fa fa-stopwatch" (click)="work === undefined ? visible=true : onStop()"></button>
   </div>
-  <div>
-    <span>17</span>
+  <div *ngIf="work !== undefined" style="padding-left: 5px">
+    <round-progress [color]="work ? '#FFB300' : '#007ad9'" [current]="done" [max]="max" [radius]="17" [stroke]="5"></round-progress>
+  </div>
+  <div *ngIf="work !== undefined" style="padding-left: 5px">
+    <span *ngIf="work" style="font-size: 1.8em; color: #FFB300;">
+      <i class="fas fa-hammer"></i>
+    </span>
+    <span *ngIf="!work" style="font-size: 1.8em; color: #007ad9;">
+      <i class="fas fa-coffee"></i>
+    </span>
   </div>
 </div>

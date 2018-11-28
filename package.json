@@ -24,6 +24,7 @@
     "@fortawesome/fontawesome-free": "^5.4.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.6",
     "@fortawesome/free-solid-svg-icons": "^5.4.1",
+    "angular-svg-round-progressbar": "^2.0.0",
     "async-wait-until": "^1.2.4",
     "codemirror": "^5.40.2",
     "core-js": "^2.5.4",
