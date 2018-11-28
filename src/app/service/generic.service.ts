@@ -24,15 +24,16 @@ export class GenericService extends BaseService<Generic> {
     if (this._files.length == 0) {
       await this.loadAll();
     }
-    let found = this._files.find(f => f.name === 'promodoro');
+    let found = this._files.find(f => f.id === 'promodoro');
     if (found) {
       this.promodoro = new Promodoro(found);
+      console.log('found promodoro', found);
       return this.promodoro;
     } else {
       let promodoro = new Promodoro();
-      let generic = promodoro.toGeneric();
       this.storePromodoro(promodoro);
       this.promodoro = promodoro;
+      console.log('generated promodoro', this.promodoro);
       return promodoro;
     }
   }
@@ -42,6 +43,8 @@ export class GenericService extends BaseService<Generic> {
     if (openRepositories.length > 0) {
       let generic = promodoro.toGeneric();
       generic.repository = openRepositories[0].id;
+      generic.id = 'promodoro';
+      console.log('storing promodoro', generic);
       return this.store(generic);
     } else {
       return new Promise(r => r('-1'));

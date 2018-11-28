@@ -75,16 +75,20 @@ export class PromodoroComponent implements OnInit, OnDestroy {
       console.log(elapsedInMin)
       console.log(intervalLength * this.promodoro.intervals)
       let positionInInterval = elapsedInMin % (intervalLength);
-      if (elapsedInMin > intervalLength * this.promodoro.intervals) {
+      console.log(positionInInterval)
+      if (elapsedInMin >= intervalLength * this.promodoro.intervals) {
+        console.log('Stopping')
         this.onStop();
-      } else if (positionInInterval <= this.promodoro.workTime) {
+      } else if (positionInInterval < this.promodoro.workTime) {
         this.work = true;
         this.done = positionInInterval;
         this.max = this.promodoro.workTime;
+        console.log('Work')
       } else {
         this.work = false;
         this.done = intervalLength - this.promodoro.workTime;
         this.max = this.promodoro.breakTime;
+        console.log('Break')
       }
     }
   }
