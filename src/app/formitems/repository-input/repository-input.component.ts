@@ -23,6 +23,7 @@ export class RepositoryInputComponent implements OnInit {
   repository: RepositoryId;
   private onChange: any;
   private onTouched: any;
+  @Input() inputStyleClass: string| undefined = undefined;
 
   constructor() {
   }

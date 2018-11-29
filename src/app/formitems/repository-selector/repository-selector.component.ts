@@ -30,6 +30,7 @@ export class RepositorySelectorComponent implements OnInit, ControlValueAccessor
   private onTouched: any;
 
   selectFirst = true;
+  styleClass = 'FormInputWithDropDown';
 
   constructor(private repoService: RepositoryService) {
   }
@@ -44,6 +45,12 @@ export class RepositorySelectorComponent implements OnInit, ControlValueAccessor
         this.onChange(this.selectedRepo.id);
       }
     });
+  }
+
+  @Input('inputStyleClass') set inputStyleClass(clazz: string | undefined) {
+    if (clazz) {
+      this.styleClass = clazz;
+    }
   }
 
   onSelect(repo: Repository) {

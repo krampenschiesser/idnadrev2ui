@@ -23,7 +23,6 @@ import {TagModule} from '../tag/tag.module';
 import {AddTaskComponent} from './add-task/add-task.component';
 import {TaskOverviewComponent} from './task-overview/task-overview.component';
 import {TaskPreviewComponent} from './task-preview/task-preview.component';
-import { TaskFilterComponent } from './task-filter/task-filter.component';
 import { TaskViewComponent } from './task-view/task-view.component';
 import { InplaceModule } from '../inplace/inplace.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -31,11 +30,9 @@ import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
 import { TaskButtonsComponent } from './task-buttons/task-buttons.component';
 import { AddToListPopupComponent } from './add-to-list-popup/add-to-list-popup.component';
-import { TaskFilterEarliestStartDateComponent } from './task-filter-earliest-start-date/task-filter-earliest-start-date.component';
-import { TaskFilterRemainingTimeComponent } from './task-filter-remaining-time/task-filter-remaining-time.component';
-import { TaskFilterStateComponent } from './task-filter-state/task-filter-state.component';
 import { FilterModule } from '../filter/filter.module';
-import { TaskSelectionComponent } from './task-selection/task-selection.component';
+import { DataViewModule } from 'primeng/dataview';
+import { TaskFilterModule } from '../task-filter/task-filter.module';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -75,9 +72,11 @@ const routes: Routes = [
     PageModule,
     ConfirmDialogModule,
     OverlayPanelModule,
-    FilterModule
+    FilterModule,
+    DataViewModule,
+    TaskFilterModule
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskFilterComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, TaskFilterEarliestStartDateComponent, TaskFilterRemainingTimeComponent, TaskFilterStateComponent, TaskSelectionComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {

@@ -20,13 +20,14 @@ export class TaskService {
   }
 
   loadAllTasksOnce(): Promise<Task[]> {
-    if(this._tasks.size==0) {
+    if (this._tasks.size == 0) {
       return this.loadAllTasks();
-    }else {
-      let tasks1 : Task[] = Array.from(this._tasks.values());
-      return new Promise<Task[]>(r=>r(tasks1));
+    } else {
+      let tasks1: Task[] = Array.from(this._tasks.values());
+      return new Promise<Task[]>(r => r(tasks1));
     }
   }
+
   async loadAllTasks(): Promise<Task[]> {
     await this.repositoryService.waitLoadAllRepositoriesOnce();
     let openRepositories = this.repositoryService.openRepositories;
@@ -150,5 +151,19 @@ export class TaskService {
 
   get delegations(): string[] {
     return this._allDelegations.slice();
+  }
+
+  async stopWork(task: Task): Promise<string> {
+    task.stopWork();
+    await this.store(task);
+    this.notifyChanges();
+    return task.id;
+  }
+
+  async startWork(task: Task): Promise<string> {
+    task.startWork();
+    await this.store(task);
+    this.notifyChanges();
+    return task.id;
   }
 }

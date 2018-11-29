@@ -1,0 +1,16 @@
+<p-card>
+  <p-header>
+    <div class="p-grid">
+      <div class="p-col-6">
+        <span class="Title ui-card-title">{{task.name}}</span>
+      </div>
+      <div class="p-col-6">
+        <span>{{task.updated | date: "short"}}</span>
+      </div>
+      <div class="p-col" style="padding-left: 15px">
+        <app-tagview [tags]="task.tags"></app-tagview>
+      </div>
+    </div>
+  </p-header>
+  <app-markdown-viewer [markdown]="task.content"></app-markdown-viewer>
+</p-card>

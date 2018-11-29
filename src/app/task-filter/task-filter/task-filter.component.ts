@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import IdnadrevFileFilter from '../../filter/IdnadrevFileFilter';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import TaskFilter from './TaskFilter';
 import { TaskService } from '../../service/task.service';

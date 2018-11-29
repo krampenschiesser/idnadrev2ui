@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageTitleComponent } from './page-title/page-title.component';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule, SidebarModule, TooltipModule } from 'primeng/primeng';
+import { DialogModule, InputTextModule, SidebarModule, TooltipModule } from 'primeng/primeng';
 import { MainNavigationComponent } from './main-navigation/main-navigation.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
@@ -11,6 +11,7 @@ import { PromodoroComponent } from './promodoro/promodoro.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormitemsModule } from '../formitems/formitems.module';
 import { RoundProgressModule } from 'angular-svg-round-progressbar';
+import { TaskFilterModule } from '../task-filter/task-filter.module';
 
 @NgModule({
   imports: [
@@ -25,6 +26,8 @@ import { RoundProgressModule } from 'angular-svg-round-progressbar';
     ReactiveFormsModule,
     FormitemsModule,
     RoundProgressModule,
+    TaskFilterModule,
+    InputTextModule
   ],
   declarations: [PageTitleComponent, MainNavigationComponent, ActiveTaskComponent, PromodoroComponent],
   exports: [PageTitleComponent]

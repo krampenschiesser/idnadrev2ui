@@ -229,4 +229,12 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
   isInProgress() {
     return this.details.workUnits.findIndex(u => u.end === undefined) >= 0;
   }
+
+  stopWork() {
+
+  }
+
+  startWork() {
+
+  }
 }

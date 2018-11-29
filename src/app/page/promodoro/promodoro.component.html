@@ -1,4 +1,4 @@
-<p-dialog [(visible)]="visible" [modal]="true" header="Configure promodoro timer">
+<p-dialog modal="true" dismissableMask="true" positionTop="0" [(visible)]="visible" [modal]="true" header="Configure promodoro timer">
   <form [formGroup]="form">
     <app-text-input label="Intervals" number="true" formControlName="intervals" [invalid]="!form.controls['intervals'].valid&&form.controls['intervals'].dirty" validationError="Intervals are required"></app-text-input>
     <app-text-input label="Worktime" number="true" formControlName="workTime" [invalid]="!form.controls['workTime'].valid&&form.controls['workTime'].dirty" validationError="Worktime is required"></app-text-input>

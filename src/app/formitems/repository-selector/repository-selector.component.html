@@ -1,7 +1,7 @@
-<p-autoComplete *ngIf="!label" inputStyleClass="FormInputWithDropDown" id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
+<p-autoComplete *ngIf="!label" [inputStyleClass]="styleClass" id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
 </p-autoComplete>
 <span *ngIf="label" class="ui-float-label">
-  <p-autoComplete inputStyleClass="FormInputWithDropDown" id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
+  <p-autoComplete [inputStyleClass]="styleClass" id="autoCompleteRepoId" (onSelect)="onSelect($event)" [(ngModel)]="selectedRepo" [suggestions]="results" (completeMethod)="search($event)" field="name" [dropdown]="true">
   </p-autoComplete>
   <label for="autoCompleteRepoId">{{label}}</label>
 </span>

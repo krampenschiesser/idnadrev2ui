@@ -1,16 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import IdnadrevFile from '../../dto/IdnadrevFile';
-import IdnadrevFileFilter, { filterFiles } from '../../filter/IdnadrevFileFilter';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DocumentService } from '../../service/document.service';
-import { ThoughtService } from '../../service/thought.service';
 import { TaskService } from '../../service/task.service';
 import Task from '../../dto/Task';
 import { FileId } from '../../dto/FileId';
 import { MessageService, TreeNode } from 'primeng/api';
 import { DisplayService } from '../../service/display.service';
-import TaskFilter from '../task-filter/TaskFilter';
-import * as moment from 'moment';
+import TaskFilter, { filterTasks } from '../../task-filter/task-filter/TaskFilter';
 
 @Component({
   selector: 'app-task-overview',
@@ -31,7 +26,6 @@ export class TaskOverviewComponent implements OnInit {
   constructor(private router: Router, private taskService: TaskService, private messageService: MessageService, public display: DisplayService) {
   }
 
-
   async ngOnInit() {
     await this.taskService.loadAllTasks();
     this.taskService.tasks.subscribe(files => {
@@ -46,64 +40,7 @@ export class TaskOverviewComponent implements OnInit {
   }
 
   onFilter(filter: TaskFilter) {
-    let tasks = new Set();
-
-    let taskFilter = (task: Task) => {
-      let valid = true;
-      if (filter.finished) {
-        valid = task.isFinished;
-      } else {
-        valid = !task.isFinished;
-      }
-      if (filter.state) {
-        if (task.state) {
-          valid = valid && filter.state.toLocaleLowerCase() === task.state.toLocaleLowerCase();
-        } else {
-          valid = valid && filter.state.toLocaleLowerCase() === 'none';
-        }
-      }
-      if (filter.actionable) {
-        valid = valid && task.isActionable();
-      }
-      if (filter.project) {
-        valid = valid && task.isProject();
-      }
-      if (filter.earliestStartDate) {
-        valid = valid && moment(task.details.earliestStartDate).isAfter(moment(task.details.earliestStartDate));
-      }
-      if (filter.remainingTime) {
-        let remainingTask = task.getRemainingTime();
-        if (remainingTask) {
-          valid = valid && remainingTask < filter.remainingTime;
-        } else {
-          valid = false;
-        }
-      }
-
-      return valid;
-    };
-
-    filterFiles(Array.from(this.allTasks.values()), filter, taskFilter).forEach(t => tasks.add(t));
-
-    const addParent = (parents: Task[], id?: FileId) => {
-      if (id) {
-        let parent = this.allTasks.get(id);
-        if (parent && !tasks.has(parent)) {
-          parents.push(parent);
-        }
-      }
-    };
-
-    Array.from(tasks).forEach(t => {
-      let parents: Task[] = [];
-      addParent(parents, t.parent);
-      while (parents.length !== 0) {
-        let parent = parents.splice(0, 1)[0];
-        tasks.add(parent);
-        addParent(parents, parent.parent);
-      }
-    });
-    this.tasks = Array.from(tasks);
+    this.tasks = filterTasks(filter,this.allTasks,true);
     this.activeFilter = filter;
     this.generateTreeItems();
   }
