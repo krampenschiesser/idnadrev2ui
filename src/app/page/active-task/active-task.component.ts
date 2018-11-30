@@ -67,8 +67,10 @@ export class ActiveTaskComponent implements OnInit {
   }
 
   private resetTask() {
+    console.log('resetting')
     this.removeFromActiveTasks();
     this.task = undefined;
+    console.log(this.allActiveTasks)
 
     if (this.allActiveTasks.length > 0) {
       this.task = this.allActiveTasks[0];

@@ -5,3 +5,8 @@
 .NewTaskInput {
     width: 146px;
 }
+
+.SmallTagSelection {
+    /*width: 22.5em !important;*/
+    width: 200px  !important;
+}

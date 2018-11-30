@@ -231,10 +231,17 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
   }
 
   stopWork() {
-
+    let length = this.details.workUnits.length;
+    if(length>0) {
+      let last = this.details.workUnits[length-1];
+      if(!last.end) {
+        last.end = new Date();
+        console.log('stopped work')
+      }
+    }
   }
 
   startWork() {
-
+    this.details.workUnits.push(new WorkUnit());
   }
 }

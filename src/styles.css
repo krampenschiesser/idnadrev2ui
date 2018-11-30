@@ -17,6 +17,10 @@ body {
     /*width: 22.5em !important;*/
     width: 236px  !important;
 }
+.FormInputTagSmall {
+    /*width: 22.5em !important;*/
+    width: 225px  !important;
+}
 .FormInputWithDropDown {
     /*width: 20.5em !important;*/
     width: 217px  !important;

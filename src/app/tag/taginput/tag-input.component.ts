@@ -18,6 +18,7 @@ import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angul
 export class TagInputComponent implements OnInit, ControlValueAccessor {
   @Output() selectedTags = new EventEmitter<Tag[]>();
   @Input() label?: string;
+  inputStyleClass = "FormInputTag";
   tags: Tag[];
   results: Tag[];
   allTags: Tag[];
@@ -27,6 +28,12 @@ export class TagInputComponent implements OnInit, ControlValueAccessor {
 
   constructor(tagService: TagService) {
     this.tagService = tagService;
+  }
+
+  @Input("inputStyleClass") set setInputStyleClass(clazz : string) {
+    if(clazz) {
+      this.inputStyleClass = clazz;
+    }
   }
 
   ngOnInit() {

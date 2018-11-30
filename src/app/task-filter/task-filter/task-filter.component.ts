@@ -61,4 +61,8 @@ export class TaskFilterComponent implements OnInit {
     possibleValues.filter(s => s.toLocaleLowerCase().includes(prefix.toLocaleLowerCase())).forEach(s => result.push(s));
     this.taskStates = result;
   }
+
+  get tagStyleClass() : string {
+    return this.display.xsOnly ? "FormInputTagSmall" : null;
+  }
 }

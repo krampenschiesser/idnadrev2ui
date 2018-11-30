@@ -27,6 +27,7 @@ export class TaskSelectionComponent implements OnInit {
   async ngOnInit() {
     await this.taskService.loadAllTasks();
     this.taskService.tasks.subscribe(files => {
+      console.log('new tasks')
       this.allTasks = files;
       if (this.activeFilter) {
         this.onFilter(this.activeFilter);

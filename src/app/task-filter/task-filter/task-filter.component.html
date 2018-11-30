@@ -15,7 +15,7 @@
   <div class="ks-grid">
     <app-name-filter [form]="form"></app-name-filter>
     <div class="ks-col">
-      <app-tag-input label="Search for tags" formControlName="tags"></app-tag-input>
+      <app-tag-input [inputStyleClass]="tagStyleClass" label="Search for tags" formControlName="tags"></app-tag-input>
     </div>
     <div *ngIf="display.xsOnly" class="ks-col" style="padding-right: 0px" >
       <button pButton type="button" icon="fa fa-ellipsis-v " (click)="xsPanel.toggle($event)"></button>

@@ -77,9 +77,14 @@ export class TaskService {
     this.tasks.next(map);
   }
 
-  store(task: Task): Promise<string> {
+  async store(task: Task): Promise<string> {
     let repository = this.repositoryService.getRepository(task.repository);
-    return this.dexie.store(task, repository);
+    let id = await this.dexie.store(task, repository);
+    if (!this._tasks.has(task.id)) {
+      this._tasks.set(task.id, task);
+      this.notifyChanges();
+    }
+    return id;
   }
 
   async delete(task: Task): Promise<string> {
@@ -140,6 +145,7 @@ export class TaskService {
 
   async finishTask(task: Task): Promise<string> {
     task.details.finished = new Date();
+    task.stopWork();
     await this.store(task);
     this.notifyChanges();
     return task.id;
