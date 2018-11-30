@@ -5,6 +5,7 @@
 
 <div>
   <app-markdown-buttons
+    [fixed]="buttonsSticky"
     (bold)="appendText('****'); moveCursor(-2)"
     (italic)="appendText('**'); moveCursor(-1)"
     (olist)="appendText('\n * ');"

@@ -4,6 +4,7 @@ import * as CodeMirror from 'codemirror';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import Template from '../../dto/Template';
+import { DisplayService } from '../../service/display.service';
 
 @Component({
   selector: 'app-markdown-editor',
@@ -20,8 +21,15 @@ export class MarkdownEditorComponent implements OnInit {
   codeMirror: CodeMirror.EditorFromTextArea;
   changes = new Subject<string>();
   showTemplateSelection = false;
+  buttonsSticky = false;
 
-  constructor() {
+  constructor(private display: DisplayService) {
+    display.xsOnlyObservable.subscribe(val => {
+      if (!val) {
+        this.buttonsSticky = false;
+        console.log('noxs',this.buttonsSticky);
+      }
+    });
   }
 
   ngOnInit() {
@@ -32,6 +40,19 @@ export class MarkdownEditorComponent implements OnInit {
     });
     this.codeMirror.on('changes', () => {
       this.changes.next(this.codeMirror.getValue());
+    });
+    this.codeMirror.on('focus', () => {
+      if (this.display.xsOnly) {
+        this.buttonsSticky = true;
+        console.log('XsFocus',this.buttonsSticky);
+      } else {
+        this.buttonsSticky = false;
+        console.log('noXsFocus',this.buttonsSticky);
+      }
+    });
+    this.codeMirror.on('blur', () => {
+      this.buttonsSticky = false;
+      console.log('blurred',this.buttonsSticky);
     });
 
     if (this.parentFormControl) {
@@ -66,19 +87,19 @@ export class MarkdownEditorComponent implements OnInit {
 
   selectTemplate(template: Template) {
     this.appendText(template.content);
-    this.showTemplateSelection=false;
+    this.showTemplateSelection = false;
   }
 
-  private moveCursor(relativePosition: number){
+  private moveCursor(relativePosition: number) {
     let doc = this.codeMirror.getDoc();
-    let cursor = Object.assign({},doc.getCursor());
+    let cursor = Object.assign({}, doc.getCursor());
     let character = cursor.ch + relativePosition;
-    if(character<0){
-      character=0;
+    if (character < 0) {
+      character = 0;
     }
-    cursor.ch=character;
+    cursor.ch = character;
     this.codeMirror.focus();
-    this.codeMirror.setCursor(cursor)
+    this.codeMirror.setCursor(cursor);
   }
 
   private appendText(content: string) {
@@ -90,6 +111,6 @@ export class MarkdownEditorComponent implements OnInit {
     let lastLine = doc.lastLine();
     let line = doc.getLine(lastLine);
     let ch = line.length;
-    this.codeMirror.setCursor({line:lastLine,ch: ch});
+    this.codeMirror.setCursor({line: lastLine, ch: ch});
   }
 }

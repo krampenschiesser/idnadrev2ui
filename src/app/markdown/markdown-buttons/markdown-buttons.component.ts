@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DisplayService } from '../../service/display.service';
 
 @Component({
@@ -18,10 +18,25 @@ export class MarkdownButtonsComponent implements OnInit {
   @Output() template = new EventEmitter<void>();
   @Output() hruler = new EventEmitter<void>();
 
+  barStyle = {};
+
   constructor() {
   }
 
   ngOnInit() {
   }
 
+  @Input() set fixed(val: boolean) {
+    console.log("buttonbar",val);
+    if (val) {
+      this.barStyle = {
+        'position': 'fixed',
+        'top': '0px',
+        'z-index': 1000
+      };
+    } else {
+      this.barStyle = {};
+    }
+    console.log("buttonbar style",this.barStyle);
+  }
 }
