@@ -22,7 +22,6 @@ export class AddThoughtComponent implements OnInit {
     content: new FormControl(''),
   });
 
-  tagsControl = this.form.get('tags');
   contentControl = this.form.get('content');
 
   thoughtInEdit = new Thought('');
@@ -66,6 +65,7 @@ export class AddThoughtComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log("submitting")
     this.creating = true;
     if (this.form.valid) {
       this.applyFormChanges(this.form.value);

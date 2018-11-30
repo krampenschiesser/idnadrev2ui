@@ -15,11 +15,11 @@ import { TagModule } from '../tag/tag.module';
 import { BlockUIModule, CheckboxModule, DialogModule, DropdownModule, InputTextModule, MessageModule, MessagesModule, TooltipModule } from 'primeng/primeng';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IdnadrevFilePreviewComponent } from './idnadrev-file-preview/idnadrev-file-preview.component';
-import { IdnadrevFileFilterComponent } from './idnadrev-file-filter/idnadrev-file-filter.component';
 import { FileTypePipe } from './file-type.pipe';
 import { FormitemsModule } from '../formitems/formitems.module';
 import { PageModule } from '../page/page.module';
 import { DocumentViewComponent } from './document-view/document-view.component';
+import { FilterModule } from '../filter/filter.module';
 
 const routes: Routes = [
   {path: 'doc/edit/:id', component: AddDocumentComponent},
@@ -51,8 +51,8 @@ const routes: Routes = [
     ThoughtModule,
     FormitemsModule,
     PageModule,
+    FilterModule
   ],
-  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, IdnadrevFileFilterComponent, FileTypePipe, DocumentViewComponent],
-  exports: [IdnadrevFileFilterComponent]
+  declarations: [DocumentOverviewComponent, AddDocumentComponent, DocumentPreviewComponent, IdnadrevFilePreviewComponent, FileTypePipe, DocumentViewComponent],
 })
 export class DocumentModule { }

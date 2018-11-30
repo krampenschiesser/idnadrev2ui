@@ -15,7 +15,7 @@
         <label for="searchContent">Search for content</label>
        </span>
     </div>
-    <div class="ks-col">
+    <div class="ks-col" *ngIf="typeFilter">
       <p-dropdown id="typeSelection" [options]="types" optionLabel="label" placeholder="Select type" formControlName="type" [showClear]="true">
       </p-dropdown>
     </div>

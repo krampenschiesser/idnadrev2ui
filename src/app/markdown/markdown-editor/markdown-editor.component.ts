@@ -3,6 +3,7 @@ import { AbstractControl } from '@angular/forms';
 import * as CodeMirror from 'codemirror';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import Template from '../../dto/Template';
 
 @Component({
   selector: 'app-markdown-editor',
@@ -18,6 +19,7 @@ export class MarkdownEditorComponent implements OnInit {
 
   codeMirror: CodeMirror.EditorFromTextArea;
   changes = new Subject<string>();
+  showTemplateSelection = false;
 
   constructor() {
   }
@@ -41,8 +43,8 @@ export class MarkdownEditorComponent implements OnInit {
           this.codeMirror.setValue(str);
         }
       });
-    }else if(this.text){
-      this.current = this.text
+    } else if (this.text) {
+      this.current = this.text;
       this.codeMirror.setValue(this.current);
     }
 
@@ -52,13 +54,42 @@ export class MarkdownEditorComponent implements OnInit {
       this.current = value;
       if (this.parentFormControl) {
         this.parentFormControl.patchValue(value);
-      }else {
+      } else {
         this.onTextChange.emit(value);
       }
     });
   }
 
-  foucs(){
+  foucs() {
     this.codeMirror.focus();
+  }
+
+  selectTemplate(template: Template) {
+    this.appendText(template.content);
+    this.showTemplateSelection=false;
+  }
+
+  private moveCursor(relativePosition: number){
+    let doc = this.codeMirror.getDoc();
+    let cursor = Object.assign({},doc.getCursor());
+    let character = cursor.ch + relativePosition;
+    if(character<0){
+      character=0;
+    }
+    cursor.ch=character;
+    this.codeMirror.focus();
+    this.codeMirror.setCursor(cursor)
+  }
+
+  private appendText(content: string) {
+    let doc = this.codeMirror.getDoc();
+    let cursor = doc.getCursor();
+    doc.replaceRange(content, cursor);
+
+    this.codeMirror.focus();
+    let lastLine = doc.lastLine();
+    let line = doc.getLine(lastLine);
+    let ch = line.length;
+    this.codeMirror.setCursor({line:lastLine,ch: ch});
   }
 }

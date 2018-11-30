@@ -3,7 +3,7 @@
 
 
 <p-blockUI [blocked]="creating"></p-blockUI>
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form">
 
   <app-text-input formControlName="name" label="Name" [invalid]="!form.controls['name'].valid&&form.controls['name'].dirty" validationError="Name is required"></app-text-input>
   <app-text-input formControlName="postpone" label="Postpone {{form.get('postpone').value || 'N'}} days"  [number]="true" [invalid]="!form.controls['postpone'].valid&&form.controls['postpone'].dirty" validationError="Must be a number of days >=0"></app-text-input>

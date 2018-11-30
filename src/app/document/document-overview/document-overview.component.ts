@@ -7,7 +7,6 @@ import Thought from '../../dto/Thought';
 import Task from '../../dto/Task';
 import BinaryFile from '../../dto/BinaryFile';
 import Document from '../../dto/Document';
-import { ThoughtService } from '../../service/thought.service';
 import { DisplayService } from '../../service/display.service';
 
 @Component({

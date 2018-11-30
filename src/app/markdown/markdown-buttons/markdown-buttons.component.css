@@ -1,0 +1,11 @@
+.SmallGap {
+    padding-right: 0.25em;
+    padding-bottom: 0em;
+}
+
+@media only screen and (max-width: 576px) {
+    .SmallGap {
+        padding-bottom: 0.25em;
+    }
+
+}

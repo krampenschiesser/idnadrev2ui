@@ -19,6 +19,7 @@ export class IdnadrevFileFilterComponent implements OnInit {
   });
   @Output() filter = new EventEmitter<IdnadrevFileFilter>();
   types = [{label: 'Task', value: FileType.Task}, {label: 'Document', value: FileType.Document}, {label: 'Thought', value: FileType.Thought}, {label: 'Binary', value: FileType.Binary}];
+  @Input() typeFilter = true;
 
   constructor() {
   }

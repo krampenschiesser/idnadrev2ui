@@ -16,7 +16,6 @@ export class TaskSelectionComponent implements OnInit {
   allTasks: Map<FileId, Task>;
   activeFilter: TaskFilter = {finished: false, tags: []};
   selectedTask?: Task;
-  showSidePreview = false;
 
   @Output('selectedTask') onTask = new EventEmitter<Task>();
 
@@ -42,14 +41,11 @@ export class TaskSelectionComponent implements OnInit {
     this.activeFilter = filter;
   }
 
-  showPreview(task: Task) {
-    this.selectedTask = task;
-    if (this.display.md) {
-      this.showSidePreview = true;
-    }
-  }
-
   selectTask(task: Task) {
     this.onTask.emit(task);
+  }
+
+  showPreview(task) {
+    this.selectedTask=task;
   }
 }

@@ -1,2 +1,22 @@
-<textarea #textArea>
-</textarea>
+<p-dialog header="Select template" modal="true" dismissableMask="true" positionTop="0" [(visible)]="showTemplateSelection">
+  <app-template-selection (selectedTemplate)="selectTemplate($event)"></app-template-selection>
+</p-dialog>
+
+
+<div>
+  <app-markdown-buttons
+    (bold)="appendText('****'); moveCursor(-2)"
+    (italic)="appendText('**'); moveCursor(-1)"
+    (olist)="appendText('\n * ');"
+    (ulist)="appendText('\n 1. ');"
+    (heading)="appendText('#');"
+    (quote)="appendText('\n > ');"
+    (code)="appendText('\n```\n');"
+    (link)="appendText('[](http://)'); moveCursor(-1)"
+    (hruler)="appendText('\n---\n')"
+    (template)="showTemplateSelection=true">
+
+  </app-markdown-buttons>
+  <textarea #textArea>
+  </textarea>
+</div>
