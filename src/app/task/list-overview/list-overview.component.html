@@ -1,0 +1,30 @@
+<app-page-title title="Lists">
+  <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new list" style="width: 5em; height: 2.5em;margin-bottom: 0.4em" (click)="addList()"></button>
+</app-page-title>
+
+<div class="p-grid">
+  <div [class]="display.md && selectedList ? 'p-col-6' : 'p-col'">
+    <app-idnadrev-file-filter [contentFilter]="false" [typeFilter]="false" (filter)="onFilter($event)"></app-idnadrev-file-filter>
+    <p-table [autoLayout]="display.sm" [value]="lists" [rowHover]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Tags</th>
+          <th *ngIf="display.md">Created</th>
+          <th *ngIf="display.md">Repository</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-list>
+        <tr (mouseover)="this.showPreview(list)">
+          <td (click)="this.showView(list)">{{list.name}}</td>
+          <td (click)="this.showView(list)"><app-tagview [tags]="list.tags"></app-tagview></td>
+          <td *ngIf="display.md" (click)="this.showView(list)">{{list.updated | date: "short"}}</td>
+          <td *ngIf="display.md" (click)="this.showView(list)">{{list.repository | repositoryName}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="p-col-6" *ngIf="display.md && selectedList">
+    <app-list-preview [list]="selectedList"></app-list-preview>
+  </div>
+</div>

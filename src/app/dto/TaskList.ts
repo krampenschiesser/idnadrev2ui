@@ -2,10 +2,12 @@ import IdnadrevFile from './IdnadrevFile';
 import { Tag } from './Tag';
 import { FileType } from './FileType';
 import { FileId } from './FileId';
+import TaskFilter from '../task-filter/task-filter/TaskFilter';
 
 export class ListDetails {
   sortings: ListSorting[] = [new ListSorting('updated',SortOrder.DESC)];
   manualSorting = false;
+  filter?: TaskFilter;
 }
 
 export class ListSorting {
@@ -23,11 +25,10 @@ export enum SortOrder {
 }
 
 
-export default class List extends IdnadrevFile<ListDetails, FileId[]> {
+export default class TaskList extends IdnadrevFile<ListDetails, FileId[]> {
   constructor(name: string, tags: Tag[] = []) {
     super(name, FileType.List);
     this.tags = tags;
     this.details = new ListDetails();
   }
-
 }

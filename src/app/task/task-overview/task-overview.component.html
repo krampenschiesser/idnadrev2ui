@@ -1,6 +1,6 @@
 <p-blockUI [blocked]="blocked"></p-blockUI>
 <app-page-title title="Tasks">
-  <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new task" style="width: 5em; height: 2.5em" (click)="this.addTask()"></button>
+  <button pButton type="button" icon="fa fa-plus-circle" pTooltip="Add new task" style="width: 5em; height: 2.5em;margin-bottom: 0.4em" (click)="this.addTask()"></button>
 </app-page-title>
 <app-add-to-list-popup [tasks]="selection" (onClose)="listSelectionDone()" [show]="showListSelection"></app-add-to-list-popup>
 

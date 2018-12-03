@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ListService } from '../../service/list.service';
-import List from '../../dto/List';
+import TaskList from '../../dto/TaskList';
 import Task from '../../dto/Task';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
@@ -26,7 +26,7 @@ export class AddToListPopupComponent implements OnInit {
   async ngOnInit() {
     await this.listService.loadAll();
     this.listService.files.subscribe(lists => {
-      this.allLists = lists;
+      this.allLists = lists.filter(l=>!l.details.filter);
       this.lists = lists;
     });
   }
@@ -43,7 +43,7 @@ export class AddToListPopupComponent implements OnInit {
     }
   }
 
-  onAddToList(list: List) {
+  onAddToList(list: TaskList) {
     let message;
     if (this.tasks.length == 1) {
       message = 'Do you want to add ' + this.tasks[0].name + ' to the list ' + list.name + '?';

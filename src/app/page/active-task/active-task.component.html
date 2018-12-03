@@ -1,21 +1,21 @@
 <p-dialog header="Select task to work on" modal="true" dismissableMask="true" positionTop="0" [(visible)]="showTaskSelection">
-  <form [formGroup]="form">
-    <div class="ks-grid" style="padding-top: 1em">
-      <div class="ks-col" style="padding-right: 0.5em">
+    <form [formGroup]="form">
+      <div class="ks-grid" style="padding-top: 1em">
+        <div class="ks-col" style="padding-right: 0.5em">
       <span class="ui-float-label">
         <input #newTaskName id="newTaskName" type="text" class="NewTaskInput" pInputText formControlName="name">
         <label for="newTaskName">Or create new task</label>
       </span>
+        </div>
+        <div class="ks-col" style="padding-right: 0.5em">
+          <app-repository-selector [inputStyleClass]="repoInputClass" formControlName="repo"></app-repository-selector>
+        </div>
+        <div class="ks-col" style="padding-right: 0px">
+          <button pButton icon="fa fa-plus" [disabled]="!form.valid" (click)="onWorkOnNewTask()"></button>
+        </div>
       </div>
-      <div class="ks-col" style="padding-right: 0.5em">
-        <app-repository-selector [inputStyleClass]="repoInputClass" formControlName="repo"></app-repository-selector>
-      </div>
-      <div class="ks-col" style="padding-right: 0px">
-        <button pButton icon="fa fa-plus" [disabled]="!form.valid" (click)="onWorkOnNewTask()"></button>
-      </div>
-    </div>
-  </form>
-  <app-task-selection (selectedTask)="workOnTask($event)"></app-task-selection>
+    </form>
+    <app-task-selection [load]="showTaskSelection" (selectedTask)="workOnTask($event)"></app-task-selection>
 </p-dialog>
 
 <div style="display: flex">

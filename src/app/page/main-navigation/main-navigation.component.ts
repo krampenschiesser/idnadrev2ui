@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { faDatabase, faBook, faClipboardList, faInbox, faHome, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faDatabase, faBook, faTasks, faInbox, faHome, faUsers, faListAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-main-navigation',
@@ -9,10 +9,11 @@ import { faDatabase, faBook, faClipboardList, faInbox, faHome, faUsers } from '@
 export class MainNavigationComponent implements OnInit {
   reposIcon = faDatabase;
   docsIcon = faBook;
-  tasksIcon = faClipboardList;
+  tasksIcon = faTasks;
   inboxIcon = faInbox;
   homeIcon = faHome;
   usersIcon = faUsers;
+  listsIcon = faListAlt;
   @Output() onClick = new EventEmitter<void>();
 
   constructor() {

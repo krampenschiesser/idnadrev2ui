@@ -9,7 +9,7 @@
     <div class="ks-col">
       <app-tag-input label="Search for tags" formControlName="tags"></app-tag-input>
     </div>
-    <div class="ks-col">
+    <div class="ks-col" *ngIf="contentFilter">
       <span class="ui-float-label">
         <input id="searchContent" type="text" pInputText formControlName="content"/>
         <label for="searchContent">Search for content</label>

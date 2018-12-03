@@ -20,7 +20,6 @@ export class InplaceContentEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("text", this.text)
   }
 
   onShowEditor() {

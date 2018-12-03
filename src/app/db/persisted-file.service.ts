@@ -10,7 +10,7 @@ import Index from './Index';
 import { indexFromJson } from './IndexFromJson';
 import Contact from '../dto/Contact';
 import Template from '../dto/Template';
-import List from '../dto/List';
+import TaskList from '../dto/TaskList';
 import Generic from '../dto/Generic';
 
 @Injectable({
@@ -114,10 +114,10 @@ export class PersistedFileService {
     return doc;
   }
 
-  async toList(persisted: PersistedIdnadrevFile, repo: Repository): Promise<List> {
+  async toList(persisted: PersistedIdnadrevFile, repo: Repository): Promise<TaskList> {
     let decrypt = await repo.decryptToText(persisted.data, persisted.nonce);
     let parse = JSON.parse(decrypt);
-    let doc = new List(parse.name, parse.tags);
+    let doc = new TaskList(parse.name, parse.tags);
     Object.assign(doc, parse);
     this.fileDates(doc);
     return doc;

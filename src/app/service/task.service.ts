@@ -6,6 +6,8 @@ import { PersistedFileService } from '../db/persisted-file.service';
 import { FileType } from '../dto/FileType';
 import { FileId } from '../dto/FileId';
 import { RepositoryService } from './repository.service';
+import TaskList from '../dto/TaskList';
+import { filterTasks } from '../task-filter/task-filter/TaskFilter';
 
 @Injectable({
   providedIn: 'root'
@@ -171,5 +173,15 @@ export class TaskService {
     await this.store(task);
     this.notifyChanges();
     return task.id;
+  }
+
+  async getTasksForList(list: TaskList): Promise<Task[]> {
+    await this.loadAllTasksOnce();
+    let filter = list.details.filter;
+    if (filter) {
+      return filterTasks(filter, this._tasks, false);
+    } else {
+      return list.content.map(id => this._tasks.get(id));
+    }
   }
 }

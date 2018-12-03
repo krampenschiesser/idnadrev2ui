@@ -27,7 +27,7 @@ import { TaskFilterModule } from '../task-filter/task-filter.module';
     FormitemsModule,
     RoundProgressModule,
     TaskFilterModule,
-    InputTextModule
+    InputTextModule,
   ],
   declarations: [PageTitleComponent, MainNavigationComponent, ActiveTaskComponent, PromodoroComponent],
   exports: [PageTitleComponent]

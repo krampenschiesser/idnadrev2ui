@@ -1,0 +1,24 @@
+<p-table [autoLayout]="display.sm" [value]="tasks" [rowHover]="true" (onRowReorder)="onRowReorder($event.dragIndex, $event.dropIndex)">
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngIf="manualSorting"> </th>
+      <th>Name</th>
+      <th>Tags</th>
+      <th *ngIf="display.md">Created</th>
+      <th *ngIf="display.md">Repository</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-task let-index="rowIndex">
+    <tr [pReorderableRow]="index">
+      <td *ngIf="manualSorting">
+        <i class="fa fa-bars" pReorderableRowHandle></i>
+      </td>
+      <td (click)="this.showView(task)">{{task.id}}</td>
+      <td (click)="this.showView(task)">
+        <app-tagview [tags]="task.tags"></app-tagview>
+      </td>
+      <td *ngIf="display.md" (click)="this.showView(list)">{{task.updated | date: "short"}}</td>
+      <td *ngIf="display.md" (click)="this.showView(list)">{{task.repository | repositoryName}}</td>
+    </tr>
+  </ng-template>
+</p-table>

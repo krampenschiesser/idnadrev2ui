@@ -8,7 +8,7 @@ import { RepositoryId } from '../dto/RepositoryId';
 import { fromHex } from '../crypto/CryptoHelper';
 import Contact from '../dto/Contact';
 import Template from '../dto/Template';
-import List from '../dto/List';
+import TaskList from '../dto/TaskList';
 
 export function generateRepositories(): Repository[] {
   return [new Repository('test', 'test'), new Repository('test2', 'test2')];
@@ -24,10 +24,10 @@ export function generateThoughts(repo: RepositoryId): Thought[] {
 export function generateContacts(repo: RepositoryId): Contact[] {
   let c1 = new Contact('John Doe').withRepository(repo);
   c1.details.emails = ['john.doe@gmail.com'];
-  c1.details.addresses=['Roonstraße 33, 50674 Köln, Germany'];
+  c1.details.addresses = ['Roonstraße 33, 50674 Köln, Germany'];
   let c2 = new Contact('Jane Doe').withRepository(repo);
   c2.content = [{label: 'testField', value: 'Hello world'}];
-  c2.details.phones=['+49281937681']
+  c2.details.phones = ['+49281937681'];
   return [c1, c2];
 }
 
@@ -37,10 +37,18 @@ export function generateTemplates(repo: RepositoryId): Template[] {
   return [t1];
 }
 
-export function generateList(tasks: Task[], repo: RepositoryId): List[] {
-  let list = new List('testList').withRepository(repo);
+export function generateList(tasks: Task[], repo: RepositoryId): TaskList[] {
+  let list = new TaskList('testListManual').withRepository(repo);
   list.content = tasks.map(t => t.id);
-  return [list];
+
+  let list2 = new TaskList('listTag1').withRepository(repo);
+  list2.details.filter = {
+    tags: [new Tag('grilling')]
+  };
+  let list3 = new TaskList('Manual sorting').withRepository(repo);
+  list3.content = tasks.map(t => t.id);
+  list3.details.manualSorting = true;
+  return [list, list2, list3];
 }
 
 export function generateTasks(repo: RepositoryId, contacts: Contact[]): Task[] {

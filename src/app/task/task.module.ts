@@ -33,12 +33,20 @@ import { AddToListPopupComponent } from './add-to-list-popup/add-to-list-popup.c
 import { FilterModule } from '../filter/filter.module';
 import { DataViewModule } from 'primeng/dataview';
 import { TaskFilterModule } from '../task-filter/task-filter.module';
+import { ListOverviewComponent } from './list-overview/list-overview.component';
+import { ListViewComponent } from './list-view/list-view.component';
+import { AddListComponent } from './add-list/add-list.component';
+import { ListPreviewComponent } from './list-preview/list-preview.component';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
   {path: 'task/add', component: AddTaskComponent},
   {path: 'task/:id', component: TaskViewComponent},
   {path: 'task', component: TaskOverviewComponent},
+  {path: 'list/edit/:id', component: AddListComponent},
+  {path: 'list/add', component: AddListComponent},
+  {path: 'list/:id', component: ListViewComponent},
+  {path: 'list', component: ListOverviewComponent},
 ];
 
 @NgModule({
@@ -76,7 +84,7 @@ const routes: Routes = [
     DataViewModule,
     TaskFilterModule
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, ListOverviewComponent, ListViewComponent, AddListComponent, ListPreviewComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {

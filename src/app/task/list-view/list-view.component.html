@@ -1,0 +1,23 @@
+<p-dialog header="Select task to add to list" modal="true" dismissableMask="true" positionTop="0" [(visible)]="showTaskSelection">
+  <app-task-selection [load]="showTaskSelection" [tasks]="allTasks" (selectedTask)="addToList($event)"></app-task-selection>
+</p-dialog>
+
+<app-page-title [title]="list ? list.name : 'No list selected'">
+
+  <div class="ks-grid" *ngIf="_list">
+    <div class="ks-col">
+      <button pButton type="button" icon="fa fa-edit" pTooltip="Edit" (click)="this.onEdit()"></button>
+    </div>
+    <div class="ks-col-no-right-pad">
+      <button pButton type="button" icon="fa fa-trash" pTooltip="Delete" class="ui-button-danger" (click)="this.onDelete()"></button>
+    </div>
+  </div>
+</app-page-title>
+
+<div *ngIf="list">
+  <app-task-filter (filter)="onFilter($event)"></app-task-filter>
+  <div *ngIf="!list.details.filter">
+    <button pButton label="Add new task to list" icon="fa fa-plus" (click)="showTaskSelection=true"></button>
+  </div>
+  <app-list-preview [manualSorting]="list.details.manualSorting" (reorder)="changeTaskRowIndex($event)" [tasks]="tasks"></app-list-preview>
+</div>

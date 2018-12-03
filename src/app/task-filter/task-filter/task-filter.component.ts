@@ -23,7 +23,6 @@ export class TaskFilterComponent implements OnInit {
     remainingTime: new FormControl(),
   });
   @Output() filter = new EventEmitter<TaskFilter>();
-  taskStates = ['Asap', 'Later'];
 
   constructor(private taskService: TaskService,public display:DisplayService) {
   }
@@ -44,23 +43,6 @@ export class TaskFilterComponent implements OnInit {
     this.form.reset();
   }
 
-  searchStates(event: any) {
-    const prefix: string = event.query;
-    let possibleValues = this.taskService.states;
-    let lowerCaseValues = possibleValues.map(v => v.toLocaleLowerCase());
-    if (!lowerCaseValues.includes('asap')) {
-      possibleValues.push('Asap');
-    }
-    if (!lowerCaseValues.includes('later')) {
-      possibleValues.push('Later');
-    }
-    if (!lowerCaseValues.includes('none')) {
-      possibleValues.push('None');
-    }
-    let result = [];
-    possibleValues.filter(s => s.toLocaleLowerCase().includes(prefix.toLocaleLowerCase())).forEach(s => result.push(s));
-    this.taskStates = result;
-  }
 
   get tagStyleClass() : string {
     return this.display.xsOnly ? "FormInputTagSmall" : null;

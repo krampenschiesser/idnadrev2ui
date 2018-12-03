@@ -13,6 +13,7 @@ export default interface TaskFilter extends IdnadrevFileFilter {
 }
 
 export function filterTasks(filter: TaskFilter, allTasks: Map<FileId,Task>, addParents: boolean): Task[] {
+  console.log('before filtering',Array.from(allTasks.values()).map(t=>t.id))
   let tasks = new Set();
 
   let taskFilter = (task: Task) => {
@@ -71,6 +72,6 @@ export function filterTasks(filter: TaskFilter, allTasks: Map<FileId,Task>, addP
         addParent(parents, parent.parent);
       }
     });
-  }
+  }console.log('after filtering',Array.from(tasks).map(t=>t.id))
   return Array.from(tasks);
 }
