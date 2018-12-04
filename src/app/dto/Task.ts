@@ -43,7 +43,6 @@ export class Delegation {
   delegationStarted: Date;
   to: FileId;//fileId of Contact
 
-
   constructor(to: FileId, delegationStarted?: Date) {
     this.delegationStarted = delegationStarted ? delegationStarted : new Date();
     this.to = to;

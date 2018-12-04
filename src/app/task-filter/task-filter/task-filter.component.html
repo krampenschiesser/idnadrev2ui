@@ -4,6 +4,7 @@
   <app-checkbox-filter [form]="form" label="Finished" name="finished"></app-checkbox-filter>
   <app-checkbox-filter [form]="form" label="Actionable" name="actionable"></app-checkbox-filter>
   <app-checkbox-filter [form]="form" label="Project" name="project"></app-checkbox-filter>
+  <app-checkbox-filter [form]="form" label="Delegated" name="delegated"></app-checkbox-filter>
   <app-task-filter-remaining-time [form]="form"></app-task-filter-remaining-time>
   <app-task-filter-earliest-start-date [form]="form"></app-task-filter-earliest-start-date>
   <div class="ks-col" style="padding-left: 5px" *ngIf="display.sm">
@@ -25,6 +26,7 @@
     <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Finished" name="finished"></app-checkbox-filter>
     <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Actionable" name="actionable"></app-checkbox-filter>
     <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Project" name="project"></app-checkbox-filter>
+    <app-checkbox-filter *ngIf="display.sm" [form]="form" label="Delegated" name="delegated"></app-checkbox-filter>
     <app-task-filter-remaining-time *ngIf="display.sm" [form]="form"></app-task-filter-remaining-time>
     <app-task-filter-earliest-start-date *ngIf="display.sm" [form]="form"></app-task-filter-earliest-start-date>
     <div *ngIf="display.sm" class="ks-col" style="padding-left: 5px" >

@@ -9,9 +9,15 @@
       <th>
         Tags
       </th>
-      <th *ngIf="display.md" pSortableColumn="created">
-        Created
-        <p-sortIcon *ngIf="!manualSorting" field="created"></p-sortIcon>
+      <th *ngIf="display.sm">
+        State
+      </th>
+      <th *ngIf="display.sm">
+        Delegated to
+      </th>
+      <th *ngIf="display.md" pSortableColumn="updated">
+        Updated
+        <p-sortIcon *ngIf="!manualSorting" field="updated"></p-sortIcon>
       </th>
       <th *ngIf="display.md">
         Repository
@@ -26,6 +32,12 @@
       <td (click)="this.showView(task)">{{task.name}}</td>
       <td (click)="this.showView(task)">
         <app-tagview [tags]="task.tags"></app-tagview>
+      </td>
+      <td *ngIf="display.sm" (click)="this.showView(task)">
+        {{task.details.state}}
+      </td>
+      <td *ngIf="display.sm" (click)="this.showView(task)">
+        {{task.details.delegation.current?.to | delegation | async}}
       </td>
       <td *ngIf="display.md" (click)="this.showView(list)">{{task.updated | date: "short"}}</td>
       <td *ngIf="display.md" (click)="this.showView(list)">{{task.repository | repositoryName}}</td>

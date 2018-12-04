@@ -14,6 +14,14 @@ export default class BaseService<T extends IdnadrevFile<any, any>> {
   }
 
 
+  async loadAllOnce(): Promise<T[]> {
+    if (this._files.length == 0) {
+      return this.loadAll();
+    } else {
+      return this._files;
+    }
+  }
+
   async loadAll(): Promise<T[]> {
     await this.repositoryService.waitLoadAllRepositoriesOnce();
     let openRepositories = this.repositoryService.openRepositories;

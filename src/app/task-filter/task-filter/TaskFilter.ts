@@ -9,6 +9,7 @@ export default interface TaskFilter extends IdnadrevFileFilter {
   remainingTime?: number;
   actionable?: boolean;
   project?: boolean;
+  delegated?: boolean;
   earliestStartDate?: Date;
 }
 
@@ -38,6 +39,9 @@ export function filterTasks(filter: TaskFilter, allTasks: Map<FileId,Task>, addP
     }
     if (filter.earliestStartDate) {
       valid = valid && moment(task.details.earliestStartDate).isAfter(moment(task.details.earliestStartDate));
+    }
+    if(filter.delegated) {
+      valid = valid && task.isDelegated;
     }
     if (filter.remainingTime) {
       let remainingTask = task.getRemainingTime();

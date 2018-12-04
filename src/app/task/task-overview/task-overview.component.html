@@ -36,6 +36,9 @@
           <th *ngIf="display.sm">
             State
           </th>
+          <th *ngIf="display.sm">
+            Delegated to
+          </th>
           <th *ngIf="display.md" ttSortableColumn="updated">
             Updated
             <p-treeTableSortIcon field="updated"></p-treeTableSortIcon>
@@ -60,6 +63,9 @@
           </td>
           <td *ngIf="display.sm" (click)="this.showPreview(rowData)">
             {{rowData.details.state}}
+          </td>
+          <td *ngIf="display.sm" (click)="this.showPreview(rowData)">
+            {{rowData.details.delegation.current?.to | delegation | async}}
           </td>
           <td *ngIf="display.md" (click)="this.showPreview(rowData)">
             {{rowData.updated | date: "short"}}

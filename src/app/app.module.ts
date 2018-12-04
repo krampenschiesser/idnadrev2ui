@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { RepositoryModule } from './repository/repository.module';
-import { SidebarModule, DialogModule, ButtonModule, MessageService, InputTextModule } from 'primeng/primeng';
+import { SidebarModule, DialogModule, ButtonModule, MessageService } from 'primeng/primeng';
 import { CardModule } from 'primeng/card';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

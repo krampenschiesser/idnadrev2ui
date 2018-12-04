@@ -19,6 +19,7 @@ export class TaskFilterComponent implements OnInit {
     state: new FormControl(),
     project: new FormControl(),
     actionable: new FormControl(),
+    delegated: new FormControl(),
     earliestStartDate: new FormControl(),
     remainingTime: new FormControl(),
   });

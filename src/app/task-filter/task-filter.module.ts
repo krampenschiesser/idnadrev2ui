@@ -17,6 +17,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { MarkdownModule } from '../markdown/markdown.module';
 import { TableModule } from 'primeng/table';
 import { TaskSelectionPreviewComponent } from './task-selection-preview/task-selection-preview.component';
+import { DelegationPipe } from './delegation.pipe';
 
 @NgModule({
   imports: [
@@ -38,7 +39,7 @@ import { TaskSelectionPreviewComponent } from './task-selection-preview/task-sel
     CardModule,
     OverlayPanelModule
   ],
-  declarations: [TaskFilterComponent,TaskFilterEarliestStartDateComponent,TaskFilterRemainingTimeComponent,TaskFilterStateComponent,TaskSelectionComponent, TaskSelectionPreviewComponent],
-  exports: [TaskFilterComponent,TaskSelectionComponent]
+  declarations: [TaskFilterComponent,TaskFilterEarliestStartDateComponent,TaskFilterRemainingTimeComponent,TaskFilterStateComponent,TaskSelectionComponent, TaskSelectionPreviewComponent, DelegationPipe],
+  exports: [TaskFilterComponent,TaskSelectionComponent,DelegationPipe]
 })
 export class TaskFilterModule { }
