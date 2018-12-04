@@ -1,11 +1,21 @@
-<p-table [autoLayout]="display.sm" [value]="tasks" [rowHover]="true" (onRowReorder)="onRowReorder($event.dragIndex, $event.dropIndex)">
+<p-table [autoLayout]="display.sm" [sortMode]="manualSorting ? null : 'multiple'" [value]="tasks" [rowHover]="true" (onRowReorder)="onRowReorder($event.dragIndex, $event.dropIndex)">
   <ng-template pTemplate="header">
     <tr>
-      <th *ngIf="manualSorting"> </th>
-      <th>Name</th>
-      <th>Tags</th>
-      <th *ngIf="display.md">Created</th>
-      <th *ngIf="display.md">Repository</th>
+      <th *ngIf="manualSorting"></th>
+      <th pSortableColumn="name">
+        Name
+        <p-sortIcon *ngIf="!manualSorting" field="name"></p-sortIcon>
+      </th>
+      <th>
+        Tags
+      </th>
+      <th *ngIf="display.md" pSortableColumn="created">
+        Created
+        <p-sortIcon *ngIf="!manualSorting" field="created"></p-sortIcon>
+      </th>
+      <th *ngIf="display.md">
+        Repository
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-task let-index="rowIndex">
@@ -13,7 +23,7 @@
       <td *ngIf="manualSorting">
         <i class="fa fa-bars" pReorderableRowHandle></i>
       </td>
-      <td (click)="this.showView(task)">{{task.id}}</td>
+      <td (click)="this.showView(task)">{{task.name}}</td>
       <td (click)="this.showView(task)">
         <app-tagview [tags]="task.tags"></app-tagview>
       </td>

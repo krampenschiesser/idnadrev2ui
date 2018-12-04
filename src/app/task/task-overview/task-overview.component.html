@@ -8,7 +8,7 @@
   <div class="p-col">
     <app-task-filter (filter)="onFilter($event)"></app-task-filter>
 
-    <p-treeTable [autoLayout]="true" sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true">
+    <p-treeTable [autoLayout]="true" sortField="updated" [sortOrder]="-1" [value]="nodes" [rowHover]="true" sortMode="multiple">
       <ng-template pTemplate="header">
         <tr>
           <th [width]="selectActionWidth">
@@ -27,11 +27,19 @@
               </div>
             </div>
           </th>
-          <th>Name</th>
+          <th ttSortableColumn="name">
+            Name
+            <p-treeTableSortIcon field="name"></p-treeTableSortIcon>
+          </th>
           <th *ngIf="display.sm">Tags</th>
           <th *ngIf="display.lg">Repository</th>
-          <th *ngIf="display.sm">State</th>
-          <th *ngIf="display.md">Updated</th>
+          <th *ngIf="display.sm">
+            State
+          </th>
+          <th *ngIf="display.md" ttSortableColumn="updated">
+            Updated
+            <p-treeTableSortIcon field="updated"></p-treeTableSortIcon>
+          </th>
           <th [width]="actionWidth ? actionWidth : null">Action</th>
         </tr>
       </ng-template>

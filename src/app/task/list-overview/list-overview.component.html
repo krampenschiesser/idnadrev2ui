@@ -5,12 +5,18 @@
 <div class="p-grid">
   <div [class]="display.md && selectedList ? 'p-col-6' : 'p-col'">
     <app-idnadrev-file-filter [contentFilter]="false" [typeFilter]="false" (filter)="onFilter($event)"></app-idnadrev-file-filter>
-    <p-table [autoLayout]="display.sm" [value]="lists" [rowHover]="true">
+    <p-table [autoLayout]="display.sm" [value]="lists" [rowHover]="true" sortMode="multiple">
       <ng-template pTemplate="header">
         <tr>
-          <th>Name</th>
+          <th pSortableColumn='name'>
+            Name
+            <p-sortIcon field="name"></p-sortIcon>
+          </th>
           <th>Tags</th>
-          <th *ngIf="display.md">Created</th>
+          <th *ngIf="display.md" pSortableColumn='created'>
+            Created
+            <p-sortIcon field="created"></p-sortIcon>
+          </th>
           <th *ngIf="display.md">Repository</th>
         </tr>
       </ng-template>

@@ -6,7 +6,7 @@
 <div class="p-grid">
   <div class="p-col">
     <app-contact-filter (filter)="onFilter($event)"></app-contact-filter>
-    <p-table [value]="contacts" [rowHover]="true" [autoLayout]="true">
+    <p-table [value]="contacts" [rowHover]="true" [autoLayout]="true" sortMode="multiple">
       <ng-template pTemplate="header">
         <tr>
           <th style="padding: 0.571em;" [style.width]="selection.length > 0 ? '7em': '5em'">
@@ -15,11 +15,23 @@
               <button style="margin-left: 5px" pButton icon="fa fa-times" pTooltip="Clear selection" (click)="selection = []"></button>
             </div>
           </th>
-          <th>Name</th>
+          <th pSortableColumn='name'>
+            Name
+            <p-sortIcon field="name"></p-sortIcon>
+          </th>
           <th *ngIf="display.sm">Tags</th>
-          <th *ngIf="display.md">Phone</th>
-          <th *ngIf="display.md">Email</th>
-          <th *ngIf="display.lg">Address</th>
+          <th *ngIf="display.md" pSortableColumn='phone'>
+            Phone
+            <p-sortIcon field="phone"></p-sortIcon>
+          </th>
+          <th *ngIf="display.md" pSortableColumn='email'>
+            Email
+            <p-sortIcon field="email"></p-sortIcon>
+          </th>
+          <th *ngIf="display.lg" pSortableColumn='address'>
+            Address
+            <p-sortIcon field="address"></p-sortIcon>
+          </th>
           <th [width]="105">Action</th>
         </tr>
       </ng-template>

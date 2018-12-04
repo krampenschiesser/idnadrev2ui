@@ -6,12 +6,21 @@
 <div class="p-grid">
   <div class="p-col">
     <app-idnadrev-file-filter (filter)="onFilter($event)"></app-idnadrev-file-filter>
-    <p-table [autoLayout]="true" [value]="files" [rowHover]="true" [paginator]="true" [rows]="tableRows">
+    <p-table [autoLayout]="true" [value]="files" [rowHover]="true" [paginator]="true" [rows]="tableRows" sortMode="multiple">
       <ng-template pTemplate="header">
         <tr>
-          <th>Created</th>
-          <th>Name</th>
-          <th>Type</th>
+          <th pSortableColumn='updated'>
+            Updated
+            <p-sortIcon field="updated"></p-sortIcon>
+          </th>
+          <th pSortableColumn='name'>
+            Name
+            <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn='fileType'>
+            Type
+            <p-sortIcon field="fileType"></p-sortIcon>
+          </th>
           <th>Repository</th>
         </tr>
       </ng-template>
