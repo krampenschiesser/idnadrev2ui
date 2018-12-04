@@ -19,7 +19,8 @@ export class AddListComponent implements OnInit {
     tags: new FormControl([]),
     repository: new FormControl(undefined, [Validators.required]),
     details: new FormGroup({
-      filter: new FormControl()
+      filter: new FormControl(),
+      manualSorting: new FormControl(),
     }),
     content: new FormControl([]),
   });

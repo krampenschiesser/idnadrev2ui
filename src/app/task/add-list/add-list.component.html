@@ -8,8 +8,15 @@
   <app-tag-input-form-item formControlName="tags"></app-tag-input-form-item>
   <app-repository-input formControlName="repository"></app-repository-input>
 
-  <p-checkbox (onChange)="toggleManual()" label="Use filter to add tasks to list"></p-checkbox>
-  <br *ngIf="!isFiltered"/>
+  <div formGroupName="details" style="padding-bottom: 0.25em">
+    <p-checkbox id="manualSorting" formControlName="manualSorting" [binary]="true"></p-checkbox>
+    <label for="manualSorting" class="CheckBoxLabel">Manually sorted list</label>
+  </div>
+  <div style="padding-bottom: 0.5em">
+    <p-checkbox id="filtered" (onChange)="toggleManual()"></p-checkbox>
+    <label for="filtered" class="CheckBoxLabel">Use filter to add tasks to list</label>
+  </div>
+
   <div *ngIf="isFiltered">
     <app-task-filter (filter)="setFilter($event)"></app-task-filter>
   </div>
