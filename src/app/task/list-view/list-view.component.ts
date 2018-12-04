@@ -8,6 +8,7 @@ import { DisplayService } from '../../service/display.service';
 import { ListService } from '../../service/list.service';
 import Task from '../../dto/Task';
 import { RowChange } from '../list-preview/list-preview.component';
+import { FileId } from '../../dto/FileId';
 
 @Component({
   selector: 'app-list-view',
@@ -32,8 +33,6 @@ export class ListViewComponent implements OnInit {
     ).subscribe(list => {
       if (list) {
         this.list = list;
-        console.log('loaded list');
-        list.content.forEach(id => console.log(id));
       }
     });
   }
@@ -44,7 +43,6 @@ export class ListViewComponent implements OnInit {
     this.taskService.getTasksForList(list).then(tasks => {
       this.allTasks = tasks;
 
-      console.log('loaded tasks');
       this.onFilter(this.activeFilter);
     });
   }
@@ -74,16 +72,22 @@ export class ListViewComponent implements OnInit {
   }
 
   async changeTaskRowIndex(event: RowChange) {
-    let content = this.list.content;
-    content.forEach(id => console.log(id));
-    console.log(event.from.id,event.to.id);
-    let index1 = content.indexOf(event.from.id);
-    let index2 = content.indexOf(event.to.id);
-    console.log('#from',index1)
-    console.log('#to',index2)
-    content[index1]=event.to.id;
-    content[index2]=event.from.id;
-    content.forEach(id => console.log(id));
-    await this.listService.store(this.list);
+
+    let modList = this.list;
+    let content = modList.content.slice();
+
+    let index1 = content.indexOf(event.from);
+    let index2 = event.to === undefined ? undefined : content.indexOf(event.to);
+
+    let elementToMove = content.splice(index1, 1)[0];
+    if (index2 === undefined) {
+      content.push(elementToMove);
+    } else {
+      content.splice(index2, 0, elementToMove);
+    }
+
+    modList.content=content;
+    await this.listService.store(modList);
+    this.list = modList;
   }
 }

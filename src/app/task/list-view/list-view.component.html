@@ -19,5 +19,5 @@
   <div *ngIf="!list.details.filter">
     <button pButton label="Add new task to list" icon="fa fa-plus" (click)="showTaskSelection=true"></button>
   </div>
-  <app-list-preview [manualSorting]="list.details.manualSorting" (reorder)="changeTaskRowIndex($event)" [tasks]="tasks"></app-list-preview>
+  <app-list-preview [manualSorting]="list.details.manualSorting" (reorder)="changeTaskRowIndex($event)" [tasks]="tasks.slice()"></app-list-preview>
 </div>

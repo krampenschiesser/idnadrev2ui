@@ -4,6 +4,7 @@ import { DisplayService } from '../../service/display.service';
 import Task from '../../dto/Task';
 import { TaskService } from '../../service/task.service';
 import { Router } from '@angular/router';
+import { FileId } from '../../dto/FileId';
 
 @Component({
   selector: 'app-list-preview',
@@ -11,11 +12,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./list-preview.component.css']
 })
 export class ListPreviewComponent implements OnInit {
-  @Input() tasks?: Task[];
+  tasks?: Task[];
+  original?: Task[];
   @Input() manualSorting = false;
   @Output() reorder = new EventEmitter<RowChange>();
 
   constructor(public display: DisplayService, private taskService: TaskService, private router: Router) {
+  }
+
+  @Input('tasks') set setTasks(t: Task[]) {
+    this.tasks = t;
+    this.original = t.slice();
   }
 
   async ngOnInit() {
@@ -25,6 +32,7 @@ export class ListPreviewComponent implements OnInit {
     if (taskList) {
       this.taskService.getTasksForList(taskList).then(tasks => {
         this.tasks = tasks;
+        this.original = tasks.slice();
       });
     }
   }
@@ -34,16 +42,15 @@ export class ListPreviewComponent implements OnInit {
   }
 
   onRowReorder(dragIndex: number, dropIndex: number) {
-    console.log('from',dragIndex)
-    console.log('to',dropIndex)
+    this.tasks.map(t => t.id);
     this.reorder.emit({
-      from: this.tasks[dragIndex],
-      to: this.tasks[dropIndex],
-    })
+      from: this.original[dragIndex].id,
+      to: dropIndex >=this.tasks.length ? undefined: this.original[dropIndex].id,
+    });
   }
 }
 
-export interface RowChange{
-  from: Task;
-  to: Task;
+export interface RowChange {
+  from: FileId;
+  to: FileId | undefined;
 }
