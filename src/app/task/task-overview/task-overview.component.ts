@@ -131,8 +131,14 @@ export class TaskOverviewComponent implements OnInit {
   finish(task: Task) {
     this.blocked = true;
     this.taskService.finishTask(task)//
-      .then(() => this.messageService.add({severity: 'success', summary: 'Finished task ' + task.name}))
-      .catch(() => this.messageService.add({severity: 'error', summary: 'Could not finish task ' + task.name}));
+      .then(() => {
+        this.messageService.add({severity: 'success', summary: 'Finished task ' + task.name});
+        this.blocked=false;
+      })
+      .catch(() => {
+        this.messageService.add({severity: 'error', summary: 'Could not finish task ' + task.name});
+        this.blocked=false;
+      });
   }
 
   get actionWidth() {

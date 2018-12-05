@@ -37,6 +37,7 @@ import { ListOverviewComponent } from './list-overview/list-overview.component';
 import { ListViewComponent } from './list-view/list-view.component';
 import { AddListComponent } from './add-list/add-list.component';
 import { ListPreviewComponent } from './list-preview/list-preview.component';
+import { TaskSchedulingComponent } from './task-scheduling/task-scheduling.component';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -47,6 +48,7 @@ const routes: Routes = [
   {path: 'list/add', component: AddListComponent},
   {path: 'list/:id', component: ListViewComponent},
   {path: 'list', component: ListOverviewComponent},
+  {path: 'schedule', component: TaskSchedulingComponent},
 ];
 
 @NgModule({
@@ -84,7 +86,7 @@ const routes: Routes = [
     DataViewModule,
     TaskFilterModule
   ],
-  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, ListOverviewComponent, ListViewComponent, AddListComponent, ListPreviewComponent],
+  declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, ListOverviewComponent, ListViewComponent, AddListComponent, ListPreviewComponent, TaskSchedulingComponent],
   exports: [TaskPreviewComponent],
 })
 export class TaskModule {

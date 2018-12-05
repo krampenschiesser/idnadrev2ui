@@ -8,6 +8,7 @@ import { FileId } from '../dto/FileId';
 import { RepositoryService } from './repository.service';
 import TaskList from '../dto/TaskList';
 import { filterTasks } from '../task-filter/task-filter/TaskFilter';
+import * as moment from 'moment'
 
 @Injectable({
   providedIn: 'root'
@@ -183,5 +184,9 @@ export class TaskService {
     } else {
       return list.content.map(id => this._tasks.get(id));
     }
+  }
+
+  async getScheduledTasks(now: moment.Moment): Promise<Task[]>{
+    return [];
   }
 }
