@@ -10,10 +10,10 @@
  */
 
 import * as moment from 'moment';
-import {FileId} from './FileId';
-import {FileType} from './FileType';
+import { FileId } from './FileId';
+import { FileType } from './FileType';
 import IdnadrevFile from './IdnadrevFile';
-import {Tag} from './Tag';
+import { Tag } from './Tag';
 
 export class WorkUnit {
   start: Date;
@@ -77,6 +77,63 @@ export class FixedScheduling {
 export class Scheduling {
   fixedScheduling?: FixedScheduling;
   proposedDate?: ProposedDateTime;
+
+  isScheduled(): boolean {
+    return !!this.fixedScheduling || !!this.proposedDate;
+  }
+
+  isAllDay() {
+    if (this.fixedScheduling) {
+      return this.fixedScheduling.scheduledDateOnly;
+    } else if (this.proposedDate) {
+      return this.proposedDate.proposedDateOnly || this.proposedDate.proposedWeekOnly;
+    }
+  }
+
+  getStartDate(): Date | undefined {
+    if (this.fixedScheduling) {
+      let date = moment(this.fixedScheduling.scheduledDateTime);
+      if (this.fixedScheduling.scheduledDateOnly) {
+        date = date.hour(0).minute(0).second(0).millisecond(0);
+      }
+      return date.toDate();
+    } else if (this.proposedDate) {
+
+      let date = moment(this.proposedDate.proposedDateTime);
+      if (this.proposedDate.proposedDateOnly) {
+        date = date.hour(0).minute(0).second(0).millisecond(0);
+      } else if (this.proposedDate.proposedWeekOnly) {
+        date = date.weekday(0).hour(0).minute(0).second(0).millisecond(0);
+      }
+      return date.toDate();
+    } else {
+      return undefined;
+    }
+  }
+
+  getEndDate(estimatedTime: Seconds | undefined): Date | undefined {
+    let startDate = this.getStartDate();
+    let end = moment(startDate);
+    if (startDate) {
+      if (estimatedTime) {
+        end = end.seconds(estimatedTime);
+        return end.toDate();
+      } else {
+        if (this.fixedScheduling) {
+          end = end.hour(23).minute(59).second(59).millisecond(999);
+          return end.toDate();
+        } else if (this.proposedDate) {
+          if (this.proposedDate.proposedWeekOnly) {
+            end = end.weekday(6).hour(23).minute(59).second(59).millisecond(999);
+            return end.toDate();
+          } else {
+            end = end.hour(23).minute(59).second(59).millisecond(999);
+            return end.toDate();
+          }
+        }
+      }
+    }
+  }
 }
 
 export class TaskDetails {
@@ -231,11 +288,11 @@ export default class Task extends IdnadrevFile<TaskDetails, string> {
 
   stopWork() {
     let length = this.details.workUnits.length;
-    if(length>0) {
-      let last = this.details.workUnits[length-1];
-      if(!last.end) {
+    if (length > 0) {
+      let last = this.details.workUnits[length - 1];
+      if (!last.end) {
         last.end = new Date();
-        console.log('stopped work')
+        console.log('stopped work');
       }
     }
   }

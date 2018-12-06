@@ -3,7 +3,7 @@ import IdnadrevFile from '../dto/IdnadrevFile';
 import { PersistedBinaryFile, PersistedIdnadrevFile, PersistedIndex, PersistedRepository } from './PersistedFiles';
 import Repository from '../dto/Repository';
 import Thought from '../dto/Thought';
-import Task from '../dto/Task';
+import Task, { Scheduling } from '../dto/Task';
 import Document from '../dto/Document';
 import BinaryFile from '../dto/BinaryFile';
 import Index from './Index';
@@ -57,13 +57,19 @@ export class PersistedFileService {
     let parse = JSON.parse(decrypt);
     let task = new Task(parse.name, parse.tags, parse.content);
     Object.assign(task, parse);
+    if (task.details.schedule) {
+      let schedule = new Scheduling();
+      Object.assign(schedule, task.details.schedule);
+      task.details.schedule = schedule;
+    }
+
     this.fileDates(task);
 
-    if (typeof  task.details.finished === 'string') {
+    if (typeof task.details.finished === 'string') {
       task.details.finished = new Date(task.details.finished);
     }
     let current = task.details.delegation.current;
-    if (current && typeof  current.delegationStarted === 'string') {
+    if (current && typeof current.delegationStarted === 'string') {
       current.delegationStarted = new Date(current.delegationStarted);
     }
     task.details.delegation.history.forEach(h => {

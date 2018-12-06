@@ -30,7 +30,8 @@
               "src/styles.css",
               "node_modules/primeng/resources/themes/luna-amber/theme.css",
               "node_modules/codemirror/lib/codemirror.css",
-              "node_modules/codemirror/theme/monokai.css"
+              "node_modules/codemirror/theme/monokai.css",
+              "node_modules/fullcalendar/dist/fullcalendar.css"
             ],
             "scripts": []
           },

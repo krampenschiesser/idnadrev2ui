@@ -8,7 +8,7 @@ import { FileId } from '../dto/FileId';
 import { RepositoryService } from './repository.service';
 import TaskList from '../dto/TaskList';
 import { filterTasks } from '../task-filter/task-filter/TaskFilter';
-import * as moment from 'moment'
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -186,7 +186,23 @@ export class TaskService {
     }
   }
 
-  async getScheduledTasks(now: moment.Moment): Promise<Task[]>{
-    return [];
+  async getScheduledTasks(start: moment.Moment, end: moment.Moment): Promise<Task[]> {
+    await this.loadAllTasksOnce();
+    let retval = Array.from(this._tasks.values())
+      .filter(t => {
+        console.log(t.name,t.details.schedule);
+        return !!t.details.schedule;
+      })
+      .filter(t => {
+        console.log('is scheduled ',t.details.schedule.isScheduled());
+        return t.details.schedule.isScheduled();
+      })
+      .filter(t => {
+        console.log('Task start date ',t.details.schedule.getStartDate());
+        console.log('Week start date ',start);
+        return moment(t.details.schedule.getStartDate()).isSameOrAfter(start);
+      })
+      .filter(t => moment(t.details.schedule.getEndDate(t.details.estimatedTime)).isSameOrBefore(end));
+    return retval;
   }
 }

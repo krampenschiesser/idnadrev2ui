@@ -16,7 +16,7 @@
 <app-add-repo-short></app-add-repo-short>
 
 <p *ngFor="let repo of repositories">
-  <p-card title={{repo.name}}>
+  <p-card header="{{repo.name}}">
     <p-button *ngIf="!repo.isOpen()" icon="fa fa-lock-open" type="button" (click)="this.loginRepo(repo)" label="Login" >
     </p-button>
     <p-button *ngIf="repo.isOpen()" icon="fa fa-lock" type="button" (click)="this.logoutRepo(repo)" label="Logout">
