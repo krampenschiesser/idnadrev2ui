@@ -43,13 +43,41 @@ interface CalendarEvent {
   styleUrls: ['./task-scheduling.component.css']
 })
 export class TaskSchedulingComponent implements OnInit {
-  options = {};
+  options = {
+    header: {
+      left: 'title',
+      center: 'month,agendaWeek,agendaDay,basicDay',
+      right: 'today prev,next'
+    }, buttonText: {
+      basicDay: 'Day View'
+    },
+    nowIndicator: true,
+    navLinks: true,
+    businessHours: {
+      daysOfWeek: [ 1, 2, 3, 4,5 ],
+      startTime: '9:00',
+      endTime: '18:00',
+    },
+    views: {
+      month: {
+        fixedWeekCount: true,
+
+      }
+    },
+    navLinkDayClick: function(date, jsEvent) {
+      console.log('in options click',date,jsEvent)
+      this._navLinkDayClick(date,jsEvent)
+    }
+  };
   events: CalendarEvent[] = [];
   tasks: Task[] = [];
 
   constructor(private taskService: TaskService) {
   }
 
+  _navLinkDayClick(date: any, jsEvent: any ) {
+    console.log('in class click')
+  }
   ngOnInit() {
     let now = moment();
     let start = now.clone();
@@ -70,6 +98,7 @@ export class TaskSchedulingComponent implements OnInit {
         start: schedule.getStartDate(),
         end: schedule.getEndDate(t.details.estimatedTime),
         title: t.name,
+        editable: true
       };
       return event;
     });
