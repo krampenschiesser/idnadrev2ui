@@ -190,19 +190,16 @@ export class TaskService {
     await this.loadAllTasksOnce();
     let retval = Array.from(this._tasks.values())
       .filter(t => {
-        console.log(t.name,t.details.schedule);
         return !!t.details.schedule;
       })
       .filter(t => {
-        console.log('is scheduled ',t.details.schedule.isScheduled());
         return t.details.schedule.isScheduled();
       })
       .filter(t => {
-        console.log('Task start date ',t.details.schedule.getStartDate());
-        console.log('Week start date ',start);
-        return moment(t.details.schedule.getStartDate()).isSameOrAfter(start);
-      })
-      .filter(t => moment(t.details.schedule.getEndDate(t.details.estimatedTime)).isSameOrBefore(end));
+        let sameOrAfter = moment(t.details.schedule.getStartDate()).isSameOrAfter(start);
+        let sameOrBefore = moment(t.details.schedule.getEndDate(t.details.estimatedTime)).isSameOrBefore(end);
+        return sameOrAfter || sameOrBefore;
+      });
     return retval;
   }
 }

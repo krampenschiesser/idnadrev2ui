@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../../service/task.service';
 import * as moment from 'moment';
 import Task from '../../dto/Task';
+import CalendarEvent from '../../calendar/CalendarEvent';
 
 interface OpenDateSpanInput {
   start?: Date;
@@ -16,7 +17,7 @@ type ConstraintInput = 'businessHours' | string | OpenDateSpanInput | {
   [timeOrRecurringProp: string]: any;
 };
 
-interface CalendarEvent {
+interface NgCalendarEvent {
   id?: string | number;
   groupId?: string | number;
   allDay?: boolean;
@@ -54,7 +55,7 @@ export class TaskSchedulingComponent implements OnInit {
     nowIndicator: true,
     navLinks: true,
     businessHours: {
-      daysOfWeek: [ 1, 2, 3, 4,5 ],
+      daysOfWeek: [1, 2, 3, 4, 5],
       startTime: '9:00',
       endTime: '18:00',
     },
@@ -64,35 +65,38 @@ export class TaskSchedulingComponent implements OnInit {
 
       }
     },
-    navLinkDayClick: function(date, jsEvent) {
-      console.log('in options click',date,jsEvent)
-      this._navLinkDayClick(date,jsEvent)
+    navLinkDayClick: function (date, jsEvent) {
+      console.log('in options click', date, jsEvent);
+      this._navLinkDayClick(date, jsEvent);
     }
   };
-  events: CalendarEvent[] = [];
+  events: NgCalendarEvent[] = [];
+  calEvents: CalendarEvent[] = [];
   tasks: Task[] = [];
+  now = moment();
 
   constructor(private taskService: TaskService) {
   }
 
-  _navLinkDayClick(date: any, jsEvent: any ) {
-    console.log('in class click')
+  _navLinkDayClick(date: any, jsEvent: any) {
+    console.log('in class click');
   }
+
   ngOnInit() {
     let now = moment();
     let start = now.clone();
     let end = now.clone();
     start = start.date(1).hour(0).minute(0).second(0).millisecond(0);
     end = end.date(now.daysInMonth()).weekday(6).hour(23).minute(59).second(59).millisecond(999);
-    this.fetFor(start,end);
+    this.fetchFor(start, end);
   }
 
-  async fetFor(start: moment.Moment,end: moment.Moment) {
+  async fetchFor(start: moment.Moment, end: moment.Moment) {
     this.tasks = await this.taskService.getScheduledTasks(start, end);
     console.log('Got tasks ', this.tasks);
     this.events = this.tasks.filter(t => t.details.schedule.isScheduled()).map(t => {
       let schedule = t.details.schedule;
-      let event: CalendarEvent = {
+      let event: NgCalendarEvent = {
         id: t.id,
         allDay: schedule.isAllDay(),
         start: schedule.getStartDate(),
@@ -102,6 +106,18 @@ export class TaskSchedulingComponent implements OnInit {
       };
       return event;
     });
+    this.calEvents = this.tasks.filter(t => t.details.schedule.isScheduled()).map(t => {
+      let schedule = t.details.schedule;
+      let event: CalendarEvent = Object.assign(new CalendarEvent(), {
+        id: t.id,
+        allDay: schedule.isAllDay(),
+        start: moment(schedule.getStartDate()),
+        end: moment(schedule.getEndDate(t.details.estimatedTime)),
+        title: t.name,
+      });
+      return event;
+    });
     console.log('Got events ', this.events);
   }
+
 }

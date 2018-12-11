@@ -1,8 +1,32 @@
-<div class="WeekDayContainer" *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
-  <div class="WeekDayTitle">
-    {{date.weekday(weekDayNr).format('ddd')}}
+<div class="MonthView">
+  <div class="Header">
+    <div *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
+      <div class="WeekDayContainer" [ngStyle]="{left: 100 / 7 * weekDayNr + '%', width: 100/7+'%'}">
+        <div class="WeekDayCell">
+          {{date.weekday(weekDayNr).format('ddd')}}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="SingleWeekDay" *ngFor="let day of forDayOfWeek(weekDayNr); index as i; ">
-    {{day.date.}}
+  <div class="EventBody" [ngStyle]="{height: height+'px'}">
+    <div *ngFor="let week of weeks; index as i" class="WeekRow" [ngStyle]="{top: 100/weeks.length*i+'%', height: height/weeks.length+'px'}">
+      <div
+        pDroppable="events"
+        [ngClass]="{'WeekDay': true, 'Weekend': week[weekDayNr].date.day() === 0 || week[weekDayNr].date.day() ===6}"
+        [ngStyle]="{left: 100/7*weekDayNr+'%', width: 100/7+'%', borderLeftWidth: weekDayNr === 0 ? '1px': '0'}"
+        *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
+        <a [routerLink]="[]" (click)="daySelected.emit(week[weekDayNr].date)" class="WeekDayLabel">
+          {{week[weekDayNr].date.format('D')}}
+        </a>
+        <a [routerLink]="[]" (click)="weekSelected.emit(week[weekDayNr].date)" *ngIf="weekDayNr===0" class="WeekNrLabel">
+          {{week[weekDayNr].date.format('w')}}
+        </a>
+      </div>
+      <div *ngFor="let event of eventsInWeek[i]">
+        <div class="Event" [ngStyle]="{top: (27+event.row*21)+'px', left: (100/7* event.offset) +'%', width: (100/7*event.length)+'%'}">
+          {{event.event.title}}
+        </div>
+      </div>
+    </div>
   </div>
 </div>

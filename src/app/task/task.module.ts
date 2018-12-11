@@ -7,7 +7,7 @@ import {CardModule} from 'primeng/card';
 import {
   AccordionModule,
   AutoCompleteModule,
-  BlockUIModule, CalendarModule,
+  BlockUIModule, CalendarModule as NgCalendarModule,
   CheckboxModule, ConfirmationService, ConfirmDialogModule,
   DialogModule,
   DropdownModule,
@@ -39,6 +39,7 @@ import { AddListComponent } from './add-list/add-list.component';
 import { ListPreviewComponent } from './list-preview/list-preview.component';
 import { TaskSchedulingComponent } from './task-scheduling/task-scheduling.component';
 import { FullCalendarModule } from 'primeng/fullcalendar';
+import { CalendarModule } from '../calendar/calendar.module';
 
 const routes: Routes = [
   {path: 'task/edit/:id', component: AddTaskComponent},
@@ -74,7 +75,7 @@ const routes: Routes = [
     DropdownModule,
     TreeTableModule,
     InplaceModule,
-    CalendarModule,
+    NgCalendarModule,
     FullCalendarModule,
     AutoCompleteModule,
     AccordionModule,
@@ -87,6 +88,7 @@ const routes: Routes = [
     FilterModule,
     DataViewModule,
     TaskFilterModule,
+    CalendarModule
   ],
   declarations: [TaskPreviewComponent, TaskOverviewComponent, AddTaskComponent, TaskViewComponent, TaskButtonsComponent, AddToListPopupComponent, ListOverviewComponent, ListViewComponent, AddListComponent, ListPreviewComponent, TaskSchedulingComponent],
   exports: [TaskPreviewComponent],
