@@ -6,13 +6,17 @@ import { DayViewComponent } from './day-view/day-view.component';
 import { DayAgendaComponent } from './day-agenda/day-agenda.component';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from 'primeng/primeng';
+import { CalendarModule as NgCalendarModule } from 'primeng/primeng';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [MonthViewComponent, WeekViewComponent, DayViewComponent, DayAgendaComponent],
   imports: [
     CommonModule,
     RouterModule,
-    DragDropModule
+    DragDropModule,
+    NgCalendarModule,
+    FormsModule
   ],
   exports: [MonthViewComponent, WeekViewComponent, DayViewComponent, DayAgendaComponent]
 })

@@ -65,8 +65,8 @@ export class DelegationState {
 
 export class ProposedDateTime {
   proposedDateTime: Date;
-  proposedDateOnly: boolean = true;
-  proposedWeekOnly: boolean = true;
+  proposedDateOnly: boolean = false;
+  proposedWeekOnly: boolean = false;
 }
 
 export class FixedScheduling {
@@ -116,7 +116,7 @@ export class Scheduling {
     let end = moment(startDate);
     if (startDate) {
       if (estimatedTime) {
-        end = end.seconds(estimatedTime);
+        end = end.minutes(estimatedTime);
         return end.toDate();
       } else {
         if (this.fixedScheduling) {

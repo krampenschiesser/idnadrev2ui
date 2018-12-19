@@ -84,6 +84,12 @@ export class TaskSchedulingComponent implements OnInit {
 
   ngOnInit() {
     let now = moment();
+    this.fetchForDate(now);
+  }
+
+  private fetchForDate(now: moment.Moment) {
+    console.log('fetch for ',now.toDate());
+    this.now = now;
     let start = now.clone();
     let end = now.clone();
     start = start.date(1).hour(0).minute(0).second(0).millisecond(0);
@@ -93,7 +99,6 @@ export class TaskSchedulingComponent implements OnInit {
 
   async fetchFor(start: moment.Moment, end: moment.Moment) {
     this.tasks = await this.taskService.getScheduledTasks(start, end);
-    console.log('Got tasks ', this.tasks);
     this.events = this.tasks.filter(t => t.details.schedule.isScheduled()).map(t => {
       let schedule = t.details.schedule;
       let event: NgCalendarEvent = {
@@ -117,7 +122,6 @@ export class TaskSchedulingComponent implements OnInit {
       });
       return event;
     });
-    console.log('Got events ', this.events);
   }
 
 }

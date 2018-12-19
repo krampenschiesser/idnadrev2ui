@@ -5,4 +5,4 @@
 <br/>
 <br/>
 <br/>
-<app-month-view [events]="calEvents" [date]="now"></app-month-view>
+<app-month-view [events]="calEvents" [date]="now" (newDate)="fetchForDate($event)"></app-month-view>

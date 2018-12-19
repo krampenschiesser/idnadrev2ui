@@ -196,8 +196,10 @@ export class TaskService {
         return t.details.schedule.isScheduled();
       })
       .filter(t => {
-        let sameOrAfter = moment(t.details.schedule.getStartDate()).isSameOrAfter(start);
-        let sameOrBefore = moment(t.details.schedule.getEndDate(t.details.estimatedTime)).isSameOrBefore(end);
+        let startDate = t.details.schedule.getStartDate();
+        let endDate = t.details.schedule.getEndDate(t.details.estimatedTime);
+        let sameOrAfter = moment(startDate).isSameOrAfter(start);
+        let sameOrBefore = moment(endDate).isSameOrBefore(end);
         return sameOrAfter || sameOrBefore;
       });
     return retval;

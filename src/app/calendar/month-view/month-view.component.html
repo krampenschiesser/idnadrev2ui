@@ -1,3 +1,4 @@
+<p-calendar [ngModel]="_dateAsDate" (ngModelChange)="newDate.emit(asMoment($event))" view="month" dateFormat="mm/yy"></p-calendar>
 <div class="MonthView">
   <div class="Header">
     <div *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">

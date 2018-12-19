@@ -104,6 +104,7 @@ export function generateTasks(repo: RepositoryId, contacts: Contact[]): Task[] {
       sched.proposedDate = new ProposedDateTime();
       sched.proposedDate.proposedDateTime = moment().add(i + 1, 'day').toDate();
       sched.proposedDate.proposedWeekOnly = true;
+      task.name = task.name + '_weeklong';
       // if (i / 2 > 3) {
       //   sched.proposedWeekDayYear.proposedWeekDay = moment().week();
       // }
@@ -111,6 +112,13 @@ export function generateTasks(repo: RepositoryId, contacts: Contact[]): Task[] {
     task.details.schedule = sched;
     retval.push(task);
   }
+  let week3 = new Task('3weeklong').withRepository(repo);
+  let sched = new Scheduling();
+  sched.fixedScheduling = new FixedScheduling();
+  sched.fixedScheduling.scheduledDateTime = moment().toDate();
+  week3.details.estimatedTime = 60 * 24 * 7 * 3;
+  week3.details.schedule=sched;
+  retval.push(week3);
   return retval;
 }
 

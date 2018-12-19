@@ -11,7 +11,6 @@ export default class CalendarEvent {
   isInWeek(date: moment.Moment): boolean {
     let weekStart = date.clone().startOf('week');
     let weekEnd = date.clone().endOf('week');
-    console.log(this.title, 'WeekStart', weekStart.toDate(), 'WeekEnd', weekEnd.toDate(), 'Start', this.start.toDate(), 'End', this.end.toDate());
 
     let endIsInWeek = (this.end.isSameOrAfter(weekStart) && this.end.isSameOrBefore(weekEnd));
     let startIsInWeek = (this.start.isSameOrAfter(weekStart) && this.start.isSameOrBefore(weekEnd));
@@ -29,7 +28,6 @@ export default class CalendarEvent {
       return undefined;
     } else if (this.start.isSameOrAfter(weekStart) && this.start.isSameOrBefore(weekEnd)) {
       let weekDay = this.start.weekday();
-      console.log('weekday for ', this.title, weekDay);
       return weekDay;
     } else {
       return 0;

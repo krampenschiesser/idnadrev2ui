@@ -21,9 +21,11 @@ interface EventInWeek {
 })
 export class MonthViewComponent implements OnInit {
   _date: moment.Moment;
+  _dateAsDate: Date;
   _events: CalendarEvent[];
   @Input() height: number = 900;
 
+  @Output() newDate = new EventEmitter<moment.Moment>();
   @Output() daySelected = new EventEmitter<moment.Moment>();
   @Output() weekSelected = new EventEmitter<moment.Moment>();
   @Output() monthSelected = new EventEmitter<moment.Moment>();
@@ -82,7 +84,6 @@ export class MonthViewComponent implements OnInit {
             return 0;
           }
         });
-        console.log('sorted order: ', copy.map(e => e.event.title + '[' + e.offset + '->' + e.length + ']'));
 
         let findCompanion = (master: EventInWeek, all: EventInWeek[]): EventInWeek | undefined => {
           let candidates = all.filter(e => e.offset > (master.offset + master.length - 1));
@@ -90,7 +91,6 @@ export class MonthViewComponent implements OnInit {
             return b.length - a.length;
           });
           if (candidates.length > 0) {
-            console.log('found candidate ', candidates[0].event.title, ' for ', master.event.title);
             return candidates[0];
           } else {
             return undefined;
@@ -98,7 +98,6 @@ export class MonthViewComponent implements OnInit {
         };
         while (copy.length > 0) {
           let event = copy.splice(0, 1)[0];
-          console.log('got event', event.event.title);
           weekSlots[i].addEvent(event);
 
           for (let next = findCompanion(event, copy); copy.length > 0 && next !== undefined; next = findCompanion(next, copy)) {
@@ -117,31 +116,52 @@ export class MonthViewComponent implements OnInit {
   }
 
   @Input() set date(d: moment.Moment) {
+    console.log('new date', d.toDate());
     this._date = d;
+    this._dateAsDate = d.toDate();
+    let days = [];
+    let weeks = [];
+    let eventsInWeek = [];
+    let dayOfWeek = [];
     let start = d.clone().startOf('month').startOf('weeks');
     let end = d.clone().endOf('month').endOf('weeks');
 
+    let weeksInYear = start.weeksInYear();
+    let startWeek = start.week();
+
     let duration = moment.duration(end.diff(start));
 
-    let temp = start.clone();
     for (let i = 0; i < duration.asWeeks(); i++) {
-      this.weeks.push([]);
-      this.eventsInWeek.push([]);
+      weeks.push([]);
+      eventsInWeek.push([]);
     }
     for (let i = 0; i < 7; i++) {
-      this.dayOfWeek[i] = [];
+      dayOfWeek[i] = [];
     }
-    temp = start.clone();
     for (let temp = start.clone(); temp.isBefore(end); temp = temp.add(1, 'day')) {
       let day = {
         date: temp.clone(),
       };
-      this.days.push(day);
-      this.dayOfWeek[temp.weekday()].push(day);
-      let weekIndex = Math.floor(moment.duration(temp.diff(start)).asWeeks());
-      this.weeks[weekIndex].push(day);
-
+      days.push(day);
+      dayOfWeek[temp.weekday()].push(day);
+      let curWeek = temp.week();
+      let weekIndex = -1;
+      if (curWeek<startWeek) {
+        weekIndex= curWeek + weeksInYear - startWeek;
+      } else {
+        weekIndex = curWeek - startWeek;
+      }
+      weeks[weekIndex].push(day);
     }
+    this.days = days;
+    this.dayOfWeek = dayOfWeek;
+    this.eventsInWeek = eventsInWeek;
+    if (weeks[weeks.length - 1].length === 0) {
+      weeks.splice(weeks.length - 1, 1);
+    }
+    this.weeks = weeks;
+
+    console.log(weeks);
   }
 
   get date() {
@@ -149,6 +169,9 @@ export class MonthViewComponent implements OnInit {
   }
 
 
+  asMoment(date: Date) {
+    return moment(date);
+  }
 }
 
 class DaySlots {
@@ -160,18 +183,14 @@ class DaySlots {
   }
 
   getFreeRow(minRow: number): number {
-    console.log('rows', this.rows.slice());
     minRow = Math.max(0, minRow);
     for (let i = this.rows.length; i <= minRow; i++) {
-      console.log('psuhing row', 'i', i, 'minRow', minRow);
       this.rows.push(undefined);
     }
     if (this.rows[minRow] === undefined) {
-      console.log('given row is undefined ', minRow);
       return minRow;
     } else {
       this.rows.push(undefined);
-      console.log(minRow, 'add new row ', this.rows.length - 1);
       return this.rows.length - 1;
     }
   }
@@ -192,10 +211,8 @@ class WeekSlots {
     for (let i = event.offset; i < event.offset + event.length; i++) {
       let cur = this.days[i].getFreeRow(row);
       row = Math.max(row, cur);
-      console.log('day ', i, ' row ', cur, ' max ', row);
     }
     for (let i = event.offset; i < event.offset + event.length; i++) {
-      console.log('Adding event ', event.event.title, ' to day ', i, ' row ', row);
       this.days[i].addEvent(event, row);
     }
   }
