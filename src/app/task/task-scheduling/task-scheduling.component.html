@@ -1,8 +1,4 @@
 <app-page-title title="Schedule tasks">
 </app-page-title>
 
-<p-fullCalendar [events]="events" [options]="options"></p-fullCalendar>
-<br/>
-<br/>
-<br/>
 <app-month-view [events]="calEvents" [date]="now" (newDate)="fetchForDate($event)"></app-month-view>

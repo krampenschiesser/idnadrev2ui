@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment from 'moment';
 import CalendarEvent from '../CalendarEvent';
-import { ActivatedRoute } from '@angular/router';
 
 interface Day {
   date: moment.Moment,
@@ -43,6 +42,7 @@ export class MonthViewComponent implements OnInit {
 
   @Input() set events(e: CalendarEvent[]) {
     this._events = e;
+    console.log('new events ',e)
     if (this.date && e) {
       let start = this.date.clone().startOf('month').startOf('weeks');
       let end = this.date.clone().endOf('month').endOf('weeks');
@@ -161,7 +161,7 @@ export class MonthViewComponent implements OnInit {
     }
     this.weeks = weeks;
 
-    console.log(weeks);
+    this.events=this.events.slice();
   }
 
   get date() {

@@ -98,7 +98,10 @@ export class TaskSchedulingComponent implements OnInit {
   }
 
   async fetchFor(start: moment.Moment, end: moment.Moment) {
+    this.tasks = [];
+    console.log('fetching tasks for ',start.toDate(),end.toDate(), this.tasks)
     this.tasks = await this.taskService.getScheduledTasks(start, end);
+    console.log('got tasks', this.tasks)
     this.events = this.tasks.filter(t => t.details.schedule.isScheduled()).map(t => {
       let schedule = t.details.schedule;
       let event: NgCalendarEvent = {

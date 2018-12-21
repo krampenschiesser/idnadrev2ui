@@ -198,9 +198,10 @@ export class TaskService {
       .filter(t => {
         let startDate = t.details.schedule.getStartDate();
         let endDate = t.details.schedule.getEndDate(t.details.estimatedTime);
-        let sameOrAfter = moment(startDate).isSameOrAfter(start);
-        let sameOrBefore = moment(endDate).isSameOrBefore(end);
-        return sameOrAfter || sameOrBefore;
+        let startIsIn = moment(startDate).isBetween(start, end);
+        let endIsIn = moment(endDate).isBetween(start, end);
+        console.log(t.name, startIsIn, endIsIn);
+        return startIsIn || endIsIn;
       });
     return retval;
   }

@@ -38,7 +38,6 @@ import { ListViewComponent } from './list-view/list-view.component';
 import { AddListComponent } from './add-list/add-list.component';
 import { ListPreviewComponent } from './list-preview/list-preview.component';
 import { TaskSchedulingComponent } from './task-scheduling/task-scheduling.component';
-import { FullCalendarModule } from 'primeng/fullcalendar';
 import { CalendarModule } from '../calendar/calendar.module';
 
 const routes: Routes = [
@@ -76,7 +75,6 @@ const routes: Routes = [
     TreeTableModule,
     InplaceModule,
     NgCalendarModule,
-    FullCalendarModule,
     AutoCompleteModule,
     AccordionModule,
     SelectButtonModule,

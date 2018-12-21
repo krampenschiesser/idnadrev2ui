@@ -48,6 +48,9 @@ body {
     padding-bottom: 0.5em;
     padding-right: 1em;
 }
+.ks-col-grow {
+    flex-grow: 1;
+}
 .ks-col-no-right-pad {
     flex-grow: 0;
     padding-bottom: 0.5em;
