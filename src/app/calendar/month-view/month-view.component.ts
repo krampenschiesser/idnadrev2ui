@@ -1,17 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment from 'moment';
 import CalendarEvent from '../CalendarEvent';
-
-interface Day {
-  date: moment.Moment,
-}
-
-interface EventInWeek {
-  offset: number;
-  length: number;
-  event: CalendarEvent;
-  row: number;
-}
+import { Day, EventInWeek, WeekSlots } from '../util';
 
 @Component({
   selector: 'app-month-view',
@@ -32,8 +22,6 @@ export class MonthViewComponent implements OnInit {
   @Output() eventMoved = new EventEmitter<[CalendarEvent, moment.Moment]>();
   @Output() eventRemoved = new EventEmitter<[CalendarEvent, moment.Moment]>();
 
-  days: Day[] = [];
-  dayOfWeek: Day[][] = [];
   weeks: Day[][] = [];
   eventsInWeek: EventInWeek[][] = [];
 
@@ -44,8 +32,8 @@ export class MonthViewComponent implements OnInit {
     this._events = e;
     console.log('new events ',e)
     if (this.date && e) {
-      let start = this.date.clone().startOf('month').startOf('weeks');
-      let end = this.date.clone().endOf('month').endOf('weeks');
+      let start = this.date.clone().startOf('month').startOf('week');
+      let end = this.date.clone().endOf('month').endOf('week');
       let duration = moment.duration(end.diff(start));
       let temp = start.clone();
 
@@ -119,12 +107,10 @@ export class MonthViewComponent implements OnInit {
     console.log('new date', d.toDate());
     this._date = d;
     this._dateAsDate = d.toDate();
-    let days = [];
     let weeks = [];
     let eventsInWeek = [];
-    let dayOfWeek = [];
-    let start = d.clone().startOf('month').startOf('weeks');
-    let end = d.clone().endOf('month').endOf('weeks');
+    let start = d.clone().startOf('month').startOf('week');
+    let end = d.clone().endOf('month').endOf('week');
 
     let weeksInYear = start.weeksInYear();
     let startWeek = start.week();
@@ -135,15 +121,10 @@ export class MonthViewComponent implements OnInit {
       weeks.push([]);
       eventsInWeek.push([]);
     }
-    for (let i = 0; i < 7; i++) {
-      dayOfWeek[i] = [];
-    }
     for (let temp = start.clone(); temp.isBefore(end); temp = temp.add(1, 'day')) {
       let day = {
         date: temp.clone(),
       };
-      days.push(day);
-      dayOfWeek[temp.weekday()].push(day);
       let curWeek = temp.week();
       let weekIndex = -1;
       if (curWeek<startWeek) {
@@ -153,8 +134,6 @@ export class MonthViewComponent implements OnInit {
       }
       weeks[weekIndex].push(day);
     }
-    this.days = days;
-    this.dayOfWeek = dayOfWeek;
     this.eventsInWeek = eventsInWeek;
     if (weeks[weeks.length - 1].length === 0) {
       weeks.splice(weeks.length - 1, 1);
@@ -174,46 +153,3 @@ export class MonthViewComponent implements OnInit {
   }
 }
 
-class DaySlots {
-  rows: (EventInWeek | undefined)[] = [];
-
-  addEvent(event: EventInWeek, row: number) {
-    this.rows[row] = event;
-    event.row = row;
-  }
-
-  getFreeRow(minRow: number): number {
-    minRow = Math.max(0, minRow);
-    for (let i = this.rows.length; i <= minRow; i++) {
-      this.rows.push(undefined);
-    }
-    if (this.rows[minRow] === undefined) {
-      return minRow;
-    } else {
-      this.rows.push(undefined);
-      return this.rows.length - 1;
-    }
-  }
-}
-
-class WeekSlots {
-  days: DaySlots[] = [];
-
-
-  constructor() {
-    for (let i = 0; i < 7; i++) {
-      this.days.push(new DaySlots());
-    }
-  }
-
-  addEvent(event: EventInWeek) {
-    let row = -1;
-    for (let i = event.offset; i < event.offset + event.length; i++) {
-      let cur = this.days[i].getFreeRow(row);
-      row = Math.max(row, cur);
-    }
-    for (let i = event.offset; i < event.offset + event.length; i++) {
-      this.days[i].addEvent(event, row);
-    }
-  }
-}

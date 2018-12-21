@@ -1,4 +1,5 @@
 <app-page-title title="Schedule tasks">
 </app-page-title>
 
-<app-month-view [events]="calEvents" [date]="now" (newDate)="fetchForDate($event)"></app-month-view>
+<app-month-view *ngIf="mode===Mode.MONTH" [events]="calEvents" [date]="now" (newDate)="fetchForDate($event)"></app-month-view>
+<app-week-view *ngIf="mode===Mode.WEEK" [events]="calEvents" [date]="now" (newDate)="fetchForDate($event)"></app-week-view>
