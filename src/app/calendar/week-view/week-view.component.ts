@@ -3,6 +3,11 @@ import * as moment from 'moment';
 import CalendarEvent from '../CalendarEvent';
 import { Day, EventInWeek, WeekSlots } from '../util';
 
+interface Interval {
+  hour: number,
+  sub: number,
+}
+
 @Component({
   selector: 'app-week-view',
   templateUrl: './week-view.component.html',
@@ -14,7 +19,9 @@ export class WeekViewComponent implements OnInit {
   end: moment.Moment;
   _dateAsDate: Date;
   _events: CalendarEvent[];
-  @Input() height: number = 900;
+  _height: number;
+  _columnHeight: number;
+  extendedHours: boolean = false;
 
   @Output() newDate = new EventEmitter<moment.Moment>();
   @Output() daySelected = new EventEmitter<moment.Moment>();
@@ -27,8 +34,38 @@ export class WeekViewComponent implements OnInit {
   week: Day[] = [];
   eventsInWeek: EventInWeek[] = [];
   title: string;
+  intervals: Interval[] = [];
 
   ngOnInit() {
+    this.generateIntervals();
+    this.height = 800;
+  }
+
+  private generateIntervals() {
+    this.intervals=[];
+    let end= this.extendedHours ? 24 : 22;
+    let start = this.extendedHours ? 0 : 6;
+    for (let i = start; i < end; i++) {
+      console.log('hour',i)
+      for (let j = 0; j < 2; j++) {
+        this.intervals.push({
+          sub: j,
+          hour: i
+        });
+      }
+    }
+  }
+
+  setExtendedHours(newVal: boolean) {
+    this.extendedHours=newVal;
+    this.generateIntervals();
+    this._columnHeight = Math.floor(this._height / this.intervals.length);
+
+  }
+
+  @Input() set height(h: number) {
+    this._height = h;
+    this._columnHeight = Math.ceil(h / this.intervals.length);
   }
 
   @Input() set events(e: CalendarEvent[]) {
@@ -107,7 +144,7 @@ export class WeekViewComponent implements OnInit {
     this.start = d.clone().startOf('week');
     this.end = d.clone().endOf('week');
     let sameMonth = this.start.month() === this.end.month();
-    this.title = this.start.format(sameMonth ? 'D' : 'D MMM - ') +
+    this.title = this.start.format(sameMonth ? 'D - ' : 'D MMM - ') +
       this.end.format('D MMM, YYY') +
       ' (Week ' +
       this.end.format('w')

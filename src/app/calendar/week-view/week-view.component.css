@@ -1,0 +1,115 @@
+.WeekView {
+    width: 100%;
+}
+
+.Header {
+    position: relative;
+    width: 100%;
+    height: 35px;
+    background-color: #191919;
+    border: 1px solid #191919;
+    color: #dedede;
+    padding: 0.571em 1em;
+    font-weight: bold;
+}
+
+.WeekDayCell {
+    text-align: center;
+    padding: 0.571em 1em;
+}
+
+.WeekDayContainer {
+    position: absolute;
+    top: 0;
+}
+
+.EventBody {
+    padding-top: 5px;
+    position: relative;
+    width: 100%;
+}
+
+.WeekRow {
+    position: absolute;
+    width: 100%;
+}
+
+.WeekDay {
+    position: absolute;
+    height: 100%;
+
+    border-style: solid;
+    border-width: 1px;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-color: #191919;
+    padding: 0;
+    background-color: #323232;
+}
+
+.Weekend {
+    background-color: #646464;
+}
+
+.WeekDayLabel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding-top: 0.25em;
+    padding-right: 0.4em;
+}
+
+.WeekNrLabel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: smaller;
+    padding-top: 0.25em;
+    padding-left: 0.5em;
+}
+
+.Event {
+    position: absolute;
+    background-color: #FFA000;
+    border: 1px solid #FFA000;
+    color: #212121;
+    font-size: .85em;
+    line-height: 1.3;
+    border-radius: 3px;
+}
+
+.HourColumn {
+    margin-top: 5px;
+    background-color: #646464;
+
+    border-style: solid;
+    border-width: 1px;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-color: #191919;
+}
+
+.HourColumnGap {
+    background-color: #191919;
+    height: 35px
+}
+
+.TimeSlotEven {
+    border-style: dashed;
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: #191919;
+}
+.TimeSlotOdd {
+    border-style: solid;
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: #191919;
+}
+
+.HourExtendButton {
+    width: 22px;
+    height: 22px;
+    margin-top: 7px;
+    margin-left: 3px;
+}

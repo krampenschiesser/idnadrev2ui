@@ -6,36 +6,52 @@
 
   </div>
   <div class="ks-col-no-right-pad">
-    <p-calendar [ngModel]="_dateAsDate" (ngModelChange)="newDate.emit(asMoment($event))" showButtonBar="true"></p-calendar>
+    <p-calendar [ngModel]="_dateAsDate" (ngModelChange)="newDate.emit(asMoment($event))" showButtonBar="true" clearButtonStyleClass="Hidden"></p-calendar>
   </div>
 </div>
-<div class="MonthView">
-  <div class="Header">
-    <div *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
-      <div class="WeekDayContainer" [ngStyle]="{left: 100 / 7 * weekDayNr + '%', width: 100/7+'%'}">
-        <div class="WeekDayCell">
-          {{date.weekday(weekDayNr).format('ddd')}}
+
+<div style="display: flex; width: 100%">
+  <div style="flex-basis: 25px;">
+    <div class="HourColumnGap">
+      <button pButton [icon]="extendedHours ? 'fa fa-minus-circle' : 'fa fa-plus-circle' " class="HourExtendButton" (click)="setExtendedHours(!extendedHours)"></button>
+    </div>
+    <div class="HourColumn" [ngStyle]="{height: (_height)+'px'}">
+      <div *ngFor="let interval  of intervals; let i =index" [ngClass]="i%2==0?'TimeSlotEven':'TimeSlotOdd'" [ngStyle]="{height: _columnHeight+'px'}">
+        {{i % 2 == 0 ? interval.hour : ''}}
+      </div>
+    </div>
+
+  </div>
+  <div style="flex-grow: 1">
+    <div class="WeekView">
+      <div class="Header">
+        <div *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
+          <div class="WeekDayContainer" [ngStyle]="{left: 100 / 7 * weekDayNr + '%', width: 100/7+'%'}">
+            <div class="WeekDayCell">
+              <a [routerLink]="[]" (click)="weekSelected.emit(week[weekDayNr].date)">
+                {{date.weekday(weekDayNr).format('D, ddd')}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="EventBody" [ngStyle]="{height: _height+'px'}">
+        <div
+          pDroppable="events"
+          [ngClass]="{'WeekDay': true, 'Weekend': week[weekDayNr].date.day() === 0 || week[weekDayNr].date.day() ===6}"
+          [ngStyle]="{left: 100/7*weekDayNr+'%', width: 100/7+'%', borderLeftWidth: weekDayNr === 0 ? '1px': '0'}"
+          *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
+          <div *ngFor="let interval  of intervals; let i =index" [ngClass]="i%2==0?'TimeSlotEven':'TimeSlotOdd'" [ngStyle]="{height: _columnHeight+'px'}">
+
+          </div>
+        </div>
+        <div *ngFor="let event of eventsInWeek[weekDayNr]">
+          <div pDraggable="events" class="Event" [ngStyle]="{top: (27+event.row*21)+'px', left: (100/7* event.offset) +'%', width: (100/7*event.length)+'%'}">
+            {{event.event.title}}
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="EventBody" [ngStyle]="{height: height+'px'}">
-    <div
-      pDroppable="events"
-      [ngClass]="{'WeekDay': true, 'Weekend': week[weekDayNr].date.day() === 0 || week[weekDayNr].date.day() ===6}"
-      [ngStyle]="{left: 100/7*weekDayNr+'%', width: 100/7+'%', borderLeftWidth: weekDayNr === 0 ? '1px': '0'}"
-      *ngFor="let weekDayNr of [0,1,2,3,4,5,6]">
-      <a [routerLink]="[]" (click)="daySelected.emit(week[weekDayNr].date)" class="WeekDayLabel">
-        {{week[weekDayNr].date.format('D')}}
-      </a>
-      <a [routerLink]="[]" (click)="weekSelected.emit(week[weekDayNr].date)" *ngIf="weekDayNr===0" class="WeekNrLabel">
-        {{week[weekDayNr].date.format('w')}}
-      </a>
-    </div>
-    <div *ngFor="let event of eventsInWeek[weekDayNr]">
-      <div pDraggable="events" class="Event" [ngStyle]="{top: (27+event.row*21)+'px', left: (100/7* event.offset) +'%', width: (100/7*event.length)+'%'}">
-        {{event.event.title}}
-      </div>
-    </div>
-  </div>
 </div>
+
