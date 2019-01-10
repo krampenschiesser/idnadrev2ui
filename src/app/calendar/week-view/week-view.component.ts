@@ -36,7 +36,7 @@ export class WeekViewComponent implements OnInit {
   dayLongEventsInWeek: EventInWeek[] = [];
   title: string;
   intervals: Interval[] = [];
-   dayLongEventHeight: number;
+  dayLongEventHeight: number;
 
   ngOnInit() {
     this.generateIntervals();
@@ -79,14 +79,14 @@ export class WeekViewComponent implements OnInit {
       let allDayEvents = [];
       let timedEvents = [];
       for (const calendarEvent of e) {
-        if(calendarEvent.allDay) {
+        if (calendarEvent.allDay) {
           allDayEvents.push(calendarEvent);
-        }else {
+        } else {
           timedEvents.push(calendarEvent);
         }
       }
-      console.log('alldayevents',allDayEvents)
-      console.log('timedEvents',timedEvents)
+      console.log('alldayevents', allDayEvents);
+      console.log('timedEvents', timedEvents);
 
       this.processDayLongEvents(duration, allDayEvents);
     }
@@ -154,7 +154,11 @@ export class WeekViewComponent implements OnInit {
     for (const eventInWeek of eventsInWeek) {
       max_row = Math.max(max_row, eventInWeek.row);
     }
-    this.dayLongEventHeight=max_row*25;
+    if (eventsInWeek.length > 0) {
+      this.dayLongEventHeight = (max_row + 1) * 21;
+    } else {
+      this.dayLongEventHeight = 0;
+    }
   }
 
   get events() {

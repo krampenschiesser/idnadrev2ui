@@ -43,6 +43,11 @@
       </div>
       <div *ngIf="dayLongEventHeight>0" class="DayLongEventBody" [ngStyle]="{height: dayLongEventHeight+'px'}">
 
+        <div *ngFor="let event of dayLongEventsInWeek">
+          <div pDraggable="events" class="Event" [ngStyle]="{top: (5+event.row*21)+'px', left: (100/7* event.offset) +'%', width: (100/7*event.length)+'%'}">
+            {{event.event.title}}
+          </div>
+        </div>
       </div>
       <div class="EventBody" [ngStyle]="{height: _height+'px'}">
         <div
