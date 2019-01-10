@@ -6,7 +6,13 @@
 
   </div>
   <div class="ks-col-no-right-pad">
+    <span style="padding-right: 5px">
+      <button pButton icon="fa fa-arrow-left" (click)="onPrevWeek()"></button>
+    </span>
     <p-calendar [ngModel]="_dateAsDate" (ngModelChange)="newDate.emit(asMoment($event))" showButtonBar="true" clearButtonStyleClass="Hidden"></p-calendar>
+    <span style="padding-left: 5px">
+      <button pButton icon="fa fa-arrow-right" (click)="onNextWeek()"></button>
+    </span>
   </div>
 </div>
 
@@ -15,7 +21,7 @@
     <div class="HourColumnGap">
       <button pButton [icon]="extendedHours ? 'fa fa-minus-circle' : 'fa fa-plus-circle' " class="HourExtendButton" (click)="setExtendedHours(!extendedHours)"></button>
     </div>
-    <div class="HourColumn" [ngStyle]="{height: (_height)+'px'}">
+    <div class="HourColumn" [ngStyle]="{height: (_height)+'px', marginTop: (dayLongEventHeight+5 )+'px'}">
       <div *ngFor="let interval  of intervals; let i =index" [ngClass]="i%2==0?'TimeSlotEven':'TimeSlotOdd'" [ngStyle]="{height: _columnHeight+'px'}">
         {{i % 2 == 0 ? interval.hour : ''}}
       </div>
@@ -34,6 +40,9 @@
             </div>
           </div>
         </div>
+      </div>
+      <div *ngIf="dayLongEventHeight>0" class="DayLongEventBody" [ngStyle]="{height: dayLongEventHeight+'px'}">
+
       </div>
       <div class="EventBody" [ngStyle]="{height: _height+'px'}">
         <div

@@ -29,6 +29,12 @@
     width: 100%;
 }
 
+.DayLongEventBody {
+    padding-top: 5px;
+    position: relative;
+    width: 100%;
+}
+
 .WeekRow {
     position: absolute;
     width: 100%;
