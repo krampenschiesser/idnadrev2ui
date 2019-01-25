@@ -116,7 +116,7 @@ export class Scheduling {
     let end = moment(startDate);
     if (startDate) {
       if (estimatedTime) {
-        end = end.minutes(estimatedTime);
+        end = end.add(estimatedTime,'seconds');
         return end.toDate();
       } else {
         if (this.fixedScheduling) {

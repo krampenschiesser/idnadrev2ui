@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment from 'moment';
 import CalendarEvent from '../CalendarEvent';
-import { Day, EventInWeek, WeekSlots } from '../util';
+import { Day, DaySlots, EventInDay, EventInWeek, WeekSlots } from '../util';
+import { of } from 'rxjs';
 
 interface Interval {
   hour: number,
@@ -32,11 +33,15 @@ export class WeekViewComponent implements OnInit {
   @Output() eventRemoved = new EventEmitter<[CalendarEvent, moment.Moment]>();
 
   week: Day[] = [];
-  eventsInWeek: EventInWeek[] = [];
+  eventsInWeek: EventInDay[] = [];
   dayLongEventsInWeek: EventInWeek[] = [];
   title: string;
   intervals: Interval[] = [];
   dayLongEventHeight: number;
+  startHour = 0;
+  endHour = 0;
+  days = 7;
+  hourSubdivision = 2;
 
   ngOnInit() {
     this.generateIntervals();
@@ -45,10 +50,9 @@ export class WeekViewComponent implements OnInit {
 
   private generateIntervals() {
     this.intervals = [];
-    let end = this.extendedHours ? 24 : 22;
-    let start = this.extendedHours ? 0 : 6;
-    for (let i = start; i < end; i++) {
-      console.log('hour', i);
+    this.endHour = this.extendedHours ? 24 : 22;
+    this.startHour = this.extendedHours ? 0 : 6;
+    for (let i = this.startHour; i < this.endHour; i++) {
       for (let j = 0; j < 2; j++) {
         this.intervals.push({
           sub: j,
@@ -72,7 +76,6 @@ export class WeekViewComponent implements OnInit {
 
   @Input() set events(e: CalendarEvent[]) {
     this._events = e;
-    console.log('new events ', e);
     if (this.date && e) {
       let duration = moment.duration(this.end.diff(this.start));
 
@@ -89,6 +92,7 @@ export class WeekViewComponent implements OnInit {
       console.log('timedEvents', timedEvents);
 
       this.processDayLongEvents(duration, allDayEvents);
+      this.processTimedEvents(duration, timedEvents);
     }
   }
 
@@ -98,13 +102,12 @@ export class WeekViewComponent implements OnInit {
 
     let eventsInWeek: EventInWeek[] = [];
     for (let i = 0; i < duration.asWeeks(); i++) {
-      let weekEvents = allDayEvents;
-      weekEvents.sort((a, b) => {
+      allDayEvents.sort((a, b) => {
         let first = a.start.valueOf();
         let second = a.end.valueOf();
         return first - second;
       });
-      weekEvents.forEach(e => eventsInWeek.push({
+      allDayEvents.forEach(e => eventsInWeek.push({
         offset: e.getWeekIndex(temp),
         length: e.getWeekLength(temp),
         event: e,
@@ -159,6 +162,103 @@ export class WeekViewComponent implements OnInit {
     } else {
       this.dayLongEventHeight = 0;
     }
+  }
+
+  private processTimedEvents(duration: moment.Duration, timedEvents: CalendarEvent[]) {
+    console.log('start of week', this.start.toDate());
+    let temp = this.start.clone();
+    temp.second(0).minute(0).hour(0);
+
+
+    let eventsInWeek: EventInDay[] = [];
+
+    for (let day = 0; day < this.days; day++) {
+      // eventsInWeek.push([]);
+      timedEvents.filter(e => e.isInDay(temp));
+      temp = temp.add(1, 'day');
+
+      let eventsInDay = timedEvents.filter(e => e.isInDay(temp));
+
+      eventsInDay.forEach(e => {
+        let offset = e.getDayHourOffset(temp, this.hourSubdivision);
+        if (!this.extendedHours) {
+          offset -= 6 * this.hourSubdivision;
+          if (offset < 0) {
+            offset = 0;
+          }
+        }
+        console.log('offset for ', e.title, 'day ', day, e.start.format('lll'), offset);
+        if (offset !== undefined) {
+          eventsInWeek.push({
+            hourSlotOffset: offset,
+            offsetInSlot: 0,
+            length: e.getDayLengthInMinutes(temp, this.hourSubdivision, this.startHour, this.endHour),
+            event: e,
+            column: 0,
+            maxColumn: 0,
+            day: day,
+            viewLeft: 0,
+            viewTop: 0,
+            viewWidth: 0,
+            viewHeight: 0
+          });
+        }
+      });
+    }
+    console.log(eventsInWeek);
+
+
+    let copy = eventsInWeek.slice().sort((a, b) => {
+      if (a.hourSlotOffset < b.hourSlotOffset) {
+        return -1;
+      } else if (a.hourSlotOffset > b.hourSlotOffset) {
+        return 1;
+      } else if (a.length > b.length) {
+        return -1;
+      } else if (a.length < b.length) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    let findCompanion = (master: EventInDay, all: EventInDay[]): EventInDay | undefined => {
+      let candidates = all.filter(e => e.hourSlotOffset > (master.hourSlotOffset + master.length - 1));
+      candidates.sort((a, b) => {
+        return b.length - a.length;
+      });
+      if (candidates.length > 0) {
+        return candidates[0];
+      } else {
+        return undefined;
+      }
+    };
+
+    let daySlots: DaySlots[] = [];
+    for (let i = 0; i < this.days; i++) {
+      daySlots.push(new DaySlots(this.hourSubdivision, this.startHour, this.endHour));
+    }
+    while (copy.length > 0) {
+      let event = copy.splice(0, 1)[0];
+      let dayslot = daySlots[event.day];
+      dayslot.addEvent(event);
+
+      for (let next = findCompanion(event, copy); copy.length > 0 && next !== undefined; next = findCompanion(next, copy)) {
+        let index = copy.indexOf(next);
+        let tmp = copy.splice(index, 1)[0];
+        dayslot.addEvent(tmp);
+      }
+    }
+    eventsInWeek.forEach(e => {
+      let dayPercentage = 100 / 7;
+      e.viewWidth = dayPercentage / (e.maxColumn + 1);
+      e.viewWidth -= 1;
+      e.viewTop = 5 + e.hourSlotOffset * this._columnHeight;
+      let offsetInColumn = e.column === 0 ? 0 : dayPercentage / (e.column + 1);
+      e.viewLeft = e.day === 0 ? 0 + offsetInColumn : ((dayPercentage * e.day) + offsetInColumn);
+      e.viewHeight = e.length * this._columnHeight;
+    });
+    this.eventsInWeek = eventsInWeek;
   }
 
   get events() {

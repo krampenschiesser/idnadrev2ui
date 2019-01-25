@@ -59,8 +59,8 @@
 
           </div>
         </div>
-        <div *ngFor="let event of eventsInWeek[weekDayNr]">
-          <div pDraggable="events" class="Event" [ngStyle]="{top: (27+event.row*21)+'px', left: (100/7* event.offset) +'%', width: (100/7*event.length)+'%'}">
+        <div *ngFor="let event of eventsInWeek">
+          <div pDraggable="events" class="Event" [ngStyle]="{top: event.viewTop+'px', left: event.viewLeft+'%', height: event.viewHeight+'px', width: event.viewWidth+'%'}">
             {{event.event.title}}
           </div>
         </div>

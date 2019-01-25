@@ -23,6 +23,7 @@ export class TaskViewComponent implements OnInit {
     ).subscribe(task => {
       if (task) {
         this.taskToShow = task;
+        console.log('task',task);
       }
     });
   }
