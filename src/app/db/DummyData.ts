@@ -116,7 +116,7 @@ export function generateTasks(repo: RepositoryId, contacts: Contact[]): Task[] {
   let sched = new Scheduling();
   sched.fixedScheduling = new FixedScheduling();
   sched.fixedScheduling.scheduledDateTime = moment().toDate();
-  week3.details.estimatedTime = 60 * 24 * 7 * 3;
+  week3.details.estimatedTime = 60*60 * 24 * 7 * 3;
   week3.details.schedule=sched;
   retval.push(week3);
   return retval;

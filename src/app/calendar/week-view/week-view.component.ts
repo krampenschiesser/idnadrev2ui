@@ -252,7 +252,7 @@ export class WeekViewComponent implements OnInit {
     eventsInWeek.forEach(e => {
       let dayPercentage = 100 / 7;
       e.viewWidth = dayPercentage / (e.maxColumn + 1);
-      e.viewWidth -= 1;
+      e.viewWidth -= 0.5;
       e.viewTop = 5 + e.hourSlotOffset * this._columnHeight;
       let offsetInColumn = e.column === 0 ? 0 : dayPercentage / (e.column + 1);
       e.viewLeft = e.day === 0 ? 0 + offsetInColumn : ((dayPercentage * e.day) + offsetInColumn);
